@@ -1,0 +1,48 @@
+GIT Structure or Where to put what??
+
+root Folder contains:
+
+->branches
+->trunk
+	->concepts
+	->dependencies
+	->documentation
+	->help
+	->resources
+	->to-do
+->tags
+
+trunk->branches:
+- folders for 
+  1) different ports
+  2) experimental versions
+  3) really unstable WIP versions
+
+root->tags
+- program versions which schould be preserved
+(milestone version, alpha, beta)
+
+root->trunk:
+- stable or semistable work in Progress(WIP) program version
+
+root->trunk->concepts:
+- concepts refering to the project
+ e.g brainstorming text files, mindmaps, pictures, uml...
+
+root->trunk->dependencies:
+- libraries the project depends on
+
+root->trunk->documentation
+- javadoc, and other documentation to the project
+
+root->trunk->help:
+- Informations how to setup the tools
+
+root->trunk->resources
+- obj files, images, etc.
+
+root->trunk->to-do:
+- milestones
+- packages  
+
+
