@@ -1,0 +1,29 @@
+How to install and setup TortoiseSVN:
+
+- Get TortoiseSVN here:
+  https://sourceforge.net/projects/tortoisesvn/files/1.8.8/Application/
+  (32bit or 64bit version)
+
+- install it
+- create a folder wherever you like
+- right click on the folder -> SVN CheckOut
+- input: 
+  svn+ssh://svn.code.sf.net/p/effective100/root/
+  or svn checkout svn+ssh://(username)@svn.code.sf.net/p/effective100/root/
+  username -> your username on sourceforge
+- click okay and type in your password if a inputform comes up
+- DONE!
+
+How to update your SVN with TortoiseSVN:
+
+- choose the folder you want to update
+- right click on the folder -> Update
+
+How to add something to the repository
+
+- rightclick on the folder/file SVN -> TortoiseSVN -> add
+- afterwards: rightclick on the folder/file -> SVN commit(to update the repository)
+
+Attention!!
+
+Everytime you want to delete/add/rename a file permenantly do it with the SVN Menu! 
