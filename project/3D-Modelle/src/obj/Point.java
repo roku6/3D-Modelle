@@ -13,25 +13,25 @@
 
 package obj;
 
-public class Vertex
+public class Point
 {	
 	//Aus Gründen der Bequemlichkeit: public, statt Getter+Setter
-	public Vector4<Float> pos;
+	public Vector4<Float> vertex;
 	public Vector4<Float> tex;
 	public Vector4<Float> norm;
 	
-	public Vertex(){}
+	public Point(){}
 	
-	public Vertex(Vector4<Float> pos, Vector4<Float> tex)
+	public Point(Vector4<Float> vertex, Vector4<Float> tex)
 	{
-		this.pos = pos;
+		this.vertex = vertex;
 		this.tex = tex;
 		this.norm = new Vector4<>(0.1f); // Problem: welchen Wert für z Wählen? (am besten im Moment 0.1f)
 	}
 
-	public Vertex(Vector4<Float> pos, Vector4<Float> tex, Vector4<Float> norm)
+	public Point(Vector4<Float> vertex, Vector4<Float> tex, Vector4<Float> norm)
 	{
-		this.pos = pos;
+		this.vertex = vertex;
 		this.tex = tex;
 		this.norm = norm;
 	}

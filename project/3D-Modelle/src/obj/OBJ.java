@@ -26,35 +26,54 @@ import java.util.ArrayList;
 
 public class OBJ
 {
-	private int faceIndicesNr;		//Anzahl der Indices eines Faces (2-4)
-	private int verticesNr;			//Anzahl der Vertices
-	private int facesNr; 			//Anzahl der Faces
-	private Vertex vertexArray[];	//Vertices
-	private int faceArray[][];		//Faces
+	private int faceIndicesNr;		//Amount of indices of a face (2-4)
+	private int pointsNr;			//Amount of points
+	private int facesNr; 			//Amount of faces
+	private Point pointArray[];		//Array of all points
+	private int faceArray[][];		//Array of all faces
+	private ArrayList<Vector4<Float>> vertexList = new ArrayList<>();	//Format x/y/z
+	private ArrayList<Vector4<Float>> textureList = new ArrayList<>();	//Format x/y
+	private ArrayList<Vector4<Float>> normalList = new ArrayList<>();	//Format x/y/z
+	private ArrayList<Vector4<Float>> faceList1 = new ArrayList<>();	//Format v v v
+	private ArrayList<Vector4<Float>> faceList2 = new ArrayList<>();	//Format v/vt v/vt v/vt
+	private ArrayList<Vector4<Float>> faceList3 = new ArrayList<>();	//Format v/vt/vn v/vt/vn v/vt/vn
+	private ArrayList<Vector4<Float>> faceList4 = new ArrayList<>();	//Nicht benutzt! Nur der Vollständigkeit halber (Vektor4<>)
 	
 	public void setFaceIndicesNr(int faceIndicesNr)		{this.faceIndicesNr = faceIndicesNr;}
-	public void setVerticesNr(int verticesNr)			{this.verticesNr = verticesNr;}
+	public void setPointsNr(int pointsNr)				{this.pointsNr = pointsNr;}
 	public void setFacesNr(int facesNr)					{this.facesNr = facesNr;}
-	public void setVertexArray(Vertex vertexArray[])	{this.vertexArray = vertexArray;}
+	public void setPointArray(Point pointArray[])		{this.pointArray = pointArray;}
 	public void setFaceArray(int faceArray[][])			{this.faceArray = faceArray;}	
 	
-	public int getFaceIndicesNr()			{return faceIndicesNr;}
-	public int getVerticesNr()				{return verticesNr;}
-	public int getFacesNr()					{return facesNr;}
-	public Vertex getVertex(int i)			{return vertexArray[i];}
-	public int[] getFaceArray()				{return convertTo1D();}	
+	public void setVertexList(ArrayList<Vector4<Float>> vertexList) 	{this.vertexList = vertexList;}
+	public void setTextureList(ArrayList<Vector4<Float>> textureList) 	{this.textureList = textureList;}
+	public void setNormalList(ArrayList<Vector4<Float>> normalList) 	{this.normalList = normalList;}
+	
+	public int getFaceIndicesNr()		{return faceIndicesNr;}
+	public int getPointsNr()			{return pointsNr;}
+	public int getFacesNr()				{return facesNr;}
+	public Point getPoint(int i)		{return pointArray[i];}
+	public Point[] getPointArray() 		{return pointArray;}
+	public int[] getFaceArray()			{return convertTo1D();}	
+	
+	public ArrayList<Vector4<Float>> getVertexList() 	{return vertexList;}
+	public ArrayList<Vector4<Float>> getTextureList() 	{return textureList;}
+	public ArrayList<Vector4<Float>> getNormalList() 	{return normalList;}
 	
 	public OBJ(){};
-	public OBJ(int verticesNr, int facesNr, Vertex[] vertexArray, int[][] faceArray)
+	public OBJ(int pointsNr, int facesNr, Point[] pointArray, int[][] faceArray)
 	{
 		setFaceIndicesNr(faceArray[0].length);
-		setVerticesNr(verticesNr);
+		setPointsNr(pointsNr);
 		setFacesNr(facesNr);
-		setVertexArray(vertexArray);
+		setPointArray(pointArray);
 		setFaceArray(faceArray);
 	}
 	
-	/* Wandelt 2-dimensionales IndexArray in ein 1-dimensionales*/
+	/**
+	 * Method to convert 2D IndexArray in a 1D IndexArray
+	 * @return 1D Array with int indices
+	 **/
 	public int[] convertTo1D()
 	{
 		int aFace[] = new int[facesNr * faceIndicesNr];
@@ -69,21 +88,13 @@ public class OBJ
 	}
 	
 	
-	/* Funktion zum Laden eines Obj Files
-	 * @param Dateiname
-	 * @return Ein OBJ-File
-	 */
-	public static OBJ load(String filename)
+	/** Method for loading an Obj-File
+	 * @param Filename as a String
+	 **/
+	public void load(String filename)
 	{
 		String splitted[] = null;
 		String splitted3[] = null;
-		ArrayList<Vector4<Float>> vertexList = new ArrayList<>();	//Format x/y/z
-		ArrayList<Vector4<Float>> textureList = new ArrayList<>();	//Format x/y
-		ArrayList<Vector4<Float>> normalList = new ArrayList<>();	//Format x/y/z
-		ArrayList<Vector4<Float>> faceList1 = new ArrayList<>();	//Format v v v
-		ArrayList<Vector4<Float>> faceList2 = new ArrayList<>();	//Format v/vt v/vt v/vt
-		ArrayList<Vector4<Float>> faceList3 = new ArrayList<>();	//Format v/vt/vn v/vt/vn v/vt/vn
-		ArrayList<Vector4<Float>> faceList4 = new ArrayList<>();	//Nicht benutzt! Nur der Vollständigkeit halber (Vektor4<>)
 				
 		File file = new File(filename);
 		
@@ -97,19 +108,19 @@ public class OBJ
 			while((s = br.readLine()) != null)
 			{
 				splitted = s.split(" ");
-				//Liest Koordinaten eines Vertex ein (3D)
+				//Reads Coordinates of a vertex (3D)
 				if (splitted[0].equals("v")) vertexList.add(new Vector4<>(	Float.valueOf(splitted[1]), 
 																			Float.valueOf(splitted[2]), 
 																			Float.valueOf(splitted[3]),
 																			0.0f));				
-				//Liest Koordinaten einer Texture ein (2D)
+				//Reads Coordinates of a texture (2D)
 				else if (splitted[0].equals("vt")) 
 				{
 				textureList.add(new Vector4<>(  Float.valueOf(splitted[1]),
 												Float.valueOf(splitted[2]),
 												0.f, 0.f));
 				}
-				//Liest Koordinaten einer Normalen ein (3D)
+				//Reads Coordinates of a normalvector (3D)
 				else if (splitted[0].equals("vn")) 
 				{
 				normalList.add(new Vector4<>(  	Float.valueOf(splitted[1]),
@@ -118,10 +129,10 @@ public class OBJ
 												0.0f));
 				}
 				
-				//Liest Indices einer Face/eine Fläche ein
+				//Reads indices of a face
 				else if (splitted[0].equals("f")) 
 				{
-					faceIndicesNrLocal = splitted.length - 1; //Anzahl der Indices in einer Zeile (2 - 4) FaceDarstellung
+					faceIndicesNrLocal = splitted.length - 1; //amount of indices in a row (2 - 4) FaceRepresentation
 					splitted3 = new String[faceIndicesNrLocal];
 					for(int i = 0; i<faceIndicesNrLocal; i++)
 					{
@@ -157,25 +168,25 @@ public class OBJ
 			}
 			
 			
-			// Vereinheitlichung des Formats zu v/vt/vn
-			// Speichern der Vertices in einer Liste
-			Vertex vertexArray[] = new Vertex[vertexList.size()];
+			// unify the formats using the form v/vt/vn
+			// saves the vertices in a List
+			Point pointArray[] = new Point[vertexList.size()];
 
 			for (int j=0; j<vertexList.size(); j++)
 			{
 				if(textureList.isEmpty() && normalList.isEmpty())				
 				{
 					//Welchen NormalenStandard?
-					vertexArray[j] = new Vertex(vertexList.get(j), new Vector4<>(0.f, 1.f, 0.f, 0.f), new Vector4<>(0.f, 1.f,0.f,0.f));
+					pointArray[j] = new Point(vertexList.get(j), new Vector4<>(0.f, 1.f, 0.f, 0.f), new Vector4<>(0.f, 1.f,0.f,0.f));
 				}
 				else if  (textureList.isEmpty())
 				{
-					vertexArray[j] = new Vertex(vertexList.get(j), new Vector4<>(0.f, 1.f, 0.f, 0.f));
+					pointArray[j] = new Point(vertexList.get(j), new Vector4<>(0.f, 1.f, 0.f, 0.f));
 				}
-				else vertexArray[j] = new Vertex(vertexList.get(j), textureList.get(j), normalList.get(j));
+				else pointArray[j] = new Point(vertexList.get(j), textureList.get(j), normalList.get(j));
 			}
 			
-			//Speichern der Faces in einer 2-Dimensionalen Liste
+			//saves the faces in a 2 dimensional list
 			int indexArray[][];
 			if (faceIndicesNrLocal == 1) 
 			{
@@ -222,18 +233,17 @@ public class OBJ
 			
 			br.close();
 			fr.close();
-			return new OBJ(vertexArray.length, indexArray.length, vertexArray, indexArray);
 		}
 		catch (IOException e)
 		{
 			
 		}
-		return null;
 	}
 	
-	/*
-		Speichert die Vertecies in einer Datei
-	*/
+	/**
+		Method to save all vertecies in a file
+		@param filename as a String
+	**/
 	public void saveTo(String filename)
 	{
 		File file = new File(filename);
@@ -242,28 +252,28 @@ public class OBJ
 		{
 			FileWriter fw = new FileWriter(file);
 			fw.write("# commentar\r\n");			
-			for (int j = 0; j<this.verticesNr; j++)
+			for (int j = 0; j<this.pointsNr; j++)
 			{
 				fw.write("v");
-				fw.write(" " + this.vertexArray[j].pos.x);
-				fw.write(" " + this.vertexArray[j].pos.y);
-				fw.write(" " + this.vertexArray[j].pos.z);
+				fw.write(" " + this.pointArray[j].vertex.x);
+				fw.write(" " + this.pointArray[j].vertex.y);
+				fw.write(" " + this.pointArray[j].vertex.z);
 				fw.write("\r\n");
 			}
 			
-			for (int j = 0; j<this.verticesNr; j++)
+			for (int j = 0; j<this.pointsNr; j++)
 			{
 				fw.write("vt");
-				fw.write(" " + this.vertexArray[j].tex.x);
-				fw.write(" " + this.vertexArray[j].tex.y);				
+				fw.write(" " + this.pointArray[j].tex.x);
+				fw.write(" " + this.pointArray[j].tex.y);				
 				fw.write("\r\n");
 			}
-			for (int j = 0; j<this.verticesNr; j++)
+			for (int j = 0; j<this.pointsNr; j++)
 			{
 				fw.write("vn");
-				fw.write(" " + this.vertexArray[j].norm.x); 
-				fw.write(" " + this.vertexArray[j].norm.y); 
-				fw.write(" " + this.vertexArray[j].norm.z); 
+				fw.write(" " + this.pointArray[j].norm.x); 
+				fw.write(" " + this.pointArray[j].norm.y); 
+				fw.write(" " + this.pointArray[j].norm.z); 
 				fw.write("\r\n");
 			}
 			fw.close();
@@ -274,9 +284,10 @@ public class OBJ
 		}
 	}	
 	
-	/*
-	 * Fügt einer OBJ Datei Faces hinzu
-	 */
+	/**
+	 * Method to add faces to an OBJ File
+	   @param filename as a String, an 1D Array of indices, Size of the format
+	 **/
 	public void writeFacesToObj(String fileName, int[] indices, int size)
 	{
 		File file = new File(fileName);

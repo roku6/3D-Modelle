@@ -16,7 +16,7 @@
 
 package obj;
 
-public class Vector4 <T extends Number>
+public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 {
 	public T x;
 	public T y;
@@ -190,5 +190,21 @@ public class Vector4 <T extends Number>
 															),
 				 							(T) Float.valueOf(1.f/4.f)));		
 	}
+	
+	public int compareTo(Vector4<T> aVector4)
+	{
+		int comparisonX = (double)this.getX() > (double)aVector4.getX() ? 1 : 
+							(double)this.getX() < (double)aVector4.getX() ? -1 : 0; 
+		if (comparisonX != 0) return comparisonX;
+		else 
+		{
+			int comparisonY = (double)this.getY() > (double)aVector4.getY() ? 1 : 
+								(double)this.getY() < (double)aVector4.getY() ? -1 : 0; 
+			if (comparisonY != 0) return comparisonY;
+			else
+				return (double)this.getZ() > (double)aVector4.getZ() ? 1 : 
+						(double)this.getZ() < (double)aVector4.getZ() ? -1 : 0; 
+		}
 
+	}
 }
