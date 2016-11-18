@@ -97,8 +97,11 @@ public class DBController {
 	 * Removes all nodes with given Object-ID from DB
 	 * @param id 
 	 */
-	public static void removeByOBJ_ID(float id){
-		//TODO foreach (node n: nodes) if n.id==id delete n;
+	public static void removeByOBJ_ID(Integer id){
+		String cypher = "MATCH (n) WHERE n.id = ";
+		cypher.concat(id.toString() + " DETACH DELETE n");
+		
+		executeQuery(cypher);
 	}
 	
 	/**
