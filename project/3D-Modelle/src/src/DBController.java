@@ -4,6 +4,8 @@
 package src;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Map;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Result;
@@ -98,7 +100,7 @@ public class DBController {
 	 * @param id 
 	 */
 	public static void removeByOBJ_ID(Integer id){
-		String cypher = "MATCH (n) WHERE n.id = ";
+		String cypher = "MATCH (n) WHERE n.ObjId = ";
 		cypher.concat(id.toString() + " DETACH DELETE n");
 		
 		executeQuery(cypher);
@@ -106,8 +108,19 @@ public class DBController {
 	
 	/**
 	 * TODO
+	 * @param An ArrayList of 3-tupels: edge,edge,double(angle) defining the object
 	 */
-	public static void writeToDB(){
+	public static void writeObjToDB(ArrayList<Map<ArrayList<Edge>,Double>> ObjEdgeRelationsArray ){
+		//set object ID and log it
+		//for each element do
+		//if NOT in DB (check objID AND edgeID)
+		writeToDB(ObjEdgeRelationsArray.next());
+	}
+	
+	/**
+	 * Private Method, meant to be called by writeObjToDB
+	 */
+	private static void writeToDB(Map<ArrayList<Edge>,Double> EdgeRel){
 		//TODO
 	}
 	
