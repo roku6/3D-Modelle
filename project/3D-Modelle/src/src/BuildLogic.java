@@ -5,13 +5,14 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import obj.OBJ;
-import obj.Vector4;
+import obj.Vector4id;
 
 public class BuildLogic 
 {
 	private static BuildLogic instance;
 	
 	private OBJ aOBJ;
+	private ArrayList<Point<Float>> pointList;
 	private ArrayList<Edge<Double>> edgeList;
 	
 	public void createOBJ(String filename)
@@ -27,13 +28,13 @@ public class BuildLogic
 		saveToDatabase();
 	}
 	
-	private void createEdges()
+	private void removeDoubleVertecies()
 	{
 		Collections.sort(aOBJ.getVertexList());	
-		Vector4<Float> oldVertex = null;
-		Vector4<Float> actVertex = null;
-		
-		for (Iterator<Vector4<Float>> iterator = aOBJ.getVertexList().iterator(); iterator.hasNext();)
+		Vector4id<Float> oldVertex = null;
+		Vector4id<Float> actVertex = null;
+				
+		for (Iterator<Vector4id<Float>> iterator = aOBJ.getVertexList().iterator(); iterator.hasNext();)
 		{
 			if (actVertex == null) 
 			{
@@ -45,18 +46,40 @@ public class BuildLogic
 				oldVertex = actVertex;
 				actVertex = iterator.next();
 			}
-			while (actVertex == oldVertex)       
+			for (int id = 0; id<aOBJ.getFacesNr(); id++)
 			{
-				for (aFaceaOBJ.getFaceArray() do
-				if (flaeche.vertex[x] == vertex[i+1]) flaeche.vertex[x] = vertex[i]
-				vertecies.pop_back(vertex[i+1])
-			end
-		      end
-		    end
-			}
-	
-		}					
+				int testVertexID = aOBJ.getFaceComponent(id,0);
+				if (aOBJ.getVertex(testVertexID) == oldVertex) 
+				{
+					for (int x = 0; x<aOBJ.getFaceIndicesNr();x++)
+					{
+						aOBJ.setFaceComponent(x,0, actVertex.id);
+					}	
+					//Possible??? -> REMOVE_Last Operation?
+					aOBJ.getVertexList().remove(actVertex.id);			
+				}
+			}			
+		}		
 	}
+	
+	private void createPointList()
+	{
+		for (int aIndex : aOBJ.getFaceArray1d())
+		{
+			pointList.add(getFace(aIndex));
+		}
+	}
+	
+	private void createEdges()
+	{
+		removeDoubleVertecies();
+		createPointList();
+		
+		
+	}
+	
+	
+	
 	private void createConnections()
 	{
 		

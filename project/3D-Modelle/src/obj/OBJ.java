@@ -31,34 +31,56 @@ public class OBJ
 	private int facesNr; 			//Amount of faces
 	private Point pointArray[];		//Array of all points
 	private int faceArray[][];		//Array of all faces
-	private ArrayList<Vector4<Float>> vertexList = new ArrayList<>();	//Format x/y/z
-	private ArrayList<Vector4<Float>> textureList = new ArrayList<>();	//Format x/y
-	private ArrayList<Vector4<Float>> normalList = new ArrayList<>();	//Format x/y/z
-	private ArrayList<Vector4<Float>> faceList1 = new ArrayList<>();	//Format v v v
-	private ArrayList<Vector4<Float>> faceList2 = new ArrayList<>();	//Format v/vt v/vt v/vt
-	private ArrayList<Vector4<Float>> faceList3 = new ArrayList<>();	//Format v/vt/vn v/vt/vn v/vt/vn
-	private ArrayList<Vector4<Float>> faceList4 = new ArrayList<>();	//Nicht benutzt! Nur der Vollständigkeit halber (Vektor4<>)
 	
-	public void setFaceIndicesNr(int faceIndicesNr)		{this.faceIndicesNr = faceIndicesNr;}
-	public void setPointsNr(int pointsNr)				{this.pointsNr = pointsNr;}
-	public void setFacesNr(int facesNr)					{this.facesNr = facesNr;}
-	public void setPointArray(Point pointArray[])		{this.pointArray = pointArray;}
-	public void setFaceArray(int faceArray[][])			{this.faceArray = faceArray;}	
+	private ArrayList<Vertex<Float>> vertexList = new ArrayList<>();		//Format x/y/z
+	private ArrayList<Texture<Float>> textureList = new ArrayList<>();	//Format x/y
+	private ArrayList<Normal<Float>> normalList = new ArrayList<>();		//Format x/y/z
 	
-	public void setVertexList(ArrayList<Vector4<Float>> vertexList) 	{this.vertexList = vertexList;}
-	public void setTextureList(ArrayList<Vector4<Float>> textureList) 	{this.textureList = textureList;}
-	public void setNormalList(ArrayList<Vector4<Float>> normalList) 	{this.normalList = normalList;}
+	private ArrayList<Face> faceList1 = new ArrayList<>();		//Format v v v
+	private ArrayList<Face> faceList2 = new ArrayList<>();		//Format v/vt v/vt v/vt
+	private ArrayList<Face> faceList3 = new ArrayList<>();		//Format v/vt/vn v/vt/vn v/vt/vn
+	private ArrayList<Face> faceList4 = new ArrayList<>();		//Nicht benutzt! Nur der Vollständigkeit halber (Vektor4<>)
 	
-	public int getFaceIndicesNr()		{return faceIndicesNr;}
-	public int getPointsNr()			{return pointsNr;}
-	public int getFacesNr()				{return facesNr;}
-	public Point getPoint(int i)		{return pointArray[i];}
-	public Point[] getPointArray() 		{return pointArray;}
-	public int[] getFaceArray()			{return convertTo1D();}	
+	public void setFaceIndicesNr(int faceIndicesNr)				{this.faceIndicesNr = faceIndicesNr;}
+	public void setPointsNr(int pointsNr)						{this.pointsNr = pointsNr;}
+	public void setFacesNr(int facesNr)							{this.facesNr = facesNr;}
+	public void setPointArray(Point pointArray[])				{this.pointArray = pointArray;}
+	public void setFaceArray(int faceArray[][])					{this.faceArray = faceArray;}		
+	public void setFaceComponent(int id, int vtn, int valueId)	{this.faceArray[id][vtn] = valueId;} 
 	
-	public ArrayList<Vector4<Float>> getVertexList() 	{return vertexList;}
-	public ArrayList<Vector4<Float>> getTextureList() 	{return textureList;}
-	public ArrayList<Vector4<Float>> getNormalList() 	{return normalList;}
+	public void setVertexList(ArrayList<Vertex<Float>> vertexList) 		{this.vertexList = vertexList;}
+	public void setTextureList(ArrayList<Texture<Float>> textureList) 	{this.textureList = textureList;}
+	public void setNormalList(ArrayList<Normal<Float>> normalList) 		{this.normalList = normalList;}
+	
+	public int getFaceIndicesNr()				{return faceIndicesNr;}
+	public int getPointsNr()					{return pointsNr;}
+	public int getFacesNr()						{return facesNr;}
+	public Point getPoint(int i)				{return pointArray[i];}
+	public Point[] getPointArray() 				{return pointArray;}
+	public int[] getFaceArray1d()				{return convertTo1D();}	
+	public int[][] getFaceArray2d()				{return faceArray;}	
+	public int getFaceComponent(int id, int vtn){return faceArray[id][vtn];}	
+	public int[] getFace(int id)				{return faceArray[id];}	
+	
+	public ArrayList<Vertex<Float>> getVertexList() 	{return vertexList;}
+	public ArrayList<Texture<Float>> getTextureList() {return textureList;}
+	public ArrayList<Normal<Float>> getNormalList() 	{return normalList;}
+	
+	public Vertex<Float> getVertex(int id)
+	{
+		for (Vertex<Float> component : vertexList) {if (component.id == id) return vertexList.get(id);}
+		return null;		
+	}
+	public Texture<Float> getTexture(int id)
+	{
+		for (Texture<Float> component : textureList) {if (component.id == id) return textureList.get(id);}
+		return null;		
+	}
+	public Normal<Float> getNormal(int id)
+	{
+		for (Normal<Float> component : normalList) {if (component.id == id) return normalList.get(id);}
+		return null;		
+	}	
 	
 	public OBJ(){};
 	public OBJ(int pointsNr, int facesNr, Point[] pointArray, int[][] faceArray)
@@ -109,21 +131,21 @@ public class OBJ
 			{
 				splitted = s.split(" ");
 				//Reads Coordinates of a vertex (3D)
-				if (splitted[0].equals("v")) vertexList.add(new Vector4<>(	Float.valueOf(splitted[1]), 
+				if (splitted[0].equals("v")) vertexList.add(new Vertex<>(	Float.valueOf(splitted[1]), 
 																			Float.valueOf(splitted[2]), 
 																			Float.valueOf(splitted[3]),
 																			0.0f));				
 				//Reads Coordinates of a texture (2D)
 				else if (splitted[0].equals("vt")) 
 				{
-				textureList.add(new Vector4<>(  Float.valueOf(splitted[1]),
+				textureList.add(new Texture<>(	Float.valueOf(splitted[1]),
 												Float.valueOf(splitted[2]),
 												0.f, 0.f));
 				}
 				//Reads Coordinates of a normalvector (3D)
 				else if (splitted[0].equals("vn")) 
 				{
-				normalList.add(new Vector4<>(  	Float.valueOf(splitted[1]),
+				normalList.add(new Normal<>( 	Float.valueOf(splitted[1]),
 												Float.valueOf(splitted[2]),
 												Float.valueOf(splitted[3]), 
 												0.0f));
@@ -141,28 +163,28 @@ public class OBJ
 					}
 					if (faceIndicesNrLocal == 1)
 					{
-						faceList1.add(new Vector4<>(	Float.valueOf(splitted3[0]),
-														0.0f, 0.0f, 0.0f));
+						faceList1.add(new Face(	Integer.valueOf(splitted3[0]),
+														0, 0, 0));
 					}
 					else if (faceIndicesNrLocal == 2)
 					{
-						faceList2.add(new Vector4<>(	Float.valueOf(splitted3[0]),
-														Float.valueOf(splitted3[1]),
-														0.0f, 0.0f));
+						faceList2.add(new Face(	Integer.valueOf(splitted3[0]),
+												Integer.valueOf(splitted3[1]),
+												0, 0));
 					}
 					else if (faceIndicesNrLocal == 3)
 					{
-						faceList3.add(new Vector4<>(	Float.valueOf(splitted3[0]),
-														Float.valueOf(splitted3[1]),
-														Float.valueOf(splitted3[2]),
-														0.0f));
+						faceList3.add(new Face(	Integer.valueOf(splitted3[0]),
+												Integer.valueOf(splitted3[1]),
+												Integer.valueOf(splitted3[2]),
+												0));
 					}
 					else if (faceIndicesNrLocal == 4)
 					{
-						faceList4.add(new Vector4<Float>(	Float.valueOf(splitted3[0]),
-															Float.valueOf(splitted3[1]),
-															Float.valueOf(splitted3[2]),
-															Float.valueOf(splitted3[3])));						
+						faceList4.add(new Face(	Integer.valueOf(splitted3[0]),
+												Integer.valueOf(splitted3[1]),
+												Integer.valueOf(splitted3[2]),
+												Integer.valueOf(splitted3[3])));						
 					}
 				}
 			}
@@ -177,59 +199,61 @@ public class OBJ
 				if(textureList.isEmpty() && normalList.isEmpty())				
 				{
 					//Welchen NormalenStandard?
-					pointArray[j] = new Point(vertexList.get(j), new Vector4<>(0.f, 1.f, 0.f, 0.f), new Vector4<>(0.f, 1.f,0.f,0.f));
+					pointArray[j] = new Point(vertexList.get(j).id, 0,0);//new Texture<Float>(0, 1, 0, 0), new Normal<Float>(0, 1,0,0));
 				}
 				else if  (textureList.isEmpty())
 				{
-					pointArray[j] = new Point(vertexList.get(j), new Vector4<>(0.f, 1.f, 0.f, 0.f));
+					pointArray[j] = new Point(vertexList.get(j).id, 0);
 				}
-				else pointArray[j] = new Point(vertexList.get(j), textureList.get(j), normalList.get(j));
+				else pointArray[j] = new Point(vertexList.get(j).id, textureList.get(j).id, normalList.get(j).id);
 			}
 			
 			//saves the faces in a 2 dimensional list
-			int indexArray[][];
+			// j = FaceID
+			// Point 1, Point 2, Pont 3...
+			//int FaceIndexArray[][];
 			if (faceIndicesNrLocal == 1) 
 			{
-				indexArray = new int[faceList1.size()][1];
+				faceArray = new int[faceList1.size()][1];
 			
 				for (int j=0; j<faceList1.size(); j++)
 				{
-					indexArray[j][0] = faceList1.get(j).getX().intValue() - 1;
+					faceArray[j][0] = getVertex((faceList1.get(j).id)).getX().intValue() - 1;
 				}
 			}
 			if (faceIndicesNrLocal == 2) 
 			{
-				indexArray = new int[faceList2.size()][2];
+				faceArray = new int[faceList2.size()][2];
 			
 				for (int j=0; j<faceList2.size(); j++)
 				{
-					indexArray[j][0] = faceList2.get(j).getX().intValue() - 1;
-					indexArray[j][1] = faceList2.get(j).getY().intValue() - 1;
+					faceArray[j][0] = getVertex(faceList2.get(j).id).getX().intValue() - 1;
+					faceArray[j][1] = getTexture(faceList2.get(j).id).getY().intValue() - 1;
 				}
 			}
 			else if (faceIndicesNrLocal == 3) 
 			{
-				indexArray = new int[faceList3.size()][3];
+				faceArray = new int[faceList3.size()][3];
 			
 				for (int j=0; j<faceList3.size(); j++)
 				{
-					indexArray[j][0] = faceList3.get(j).getX().intValue() - 1;
-					indexArray[j][1] = faceList3.get(j).getY().intValue() - 1;
-					indexArray[j][2] = faceList3.get(j).getZ().intValue() - 1;
+					faceArray[j][0] = getVertex(faceList3.get(j).id).getX().intValue() - 1;
+					faceArray[j][1] = getTexture(faceList3.get(j).id).getY().intValue() - 1;
+					faceArray[j][2] = getNormal(faceList3.get(j).id).getZ().intValue() - 1;
 				}
 			}
 			else if (faceIndicesNrLocal == 4) 
 			{
-				indexArray = new int[faceList4.size()][4];
+				faceArray = new int[faceList4.size()][4];
 				for (int j=0; j<faceList4.size(); j++)
 				{
-					indexArray[j][0] = faceList4.get(j).getX().intValue() - 1;
-					indexArray[j][1] = faceList4.get(j).getY().intValue() - 1;
-					indexArray[j][2] = faceList4.get(j).getZ().intValue() - 1;
-					indexArray[j][3] = faceList4.get(j).getW().intValue() - 1;
+					faceArray[j][0] = faceList4.get(j).getX().intValue() - 1;
+					faceArray[j][1] = faceList4.get(j).getY().intValue() - 1;
+					faceArray[j][2] = faceList4.get(j).getZ().intValue() - 1;
+					faceArray[j][3] = faceList4.get(j).getW().intValue() - 1;
 				}
 			}
-			else indexArray = null;
+			else faceArray = null;
 			
 			br.close();
 			fr.close();

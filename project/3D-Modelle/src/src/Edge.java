@@ -3,12 +3,15 @@ package src;
 import java.util.ArrayList;
 
 import obj.Operation;
+import obj.Point;
 import obj.Vector4;
 
 public class Edge<T extends Number> 
 {
-	Vector4<T> vertex0;
-	Vector4<T> vertex1;
+	int static number= 0;
+	int id = 0;
+	Point<T> vertex0;
+	Point<T> vertex1;
 	double length;
 	ArrayList<Edge<T>> neighbours;
 	

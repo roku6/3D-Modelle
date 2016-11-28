@@ -16,24 +16,25 @@ package obj;
 public class Point
 {	
 	//Aus Gründen der Bequemlichkeit: public, statt Getter+Setter
-	public Vector4<Float> vertex;
-	public Vector4<Float> tex;
-	public Vector4<Float> norm;
+	public int vertexId;
+	public int texId;
+	public int normId;
 	
 	public Point(){}
 	
-	public Point(Vector4<Float> vertex, Vector4<Float> tex)
+	public Point(int vertex, int tex)
 	{
-		this.vertex = vertex;
-		this.tex = tex;
-		this.norm = new Vector4<>(0.1f); // Problem: welchen Wert für z Wählen? (am besten im Moment 0.1f)
+		this.vertexId = vertex;
+		this.texId = tex;
+	//	this.normId = new Vector4id<>(0.1f); // Problem: welchen Wert für z Wählen? (am besten im Moment 0.1f)
+		this.normId = 0;
 	}
 
-	public Point(Vector4<Float> vertex, Vector4<Float> tex, Vector4<Float> norm)
+	public Point(int vertex, int tex, int norm)
 	{
-		this.vertex = vertex;
-		this.tex = tex;
-		this.norm = norm;
+		this.vertexId = vertex;
+		this.texId = tex;
+		this.normId = norm;
 	}
 
 }
