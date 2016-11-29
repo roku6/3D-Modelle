@@ -15,6 +15,17 @@ public class Edge<T extends Number>
 	double length;
 	ArrayList<Edge<T>> neighbours;
 	
+	Point<T> getVertex0()	{return vertex0;}
+	Point<T> getVertex1()	{return vertex1;}
+	double getLength()	{return length;}
+	ArrayList<Edge<T>> neighbours {return neighbours;}	
+
+	void setVertex0(Point<T> vertex0) 		{this.vertex0 = vertex0;}
+	void setVertex0(Point<T> vertex1) 		{this.vertex1 = vertex1;}
+	void setLength(double length)			{this.length = length;}
+	void neighbours(ArrayList<Edge<T>> neighbours) 	{this.neighbours = neighbours;}
+
+
 	Edge(Vector4<T> vertex0, Vector4<T> vertex1)
 	{
 		this.vertex0 = vertex0;
