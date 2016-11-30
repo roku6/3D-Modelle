@@ -2,9 +2,12 @@ package obj;
 
 public class Vector4id<T extends Number> extends Vector4<T> 
 {
-	public static int number = 0;
-	public int id = 0;
-		
+	private static int number = 0;
+	protected int id = 0;
+	
+	public int getId() 				{return id;}
+	public void setId(int id) 		{this.id = id;}
+	
 	Vector4id(Vector4<T> aVector4)
 	{
 		super(aVector4);
@@ -24,5 +27,9 @@ public class Vector4id<T extends Number> extends Vector4<T>
 		super(value);
 		this.id = number;
 		Vector4id.number++;
+	}
+	public String toString()
+	{
+		return 	this.getId() + " " + this.getX() + " " + this.getY() + " " + this.getZ();
 	}
 }

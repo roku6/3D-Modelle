@@ -18,10 +18,10 @@ package obj;
 
 public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 {
-	public T x;
-	public T y;
-	public T z;
-	public T w;
+	private T x;
+	private T y;
+	private T z;
+	private T w;
 	
 	private T magnitude;
 	

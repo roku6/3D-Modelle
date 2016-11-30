@@ -4,32 +4,38 @@ import java.util.ArrayList;
 
 import obj.Operation;
 import obj.Point;
-import obj.Vector4;
 
 public class Edge<T extends Number> 
 {
-	int static number= 0;
-	int id = 0;
-	Point<T> vertex0;
-	Point<T> vertex1;
-	double length;
-	ArrayList<Edge<T>> neighbours;
+	public static int number = 0;
+	private int id = 0;
+	private Point<T> point0;
+	private Point<T> point1;
+	private double length;
+	private ArrayList<Edge<T>> neighbours;
 	
-	Point<T> getVertex0()	{return vertex0;}
-	Point<T> getVertex1()	{return vertex1;}
-	double getLength()	{return length;}
-	ArrayList<Edge<T>> neighbours {return neighbours;}	
+	public int getId() 							{return id;}
+	public Point<T> getPoint0()					{return point0;}
+	public Point<T> getPoint1()					{return point1;}
+	public double getLength()					{return length;}
+	public ArrayList<Edge<T>> getNeighbours() 	{return neighbours;}	
 
-	void setVertex0(Point<T> vertex0) 		{this.vertex0 = vertex0;}
-	void setVertex0(Point<T> vertex1) 		{this.vertex1 = vertex1;}
-	void setLength(double length)			{this.length = length;}
-	void neighbours(ArrayList<Edge<T>> neighbours) 	{this.neighbours = neighbours;}
+	public void setVertex0(Point<T> point0) 				{this.point0 = point0;}
+	public void setVertex1(Point<T> point1) 				{this.point1 = point1;}
+	public void setLength(double length)					{this.length = length;}
+	public void neighbours(ArrayList<Edge<T>> neighbours) 	{this.neighbours = neighbours;}
 
-
-	Edge(Vector4<T> vertex0, Vector4<T> vertex1)
+	/*
+	 * Constructor
+	 * @param Point<T> point0
+	 * @param Point<T> point1
+	 */
+	Edge(Point<T> point0, Point<T> point1)
 	{
-		this.vertex0 = vertex0;
-		this.vertex0 = vertex1;
+		Edge.number++;
+		this.id = number;
+		this.point0 = point0;
+		this.point1 = point1;
 		calculateLength();
 	}
 	
@@ -37,15 +43,14 @@ public class Edge<T extends Number>
 	{
 		this.length = (double) 
 				Operation.squareRoot(
-				Operation.add4(	Operation.powerOf(Operation.sub2(vertex0.getX(), vertex1.getX()), 2),
-								Operation.powerOf(Operation.sub2(vertex0.getY(), vertex1.getY()), 2),
-								Operation.powerOf(Operation.sub2(vertex0.getZ(), vertex1.getZ()), 2),
-								Operation.powerOf(Operation.sub2(vertex0.getW(), vertex1.getW()), 2)));
+				Operation.add4(	Operation.powerOf(Operation.sub2(point0.getAVertex().getX(), point1.getAVertex().getX()), 2),
+								Operation.powerOf(Operation.sub2(point0.getAVertex().getY(), point1.getAVertex().getY()), 2),
+								Operation.powerOf(Operation.sub2(point0.getAVertex().getZ(), point1.getAVertex().getZ()), 2),
+								Operation.powerOf(Operation.sub2(point0.getAVertex().getW(), point1.getAVertex().getW()), 2)));
 	}
 	
 	public void addNeighbour(Edge<T> aEdge)
 	{
 		neighbours.add(aEdge);
-	}
-	
+	}	
 }

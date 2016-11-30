@@ -1,28 +1,46 @@
+/** 
+ * Vertex.java
+ * (c) Copyright 04-2016 Robert Külpmann
+ *  Vertex Klasse - Speichert Vertexformat einer OBJ Datei
+ *  Extends:
+ *  	Vector4id - Klasse (obj)   
+ *  
+ *  @author Robert Külpmann
+ *  @version 1.0
+ *  
+ *  TODO: Redundanzen entfernen (siehe Vector4id, Vector4, Vertex, Texture, Normal)
+ */
+
 package obj;
 
-public class Vertex<T extends Number> extends Vector4<T> 
+public class Vertex<T extends Number> extends Vector4id<T> 
 {
-	public static int number = 0;
-	public int id = 0;
-		
+	/* 
+	 * Attention: First ID and First number = 1 !
+	 */
+	private static int number = 0;
+	
+	public static int getNumber() 	{return number;}	
+	public static void setNumber(int number) 	{Vertex.number = number;}
+
 	Vertex(Vector4<T> aVector4)
 	{
 		super(aVector4);
+		Vertex.number++;
 		this.id = number;
-		Vector4id.number++;
 	}
 	
 	public Vertex(T x, T y, T z, T w)
 	{
 		super(x,y,z,w);
+		Vertex.number++;
 		this.id = number;
-		Vector4id.number++;
 	}
 	
 	public Vertex(T value)
 	{
 		super(value);
+		Vertex.number++;
 		this.id = number;
-		Vector4id.number++;
 	}
 }
