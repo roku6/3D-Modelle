@@ -4,6 +4,9 @@
  * and open the template in the editor.
  */
 package src;
+import  java.util.List;
+import java.util.ArrayList;
+import java.nio.file.Files;
 
 
 /**
@@ -16,8 +19,10 @@ public class GUI extends javax.swing.JFrame {
      * Creates new form GUI
      */
     javax.swing.DefaultListModel listModel = new javax.swing.DefaultListModel();
-    javax.swing.DefaultComboBoxModel kanteCBM = new javax.swing.DefaultComboBoxModel();
-    javax.swing.DefaultComboBoxModel zurKanteCBM = new javax.swing.DefaultComboBoxModel();
+    List<Searchobject> searchList = new ArrayList<Searchobject>();
+    javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
+    
+
      
     public GUI() {
        
@@ -48,6 +53,8 @@ public class GUI extends javax.swing.JFrame {
         editButton = new javax.swing.JButton();
         edgeTF = new javax.swing.JTextField();
         toEdgeTF = new javax.swing.JTextField();
+        removeButton = new javax.swing.JButton();
+        readFileButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Input-GUI");
@@ -95,6 +102,20 @@ public class GUI extends javax.swing.JFrame {
         }
     });
 
+    removeButton.setText("Kante loeschen");
+    removeButton.addMouseListener(new java.awt.event.MouseAdapter() {
+        public void mouseClicked(java.awt.event.MouseEvent evt) {
+            removeButtonMouseClicked(evt);
+        }
+    });
+
+    readFileButton.setText("neue Datei einlesen");
+    readFileButton.addMouseListener(new java.awt.event.MouseAdapter() {
+        public void mouseClicked(java.awt.event.MouseEvent evt) {
+            readFileButtonMouseClicked(evt);
+        }
+    });
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -121,12 +142,16 @@ public class GUI extends javax.swing.JFrame {
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(addButton))
                 .addGroup(layout.createSequentialGroup()
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 306, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(23, 23, 23)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 323, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(18, 18, 18)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(editButton)
-                        .addComponent(searchButton))))
-            .addContainerGap(226, Short.MAX_VALUE))
+                        .addComponent(searchButton)
+                        .addComponent(removeButton)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(editButton)
+                            .addGap(155, 155, 155)
+                            .addComponent(readFileButton)))))
+            .addContainerGap(306, Short.MAX_VALUE))
     );
 
     layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {angleLabel, angleTF, edgeLabel, edgeTF, lenLabel, lenTF, toEdgeLabel, toEdgeTF});
@@ -134,14 +159,20 @@ public class GUI extends javax.swing.JFrame {
     layout.setVerticalGroup(
         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(layout.createSequentialGroup()
-            .addContainerGap()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+            .addGap(149, 149, 149)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
-                    .addComponent(editButton)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createSequentialGroup()
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(editButton)
+                        .addComponent(readFileButton))
+                    .addGap(18, 18, 18)
+                    .addComponent(removeButton)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(searchButton))
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
+                    .addComponent(searchButton)
+                    .addGap(32, 32, 32)))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(edgeLabel)
                 .addComponent(lenLabel)
@@ -166,30 +197,153 @@ public class GUI extends javax.swing.JFrame {
 
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
         // TODO add your handling code here:
+        for(Searchobject obj : searchList) {
+            System.out.println(obj.getId1() + "  " + obj.getLength() + "  " + obj.getAngle() + "  " + obj.getId2());
+        }
     }//GEN-LAST:event_searchButtonActionPerformed
 
     private void addButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addButtonMouseClicked
+        
+        Integer id1;       
+    //    if(edgeTF.getText().isEmpty()) 
+    //        id1 = null;
+        if (!isInteger(edgeTF.getText()) || Integer.valueOf(edgeTF.getText()) <0) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erste Kanten-ID muss eine nicht-negative ganze Zahl sein.");
+            edgeTF.setText("");
+            return; 
+        }
+        else id1 = Integer.valueOf(edgeTF.getText()); 
+        
+        
+        Double length;
+        if(lenTF.getText().isEmpty()) 
+            length = null;
+        else if (!isDouble(lenTF.getText()) || Double.valueOf(lenTF.getText()) <0) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Kantenlaenge muss eine nicht-negative Zahl sein.");
+            lenTF.setText("");
+            return; 
+        }
+        else length = Double.valueOf(lenTF.getText()); 
+        
+        
+        Double angle;
+        if(angleTF.getText().isEmpty()) 
+            angle = null;
+        else if (!isDouble(angleTF.getText()) || Double.valueOf(angleTF.getText()) <0) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Winkel muss eine nicht-negative Zahl sein.");
+            angleTF.setText("");
+            return; 
+        }
+        else angle = Double.valueOf(angleTF.getText()); 
+        
+   
 
-        int edge = Integer.valueOf(edgeTF.getText());
-        double length = Double.valueOf(lenTF.getText());
-        double angle = Double.valueOf(angleTF.getText());
-        int toEdge = Integer.valueOf(toEdgeTF.getText());
-
-
-        String newLine = "Kante " + edge + ":      " + "Laenge: " + length + ",      Winkel: " + angle + "   zur Kante " + toEdge;
+        Integer id2;       
+        if(toEdgeTF.getText().isEmpty()) 
+            id2 = null;
+        else if (!isInteger(toEdgeTF.getText()) || Integer.valueOf(toEdgeTF.getText()) <0) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Zweite Kanten-ID muss eine nicht-negative ganze Zahl sein.");
+            toEdgeTF.setText("");
+            return; 
+        }
+        else id2 = Integer.valueOf(toEdgeTF.getText()); 
+        
+        if(valuesMatch(id1,length,angle,id2,searchList)) {
+        Searchobject searchObj = new Searchobject(id1, length,angle,id2);
+        searchList.add(searchObj);
+        String newLine = "Kante " + id1 + ":      " + "Laenge: " + length + ",      Winkel: " + angle + "   zur Kante " + id2;
         listModel.addElement(newLine );
+        }
+        
         edgeTF.setText("");   
         lenTF.setText("");
         angleTF.setText("");
         toEdgeTF.setText("");
         
+        if(addButton.getText().equals("Speichern"))
+            addButton.setText("hinzufuegen");
+        
+        
         
     }//GEN-LAST:event_addButtonMouseClicked
 
     private void editButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_editButtonMouseClicked
-        listModel.setElementAt("zeile", inputList.getSelectedIndex());
+        int index = inputList.getSelectedIndex();
+        if (index == -1) return;
+            
+        addButton.setText("Speichern");
+        edgeTF.setText(java.util.Objects.toString(searchList.get(index).getId1(), ""));   
+        lenTF.setText(java.util.Objects.toString(searchList.get(index).getLength(), ""));   
+        angleTF.setText(java.util.Objects.toString(searchList.get(index).getAngle(), ""));     
+        toEdgeTF.setText(java.util.Objects.toString(searchList.get(index).getId2(), ""));   
+        
+        searchList.remove(inputList.getSelectedIndex());
+        listModel.removeElementAt(inputList.getSelectedIndex());
+        
     }//GEN-LAST:event_editButtonMouseClicked
 
+    private void removeButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_removeButtonMouseClicked
+        if(inputList.getSelectedIndex()!=-1) {
+            searchList.remove(inputList.getSelectedIndex());
+            listModel.removeElementAt(inputList.getSelectedIndex());
+            
+        }
+    }//GEN-LAST:event_removeButtonMouseClicked
+
+    private void readFileButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_readFileButtonMouseClicked
+         chooser.setFileSelectionMode( javax.swing.JFileChooser.FILES_AND_DIRECTORIES );
+       // chooser.setAcceptAllFileFilterUsed(false);
+         chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("OBJ-Dateien","obj"));
+        
+        int ret = chooser.showDialog(null, "Open file");                
+        if (ret == javax.swing.JFileChooser.APPROVE_OPTION) {
+           // java.nio.file.Files.Path path = chooser.getSelectedFile().getPath();
+            System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
+            System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
+           // java.nio.file.Files.list(path);
+        }
+    }//GEN-LAST:event_readFileButtonMouseClicked
+    
+    private boolean valuesMatch(Integer id1, Double length, Double angle, Integer id2, List<Searchobject> searchList) {
+        for(Searchobject obj : searchList) {
+            if(obj.getId1().equals(id1) && !obj.getLength().equals(length)) {               
+                javax.swing.JOptionPane.showMessageDialog(this, "Diese Kante hat schon eine andere Laenge!");
+                return false;
+            }
+            
+            else if (obj.getId1().equals(id1) && obj.getId2().equals(id2) &&  !obj.getAngle().equals(angle)) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Diese 2 Kanten haben schon einen anderen Winkel!");
+                return false;
+            }                               
+        }
+        
+        return true;
+    }
+    
+    
+    private boolean isInteger(String string) {
+        try {
+            Integer.valueOf(string);
+            return true;
+        } 
+        catch (NumberFormatException e) {
+            return false;
+        }
+    }
+    
+    
+    private boolean isDouble(String string) {
+        try {
+         Double.valueOf(string);
+            return true;
+        } 
+        catch (NumberFormatException e) {
+            return false;
+        }
+    }
+    
+    
+    
     /**
      * @param args the command line arguments
      */
@@ -236,6 +390,8 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lenLabel;
     private javax.swing.JTextField lenTF;
+    private javax.swing.JButton readFileButton;
+    private javax.swing.JButton removeButton;
     private javax.swing.JButton searchButton;
     private javax.swing.JLabel toEdgeLabel;
     private javax.swing.JTextField toEdgeTF;
