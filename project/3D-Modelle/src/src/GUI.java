@@ -11,7 +11,7 @@ import java.nio.file.Files;
 
 /**
  *
- * @author Администратор
+ * @author Ð�Ð´Ð¼Ð¸Ð½Ð¸Ñ�Ñ‚Ñ€Ð°Ñ‚Ð¾Ñ€
  */
 public class GUI extends javax.swing.JFrame {
 
@@ -61,7 +61,7 @@ public class GUI extends javax.swing.JFrame {
 
         edgeLabel.setText("Kante:");
 
-        lenLabel.setText("Länge:");
+        lenLabel.setText("LÃ¤nge:");
 
         angleLabel.setText("Winkel:");
 
@@ -88,7 +88,7 @@ public class GUI extends javax.swing.JFrame {
         }
     });
 
-    addButton.setText("hinzufügen");
+    addButton.setText("hinzufÃ¼gen");
     addButton.addMouseListener(new java.awt.event.MouseAdapter() {
         public void mouseClicked(java.awt.event.MouseEvent evt) {
             addButtonMouseClicked(evt);
@@ -300,6 +300,10 @@ public class GUI extends javax.swing.JFrame {
            // java.nio.file.Files.Path path = chooser.getSelectedFile().getPath();
             System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
             System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
+    		BuildLogic aBuildLogic = BuildLogic.getBuildLogic();
+    		aBuildLogic.createOBJ(chooser.getSelectedFile().getPath());
+    		aBuildLogic.createFigure();
+
            // java.nio.file.Files.list(path);
         }
     }//GEN-LAST:event_readFileButtonMouseClicked

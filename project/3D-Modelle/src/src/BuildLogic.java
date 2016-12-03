@@ -2,7 +2,8 @@
  * DONE: 
  * 	Erased same values (vertecies, textures, normals)
  * 	Filled the pointList with every single Point (every Point just once)
- * TODO: Create EdgeList, createConnections, createAngles etc... + remove duplicates (later)
+ *  Created an edgeList with every possible Edge(every Edge just once)
+ * TODO: Create edgeList, createConnections, createAngles etc... + remove duplicates (later)
  */
 
 package src;
@@ -12,6 +13,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.ListIterator;
 
+import obj.Face;
 import obj.Normal;
 import obj.OBJ;
 import obj.Point;
@@ -146,7 +148,7 @@ public class BuildLogic
 	{		
 		Vector4id<Double> oldVector4id = null;	//lastVertex (Vertex[i-1])
 		Vector4id<Double> actVector4id = null;	//activeVertex (Vertex[i])
-		//Iteration over the list of Vertecies
+		//Iteration over the list of Normals
 		Iterator<Normal<Double>> iterator = aOBJ.getNormalList().iterator();
 		while (iterator.hasNext())
 		{
@@ -226,12 +228,64 @@ public class BuildLogic
 		removeDoubleVertecies();
 		removeDoubleTextures();
 		removeDoubleNormals();
+		System.out.println(aOBJ.toString());
 		createPointSet();
+		createEdgePoints();
+		updateEdgePoints();
+	}
+	
+	private void updateEdgePoints()
+	{
+		for (Edge<Double> aEdge : edgeList)
+		{
+			for (Edge<Double> aEdge2 : edgeList)
+			{
+			}
+		}
+	}
+	
+	private void createEdgePoints()
+	{
+		/*Optimized for Triangles*/
+		ArrayList<Edge<Double>> aTempEdgeList = new ArrayList<>();
+		for (Face aFace : aOBJ.getFaceList())
+		{
+			Edge<Double> aEdge = new Edge<>(aFace.getPointList().get(0), aFace.getPointList().get(1));
+			aTempEdgeList.add(aEdge);
+			aEdge = new Edge<>(aFace.getPointList().get(0), aFace.getPointList().get(1));
+			aTempEdgeList.add(aEdge);
+			aEdge = new Edge<>(aFace.getPointList().get(1), aFace.getPointList().get(2));
+			aTempEdgeList.add(aEdge);
+			
+		}
+		
+		//3. Liste reinschreiben der Kanten, wenn es nicht doppelt ist
+		boolean isInList = false;
+		ListIterator<Edge<Double>> itTemp = aTempEdgeList.listIterator();
+		while(itTemp.hasNext())
+		{
+			Edge<Double> aEdge = itTemp.next();
+			ListIterator<Edge<Double>> itList = edgeList.listIterator();		
+			while (itList.hasNext())
+			{
+				Edge<Double> aEdge2 = itList.next();
+				if (edgeList.isEmpty()) break;
+				else if (aEdge.equals(aEdge2)) {isInList = true;}
+			}
+			if (isInList == true) isInList = false;
+			else edgeList.add(aEdge);
+		}
+		
+		System.out.println("Edges: ");
+		for(Edge<Double> aEdge : edgeList)
+		{
+			System.out.println(aEdge.toString());
+		}
+		System.out.println(edgeList.size());
 	}
 	
 	private void createConnections()
-	{
-		
+	{	
 	}
 	private void calculateAngles()
 	{

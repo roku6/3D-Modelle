@@ -64,6 +64,23 @@ public class Point<T extends Number>
 		this.aNormal = normal;
 	}
 	
+	@Override
+	public boolean equals(Object obj)
+	{
+		Point<Double> aPoint = obj instanceof Point ? (Point<Double>)obj : null;
+		if (aPoint != null)
+		{
+			if (this.getAVertex().getId() == aPoint.getAVertex().getId() &&
+				this.getATexture().getId() == aPoint.getATexture().getId() &&
+				this.getANormal().getId() == aPoint.getANormal().getId())
+			{
+				return true;
+			}
+			return false;
+		}
+		return false;
+	}
+	
 	/** To String Methode
 	 * Overrides the standard to String methode
 	 * @return String aString shows Vertex-/Texture- and NormalID

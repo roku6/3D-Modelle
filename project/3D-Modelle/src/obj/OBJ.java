@@ -33,7 +33,7 @@ public class OBJ
 	private int pointsNr;						//Amount of points
 	private int facesNr; 						//Amount of faces
 	private ArrayList<Point<Double>> pointList;	//Array of all points
-	private ArrayList<Face> faceList;	//Array of all faces
+	private ArrayList<Face> faceList;			//Array of all faces
 	
 	private ArrayList<Vertex<Double>> vertexList = new ArrayList<>();	//Format x/y/z
 	private ArrayList<Texture<Double>> textureList = new ArrayList<>();	//Format x/y
@@ -99,23 +99,12 @@ public class OBJ
 	}
 	
 	/**
-	 * Method to convert 2D IndexArray in a 1D IndexArray
-	 * @return 1D Array with int indices
-	 **/
-	/*
-	public int[] convertTo1D()
-	{
-		int aFace[] = new int[facesNr * faceIndicesNr];
-		for (int i=0; i<facesNr; i++)
-		{
-			aFace[i*faceIndicesNr] = faceArray[i][0]; 
-			aFace[i*faceIndicesNr+1] = faceArray[i][1];
-			if (faceIndicesNr >= 3) aFace[i*faceIndicesNr+2] = faceArray[i][2];
-			if (faceIndicesNr >= 4) aFace[i*faceIndicesNr + 3] = faceArray[i][3];
-		}
-		return aFace;
-	}
-	*/
+	 * 
+	 * @param vertexId
+	 * @param textureId
+	 * @param normalId
+	 * @return aPoint
+	 */
 	private Point<Double> createPoint(int vertexId, int textureId, int normalId)
 	{
 		Point<Double> aPoint = new Point<>();
