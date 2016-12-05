@@ -4,19 +4,24 @@ package src;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Label;
+import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+import org.neo4j.unsafe.batchinsert.BatchInserter;
+import org.neo4j.unsafe.batchinsert.BatchInserters;
 
 /**
  * @author Lennard Flegel
  *
  * Singleton-class for DB-access. Singleton NOT threadsafe.
+ * Make sure to invoke the shutdown method once your transactions are done.
+ *  
  *
  */
 public class DBController {
@@ -26,7 +31,8 @@ public class DBController {
 	private static File directory;
 	private static GraphDatabaseService graphDb;
 	private static ArrayList<Integer> usedIds;
-	
+	private static enum FigureLabels implements Label {EDGE;};
+	private static enum FigureRelTypes implements RelationshipType{CONNECTED;};
 	//Constructors
 	/**
 	 * Constructor. Creates an DBController, sets up a Neo4J DB at given directory and initializes it. 
@@ -34,7 +40,7 @@ public class DBController {
 	 * @param directory Target directory to initialize DB
 	 */
 	private DBController(File directory) {
-		this.directory = directory;
+		DBController.directory = directory;
 		initializeDB();
 	}
 	
@@ -75,13 +81,6 @@ public class DBController {
 	    } );
 	}
 	
-	/**
-	 * Private Method, meant to be called by writeObjToDB to write a Node-Rel-Node 3-tupel to the DB
-	 * @param EdgeRel Object containing information about 2 edges and their relation (angle)
-	 */
-	private static void writeToDB(RelationsDefinition EdgeRel){
-		//TODO
-	}
 	
 	/**
 	*Fills the usedIds ArrayList with all distinct Object-Ids used in the DB and sorts the list.
@@ -95,6 +94,28 @@ public class DBController {
 		Collections.sort(usedIds);
 	}
 	
+	/**
+	 * Concatenates ObjectId and EdgeId to a new, unique Long type Id. EdgeId is ZeroPadded (5-> 00005, 12->00012) 
+	 * to ensure that the Id of edge 12 is greater than edge 2 (Unwanted: 1.12 < 1.2 , now: 1.00012 > 1.00002 ).
+	 * This Limits a Figure to max 99999 edges. If more is needed, edit this function or rework the indexing
+	 * 
+	 * @param id1 ObjectId
+	 * @param id2 EdgeId
+	 * @return the new Double Id: ObjectId.EgdeId
+	 */
+	@SuppressWarnings("null")
+	private static Long concatIds(Integer id1, Integer id2){
+		String id2ZeroPadding = null;
+		int zeroesToAdd = 5-id2.toString().length();
+		for(int i = 0; i < zeroesToAdd; i++){
+			id2ZeroPadding.concat("0");
+		}
+		id2ZeroPadding.concat(id2.toString());
+		
+		Long newId = Long.parseLong( id1.toString().concat(".").concat(id2ZeroPadding) );
+		return newId;
+	}
+	
 	//Public
 	/**
 	 * Method to realize Singleton-Pattern
@@ -102,7 +123,7 @@ public class DBController {
 	 * @param directory  Target directory to initialize DB
 	 * @return instance of DBController to access DB
 	 */
-	 public static DBController getInstance (File directory) {
+	public static DBController getInstance (File directory) {
 		    if (DBController.instance == null) {
 		    	DBController.instance = new DBController (directory);
 		    }
@@ -139,23 +160,79 @@ public class DBController {
 	}
 	
 	/**
-	 * TODO
-	 * Currently no check if same Obj already in Db only having a different ID
-	 * 
+	 * Writes an GeometricFigure object to the DB.
+	 * Currently no check if same Obj already in Db only having a different ID.
+	 * The ID consists of ObjectId.EdgeId. 
+	 * This method uses the Neo4J BatchInserter:
+	 * The batch inserter drops support for transactions and concurrency in favor of insertion speed. When done using the batch inserter shutdown() must be invoked and complete successfully for the Neo4j store to be in consistent state.
+     * Only one thread at a time may work against the batch inserter, multiple threads performing concurrent access have to employ synchronization.
+     * Transactions are not supported so if the JVM/machine crashes or you fail to invoke shutdown() before JVM exits the Neo4j store can be considered being in non consistent state and the insertion has to be re-done from scratch.
+	 *
 	 * @param figure An object defining the object containing edges and their relations, ids, description etc
 	 */
+	@SuppressWarnings("null")
 	public static void writeObjToDB(GeometricFigure figure ) throws Exception {
 		
 		if (usedIds.contains(figure.getObjectID())) {
 			throw new Exception("ID already used. Check the usedIds ArrayList of your DBController and use the GeoFigure ID setter to adjust");
 			}
+		
 		ArrayList<RelationsDefinition> relationsArray = figure.getEdgeRelations();
-		ArrayList<Integer> writtenEdges;
-		//TODO
-		for(RelationsDefinition relation:relationsArray){
-			//if NOT in DB (check objID AND edgeID in usedIds and writtenegdes)
-			writeToDB( relation);
+        
+		new BatchInserters();
+		BatchInserter inserter = BatchInserters.inserter(directory);
+		Long edgeId1, edgeId2;
+		Edge<?> edge1, edge2;
+		Map<String, Object> properties = null;
+		
+		try{
+			//schema index not needed if this works as intended
+			//inserter.createDeferredSchemaIndex(FigureLabels.EDGE).on("EDGE_ID").create();
+			
+			for(RelationsDefinition relation:relationsArray){
+				//if NOT in DB
+				//writeToDB( relation);
+				edge1 = relation.getEdge1();
+				edge2 = relation.getEdge2();
+				
+				edgeId1 = concatIds(figure.getObjectID(), edge1.getId()); 
+				edgeId2 = concatIds(figure.getObjectID(), edge2.getId()); 
+				
+				if(!inserter.nodeExists(edgeId1)){
+					properties.put("LENGTH", edge1.getLength());
+					properties.put("URL", figure.getPictureURL());
+					properties.put("DESCRIPTION", figure.getDescription());
+					
+					inserter.createNode(edgeId1, properties, FigureLabels.EDGE);
+					
+					properties.clear();
+				}
+				
+				if(!inserter.nodeExists(edgeId2)){
+					properties.put("LENGTH", edge2.getLength());
+					properties.put("URL", figure.getPictureURL());
+					properties.put("DESCRIPTION", figure.getDescription());
+					
+					inserter.createNode(edgeId2, properties, FigureLabels.EDGE);
+					
+					properties.clear();
+					
+				}
+				
+				properties.put("ANGLE", relation.getWinkel());
+				
+				inserter.createRelationship(edgeId1, edgeId2, FigureRelTypes.CONNECTED, properties);
+				
+				properties.clear();
+				
 			}
+			usedIds.add(figure.getObjectID());
+			
+		} catch(Exception e){
+			e.printStackTrace();
+			inserter.shutdown();
+		}
+		inserter.shutdown();
 	}
 	
 	/**
@@ -166,7 +243,10 @@ public class DBController {
  	public static void shutdownDB(){
 		graphDb.shutdown();
 		}
-	
+ 	
+ 	
+ 	
+ 	
 	//Getters
 	/**
 	 * Getter for directory
