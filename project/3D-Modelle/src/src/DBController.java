@@ -20,8 +20,11 @@ import org.neo4j.unsafe.batchinsert.BatchInserters;
  * @author Lennard Flegel
  *
  * Singleton-class for DB-access. Singleton NOT threadsafe.
- * Make sure to invoke the shutdown method once your transactions are done.
+ * Make sure to invoke initializeDB to get started 
+ * and the shutdown method once your transactions are done.
  *  
+ *  
+ *  TODO drop constructor? to be discussed 
  *
  */
 public class DBController {
@@ -47,20 +50,6 @@ public class DBController {
 	//Methods
 	
 	//Private
-	
-	/**
-	 * Instantiate a GraphDatabaseService to
-	 * create a new database or open an existing one 
-	 * 
-	 * @param directory Target directory to initialize DB
-	 */
-	private static void initializeDB(){
-		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase( directory );
-		registerShutdownHook( graphDb );
-		
-		fetchUsedIds();
-		
-	}
 	
   	/**
  	 * Registers a shutdown hook for the Neo4j instance so that it
@@ -117,6 +106,20 @@ public class DBController {
 	}
 	
 	//Public
+	
+	/**
+	 * Instantiate a GraphDatabaseService to
+	 * create a new database or open an existing one 
+	 * 
+	 * @param directory Target directory to initialize DB
+	 */
+	public static void initializeDB(){
+		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase( directory );
+		registerShutdownHook( graphDb );
+		
+		fetchUsedIds();
+	}
+	
 	/**
 	 * Method to realize Singleton-Pattern
 	 * 
