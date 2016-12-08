@@ -51,16 +51,22 @@
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="searchButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="removeButton" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="editButton" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="editButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="removeButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
                               <EmptySpace min="-2" pref="155" max="-2" attributes="0"/>
-                              <Component id="readFileButton" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="outputButton" min="-2" max="-2" attributes="0"/>
+                                  <Component id="readFileButton" min="-2" max="-2" attributes="0"/>
+                                  <Component id="readDirButton" min="-2" max="-2" attributes="0"/>
+                              </Group>
                           </Group>
                       </Group>
                   </Group>
               </Group>
-              <EmptySpace pref="306" max="32767" attributes="0"/>
+              <EmptySpace pref="324" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -79,8 +85,13 @@
                           <Component id="readFileButton" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                      <Component id="removeButton" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="removeButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="readDirButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
                       <EmptySpace max="32767" attributes="0"/>
+                      <Component id="outputButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="65" max="-2" attributes="0"/>
                       <Component id="searchButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
                   </Group>
@@ -184,11 +195,24 @@
     </Component>
     <Component class="javax.swing.JButton" name="readFileButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="neue Datei einlesen"/>
+        <Property name="text" type="java.lang.String" value="Datei einlesen"/>
       </Properties>
       <Events>
         <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="readFileButtonMouseClicked"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="outputButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Test OutputGUI"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="outputButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="readDirButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Ordner einlesen"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

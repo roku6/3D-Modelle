@@ -55,13 +55,15 @@ public class GUI extends javax.swing.JFrame {
         toEdgeTF = new javax.swing.JTextField();
         removeButton = new javax.swing.JButton();
         readFileButton = new javax.swing.JButton();
+        outputButton = new javax.swing.JButton();
+        readDirButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Input-GUI");
 
         edgeLabel.setText("Kante:");
 
-        lenLabel.setText("LÃ¤nge:");
+        lenLabel.setText("Länge:");
 
         angleLabel.setText("Winkel:");
 
@@ -88,7 +90,7 @@ public class GUI extends javax.swing.JFrame {
         }
     });
 
-    addButton.setText("hinzufÃ¼gen");
+    addButton.setText("hinzufügen");
     addButton.addMouseListener(new java.awt.event.MouseAdapter() {
         public void mouseClicked(java.awt.event.MouseEvent evt) {
             addButtonMouseClicked(evt);
@@ -109,12 +111,21 @@ public class GUI extends javax.swing.JFrame {
         }
     });
 
-    readFileButton.setText("neue Datei einlesen");
+    readFileButton.setText("Datei einlesen");
     readFileButton.addMouseListener(new java.awt.event.MouseAdapter() {
         public void mouseClicked(java.awt.event.MouseEvent evt) {
             readFileButtonMouseClicked(evt);
         }
     });
+
+    outputButton.setText("Test OutputGUI");
+    outputButton.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            outputButtonActionPerformed(evt);
+        }
+    });
+
+    readDirButton.setText("Ordner einlesen");
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -146,12 +157,16 @@ public class GUI extends javax.swing.JFrame {
                     .addGap(18, 18, 18)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(searchButton)
-                        .addComponent(removeButton)
                         .addGroup(layout.createSequentialGroup()
-                            .addComponent(editButton)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(editButton)
+                                .addComponent(removeButton))
                             .addGap(155, 155, 155)
-                            .addComponent(readFileButton)))))
-            .addContainerGap(306, Short.MAX_VALUE))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(outputButton)
+                                .addComponent(readFileButton)
+                                .addComponent(readDirButton))))))
+            .addContainerGap(324, Short.MAX_VALUE))
     );
 
     layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {angleLabel, angleTF, edgeLabel, edgeTF, lenLabel, lenTF, toEdgeLabel, toEdgeTF});
@@ -169,8 +184,12 @@ public class GUI extends javax.swing.JFrame {
                         .addComponent(editButton)
                         .addComponent(readFileButton))
                     .addGap(18, 18, 18)
-                    .addComponent(removeButton)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(removeButton)
+                        .addComponent(readDirButton))
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(outputButton)
+                    .addGap(65, 65, 65)
                     .addComponent(searchButton)
                     .addGap(32, 32, 32)))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -307,6 +326,11 @@ public class GUI extends javax.swing.JFrame {
            // java.nio.file.Files.list(path);
         }
     }//GEN-LAST:event_readFileButtonMouseClicked
+
+    private void outputButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outputButtonActionPerformed
+       outputGUI outg = new outputGUI(searchList);
+       outg.setVisible(true);
+    }//GEN-LAST:event_outputButtonActionPerformed
     
     private boolean valuesMatch(Integer id1, Double length, Double angle, Integer id2, List<Searchobject> searchList) {
         for(Searchobject obj : searchList) {
@@ -394,6 +418,8 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lenLabel;
     private javax.swing.JTextField lenTF;
+    private javax.swing.JButton outputButton;
+    private javax.swing.JButton readDirButton;
     private javax.swing.JButton readFileButton;
     private javax.swing.JButton removeButton;
     private javax.swing.JButton searchButton;
