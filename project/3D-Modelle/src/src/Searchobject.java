@@ -8,7 +8,7 @@ package src;
 
 /**
  *
- * @author Администратор
+ * @author Ekaterina Kuzminykh
  */
 public class Searchobject {
     
