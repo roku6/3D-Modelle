@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.ArrayList;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.awt.Container;
+import java.awt.Insets;
+import java.awt.Dimension;
+import java.util.Objects;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -39,6 +43,8 @@ public class GUI extends javax.swing.JFrame {
 			"OBJ-Dateien", "obj");
 	private Double lenInterval = 0.0;
 	private Double angleInterval = 0.0;
+	private boolean editClicked = false;
+	private int index = -1;
 
 	/**
 	 * Constructor
@@ -46,6 +52,12 @@ public class GUI extends javax.swing.JFrame {
 	public GUI() {
 
 		initComponents();
+		Insets insets = getInsets();
+		setSize(830 + insets.left + insets.right,
+                400 + insets.top + insets.bottom);
+		setVisible(true);
+		setResizable(false);
+
 
 	}
 
@@ -96,11 +108,7 @@ public class GUI extends javax.swing.JFrame {
 		toEdgeLabel.setText("zur Kante:");
 
 		inputList.setModel(listModel);// {
-		// String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5"
-		// };
-		// public int getSize() { return strings.length; }
-		// public Object getElementAt(int i) { return strings[i]; }
-		// });
+
 		inputList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 		jScrollPane2.setViewportView(inputList);
 
@@ -128,6 +136,12 @@ public class GUI extends javax.swing.JFrame {
 		edgeTF.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				edgeTFActionPerformed(evt);
+			}
+		});
+		
+		edgeTF.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusLost(java.awt.event.FocusEvent evt) {
+				edgeTFFocusLost(evt);
 			}
 		});
 
@@ -187,105 +201,99 @@ public class GUI extends javax.swing.JFrame {
 				angleIntervalTFActionPerformed(evt);
 			}
 		});
+		
+		//pack();
+		
+		//Layout
+		
 
-		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-		getContentPane().setLayout(layout);
-		layout.setHorizontalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup().addGap(63, 63, 63)
-						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-								.addGroup(layout.createSequentialGroup().addComponent(edgeLabel)
-										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED,
-												javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(edgeTF, javax.swing.GroupLayout.PREFERRED_SIZE, 41,
-										javax.swing.GroupLayout.PREFERRED_SIZE)
-								.addGap(27, 27, 27)
-								.addComponent(lenLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 47,
-										javax.swing.GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-								.addComponent(lenTF, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
-										javax.swing.GroupLayout.PREFERRED_SIZE).addGap(36, 36, 36)
-								.addComponent(angleLabel)
-								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-								.addComponent(angleTF, javax.swing.GroupLayout.PREFERRED_SIZE, 36,
-										javax.swing.GroupLayout.PREFERRED_SIZE)
-								.addGap(26, 26, 26)
-								.addComponent(toEdgeLabel, javax.swing.GroupLayout.DEFAULT_SIZE,
-										javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-								.addComponent(toEdgeTF, javax.swing.GroupLayout.PREFERRED_SIZE, 40,
-										javax.swing.GroupLayout.PREFERRED_SIZE).addGap(30, 30, 30)
-								.addComponent(addButton).addGap(150, 150, 150))
-						.addGroup(layout.createSequentialGroup()
-								.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-										.addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 323,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
-								.addGroup(layout.createSequentialGroup().addComponent(lenIntervalLabel).addGap(2, 2, 2)
-										.addComponent(lenIntervalTF, javax.swing.GroupLayout.PREFERRED_SIZE, 52,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addGap(18, 18, 18).addComponent(angleIntervalLabel)
-										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(angleIntervalTF, javax.swing.GroupLayout.PREFERRED_SIZE, 55,
-												javax.swing.GroupLayout.PREFERRED_SIZE)))
-								.addGap(18, 18, 18)
-								.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-										.addGroup(layout.createSequentialGroup().addGroup(layout
-												.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-												.addComponent(editButton, javax.swing.GroupLayout.DEFAULT_SIZE,
-														javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-												.addComponent(removeButton, javax.swing.GroupLayout.DEFAULT_SIZE,
-														javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-												.addGap(71, 71, 71)
-												.addGroup(layout
-														.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING,
-																false)
-														.addComponent(readDirButton,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-														.addComponent(readFileButton,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-										.addComponent(searchButton))))));
-		layout.setVerticalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(layout
-				.createSequentialGroup().addGap(50, 50, 50)
-				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-								.addComponent(lenIntervalLabel).addComponent(angleIntervalLabel)
-								.addComponent(angleIntervalTF, javax.swing.GroupLayout.PREFERRED_SIZE,
-										javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-						.addComponent(lenIntervalTF, javax.swing.GroupLayout.PREFERRED_SIZE,
-								javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-						.addGroup(layout.createSequentialGroup()
-								.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-										.addComponent(editButton).addComponent(readFileButton))
-						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-								.addGroup(layout.createSequentialGroup()
-										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-										.addComponent(removeButton))
-								.addGroup(
-										layout.createSequentialGroup().addGap(20, 20, 20).addComponent(readDirButton)))
-						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED,
-								javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addComponent(searchButton))
-						.addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 225,
-								javax.swing.GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
-				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE).addComponent(edgeLabel)
-						.addComponent(lenLabel)
-						.addComponent(lenTF, javax.swing.GroupLayout.PREFERRED_SIZE,
-								javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-						.addComponent(angleLabel)
-						.addComponent(angleTF, javax.swing.GroupLayout.PREFERRED_SIZE,
-								javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-						.addComponent(toEdgeLabel).addComponent(addButton)
-						.addComponent(edgeTF, javax.swing.GroupLayout.PREFERRED_SIZE,
-								javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-						.addComponent(toEdgeTF, javax.swing.GroupLayout.PREFERRED_SIZE,
-								javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-				.addGap(24, 24, 24)));
+		
+		Container pane =  getContentPane();
+		Dimension size;
+		pane.setLayout(null);
+			    
+	    pane.add(angleIntervalLabel);
+	    size = angleIntervalLabel.getPreferredSize();
+	    angleIntervalLabel.setBounds(230, 60, size.width, size.height);
 
-		layout.linkSize(javax.swing.SwingConstants.VERTICAL,
-				new java.awt.Component[] { angleLabel, angleTF, edgeLabel, lenLabel, lenTF, toEdgeLabel });
+	    pane.add(angleIntervalTF);
+	    size = angleIntervalTF.getPreferredSize();
+	    angleIntervalTF.setBounds(330, 58, 50, size.height);
+	    
+	    pane.add(lenIntervalLabel);
+	    size = lenIntervalLabel.getPreferredSize();
+	    lenIntervalLabel.setBounds(65, 60, size.width, size.height);
+
+	    pane.add( lenIntervalTF);
+	    size =  lenIntervalTF.getPreferredSize();
+	    lenIntervalTF.setBounds(165, 58, 50, size.height);
+	    
+	    pane.add(edgeLabel);
+	    size = edgeLabel.getPreferredSize();
+	    edgeLabel.setBounds(60, 360, size.width, size.height);
+	    
+	    pane.add(edgeTF);
+	    size = edgeTF.getPreferredSize();
+	    edgeTF.setBounds(110, 357, 37, 21);
+	    
+	    pane.add(lenLabel);
+	    size = lenLabel.getPreferredSize();
+	    lenLabel.setBounds(180, 360, size.width, size.height);
+
+	    pane.add(lenTF);
+	    size = lenTF.getPreferredSize();
+	    lenTF.setBounds(240, 357 ,37 , 21);
+	    
+	    pane.add(angleLabel);
+	    size = angleLabel.getPreferredSize();
+	    angleLabel.setBounds(315, 360, size.width, size.height);
+	    
+	    pane.add(angleTF);
+	    size = angleTF.getPreferredSize();
+	    angleTF.setBounds(370,357 ,37 , 21);
+	    
+	    pane.add(toEdgeLabel);
+	    size = toEdgeLabel.getPreferredSize();
+	    toEdgeLabel.setBounds(440, 360, size.width, size.height);
+
+	    pane.add(toEdgeTF);
+	    size = toEdgeTF.getPreferredSize();
+	    toEdgeTF.setBounds(507,357 ,37 , 21);
+	    
+	    pane.add(inputList);
+	    size = inputList.getPreferredSize();
+	    inputList.setBounds(67, 87, 310,215);
+
+	    pane.add( jScrollPane2);
+	    size =  jScrollPane2.getPreferredSize();
+	     jScrollPane2.setBounds(65, 85, 315,220);
+
+		pane.add(addButton);
+	    size = addButton.getPreferredSize();
+	    addButton.setBounds(580, 352, size.width, size.height);
+
+	    pane.add(editButton);
+	    size = editButton.getPreferredSize();
+	    editButton.setBounds(400, 85, size.width, size.height);
+	    
+	    pane.add( removeButton);
+	     removeButton.setBounds(400, 125, size.width, size.height);
+
+
+	    pane.add(readDirButton);
+	    size = readDirButton.getPreferredSize();
+	    readDirButton.setBounds(610,125 , size.width, size.height);
+
+	    pane.add(readFileButton);
+	    readFileButton.setBounds(610, 85, size.width, size.height);
+
+
+
+	    pane.add(searchButton);
+	    size = searchButton.getPreferredSize();
+	    searchButton.setBounds(400, 280, size.width, size.height);
+
+
 
 		pack();
 	}
@@ -297,7 +305,7 @@ public class GUI extends javax.swing.JFrame {
 	 *            the evt
 	 */
 	private void angleTFActionPerformed(java.awt.event.ActionEvent evt) {
-		addSearchobject();
+		addSearchobject(searchList.size());
 	}
 
 	/**
@@ -331,7 +339,8 @@ public class GUI extends javax.swing.JFrame {
 	 *            the evt
 	 */
 	private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {
-		addSearchobject();
+		if (editClicked) replaceSearchobject(index);
+		else addSearchobject(searchList.size());
 	}
 
 	/**
@@ -351,8 +360,14 @@ public class GUI extends javax.swing.JFrame {
 	 *            the evt
 	 */
 	private void edgeTFActionPerformed(java.awt.event.ActionEvent evt) {
-		addSearchobject();
+		addSearchobject(searchList.size());
 	}
+	
+	private void edgeTFFocusLost(java.awt.event.FocusEvent evt) {
+		if(edgeExists(edgeTF)) presetLenTF();
+		else lenTF.setText("");		
+	}
+
 
 	/**
 	 * Len TF action performed.
@@ -361,7 +376,7 @@ public class GUI extends javax.swing.JFrame {
 	 *            the evt
 	 */
 	private void lenTFActionPerformed(java.awt.event.ActionEvent evt) {
-		addSearchobject();
+		addSearchobject(searchList.size());
 	}
 
 	/**
@@ -371,7 +386,7 @@ public class GUI extends javax.swing.JFrame {
 	 *            the evt
 	 */
 	private void toEdgeTFActionPerformed(java.awt.event.ActionEvent evt) {
-		addSearchobject();
+		addSearchobject(searchList.size());
 	}
 
 	/**
@@ -448,20 +463,22 @@ public class GUI extends javax.swing.JFrame {
 			javax.swing.JOptionPane.showMessageDialog(this, "Eine Kante kann keinen Winkel zu sich selbst haben!");
 			return false;
 		}
-
+		
 		for (Searchobject obj : searchList) {
-			if (obj.getId1().equals(id1) && !obj.getLength().equals(length)) {
-				javax.swing.JOptionPane.showMessageDialog(this, "Diese Kante hat schon eine andere Laenge!");
-				return false;
+			if (!editClicked && obj.getId1().equals(id1) && !Objects.equals(obj.getLength(),length)) {				 
+					javax.swing.JOptionPane.showMessageDialog(this, "Diese Kante hat schon eine andere Laenge!");
+					return false;		
 			}
 
-			else if (obj.getId1().equals(id1) && obj.getId2().equals(id2) && !obj.getAngle().equals(angle)) {
+			else if (!editClicked && obj.getId1().equals(id1) && Objects.equals(obj.getId2(),id2) && !Objects.equals(obj.getAngle(),angle)
+					|| editClicked && obj.getId1().equals(id1) && Objects.equals(obj.getId2(),id2) && !Objects.equals(obj.getAngle(),angle)
+					&& searchList.indexOf(obj) != inputList.getSelectedIndex()) {
 				javax.swing.JOptionPane.showMessageDialog(this, "Diese 2 Kanten haben schon einen anderen Winkel!");
 				return false;
 			}
 
 		}
-
+		
 		return true;
 	}
 
@@ -496,6 +513,26 @@ public class GUI extends javax.swing.JFrame {
 			return false;
 		}
 	}
+	
+	private boolean edgeExists(javax.swing.JTextField tf) {
+		if(isInteger(tf.getText())) {
+			 Integer id = Integer.valueOf(tf.getText());
+			 for (Searchobject obj : searchList) 
+					if (obj.getId1().equals(id))
+						return true;			 
+		}
+		return false;
+	}
+	
+	private void presetLenTF() {
+			 Integer id = Integer.valueOf(edgeTF.getText());
+			 for (Searchobject obj : searchList) 
+					if (obj.getId1().equals(id)) 
+						lenTF.setText(java.util.Objects.toString(obj.getLength()));
+
+						
+		
+	}
 
 	/**
 	 * Adds the interval.
@@ -519,18 +556,20 @@ public class GUI extends javax.swing.JFrame {
 	/**
 	 * Adds the searchobject.
 	 */
-	private void addSearchobject() {
+	private void addSearchobject(int index) {
 		Integer id1;
 		if (!isInteger(edgeTF.getText()) || Integer.valueOf(edgeTF.getText()) < 0) {
 			javax.swing.JOptionPane.showMessageDialog(this,
 					"Erste Kanten-ID muss eine nicht-negative ganze Zahl sein.");
+
+			
 			edgeTF.setText("");
 			return;
 		} else
 			id1 = Integer.valueOf(edgeTF.getText());
 
 		Double length;
-		if (lenTF.getText().isEmpty())
+		if (lenTF.getText().isEmpty() || lenTF.getText().equals("null"))
 			length = null;
 		else if (!isDouble(lenTF.getText()) || Double.valueOf(lenTF.getText()) < 0) {
 			javax.swing.JOptionPane.showMessageDialog(this, "Kantenlaenge muss eine nicht-negative Zahl sein.");
@@ -559,21 +598,41 @@ public class GUI extends javax.swing.JFrame {
 			return;
 		} else
 			id2 = Integer.valueOf(toEdgeTF.getText());
-
-		if (valuesMatch(id1, length, angle, id2, searchList)) {
+ 
+		if ( valuesMatch(id1, length, angle, id2, searchList)) {
 			Searchobject searchObj = new Searchobject(id1, length, angle, id2);
-			searchList.add(searchObj);
+			
+			if(searchList.size() <= index) searchList.add(index,searchObj);
+			else searchList.set(index,searchObj);
+			
 			String newLine = "Kante " + id1 + ":      " + "Laenge: " + length + ",      Winkel: " + angle
 					+ "   zur Kante " + id2;
-			listModel.addElement(newLine);
+			
+			if(listModel.size() <= index)listModel.add(index,newLine);
+			else listModel.setElementAt(newLine,index);
+			//rework?
+			if(!edgeExists(toEdgeTF)) {
+				searchObj = new Searchobject(id2, null, null, null);
+				searchList.add(index+1,searchObj);
+				newLine = "Kante " + id2 + ":      " + "Laenge: " + null + ",      Winkel: " + null
+						+ "   zur Kante " + null;
+				listModel.add(index+1,newLine);
+
+			}
+		
+
+			edgeTF.setText("");
+			lenTF.setText("");
+			angleTF.setText("");
+			toEdgeTF.setText("");
+			
+			if(editClicked) replaceLengths(id1,length);
+			editClicked = false;
+			
+		
 		}
 
-		edgeTF.setText("");
-		lenTF.setText("");
-		angleTF.setText("");
-		toEdgeTF.setText("");
-
-		if (addButton.getText().equals("Speichern"))
+		if (editClicked == false)
 			addButton.setText("hinzufuegen");
 
 	}
@@ -582,19 +641,45 @@ public class GUI extends javax.swing.JFrame {
 	 * Edits the searchobject.
 	 */
 	private void editSearchobject() {
-		int index = inputList.getSelectedIndex();
+		index = inputList.getSelectedIndex();
 		if (index == -1)
 			return;
 
+		editClicked = true;
 		addButton.setText("Speichern");
-		edgeTF.setText(java.util.Objects.toString(searchList.get(index).getId1(), ""));
+		edgeTF.setText(java.util.Objects.toString(searchList.get(index).getId1(), "GG"));
+		System.out.println(edgeTF.getText());
+
 		lenTF.setText(java.util.Objects.toString(searchList.get(index).getLength(), ""));
 		angleTF.setText(java.util.Objects.toString(searchList.get(index).getAngle(), ""));
 		toEdgeTF.setText(java.util.Objects.toString(searchList.get(index).getId2(), ""));
 
-		searchList.remove(inputList.getSelectedIndex());
-		listModel.removeElementAt(inputList.getSelectedIndex());
+		//searchList.remove(inputList.getSelectedIndex());
+		//listModel.removeElementAt(inputList.getSelectedIndex());
 
+	}
+	
+	private void replaceSearchobject(int index) {
+		addSearchobject(index);
+		
+		
+		
+	}
+	
+	private void replaceLengths(Integer id, Double length) {
+		
+		for (Searchobject obj : searchList) 
+			if ( obj.getId1().equals(id) && !Objects.equals(obj.getLength(),length)) {	
+				obj.setLength(length);
+				String newLine = "Kante " + id + ":      " + "Laenge: " + length + ",      Winkel: " + obj.getAngle()
+						+ "   zur Kante " + obj.getId2();
+				
+				 listModel.setElementAt(newLine,searchList.indexOf(obj));
+			
+			}
+		
+		
+		
 	}
 
 	/**
@@ -617,7 +702,7 @@ public class GUI extends javax.swing.JFrame {
 			System.out.println(obj.getId1() + "  " + obj.getLength() + "  " + obj.getAngle() + "  " + obj.getId2());
 		}
 		System.out.println(lenInterval + " " + angleInterval);
-		outputGUI outg = new outputGUI(searchList);
+		outputGUI outg = new outputGUI();
 		outg.setVisible(true);
 	}
 
@@ -663,6 +748,8 @@ public class GUI extends javax.swing.JFrame {
 			});
 
 			matchTxtPng(fl);
+
+			
 		}
 	}
 
@@ -673,6 +760,8 @@ public class GUI extends javax.swing.JFrame {
 	 *            the filelist
 	 */
 	private void matchTxtPng(File[] fl) {
+		//rem
+		List<String> imageList = new ArrayList<String>();
 
 		for (File file : fl) {
 			String nameWithObj = java.util.Objects.toString(file);
@@ -691,7 +780,12 @@ public class GUI extends javax.swing.JFrame {
 			System.out.println(nameWithObj);
 			System.out.println(nameWithTxt);
 			System.out.println(nameWithPng);
+			//rem
+			imageList.add(nameWithPng);
 		}
+		//remove later
+		outputGUI outg2 = new outputGUI(imageList);
+		outg2.setVisible(true);
 
 	}
 
@@ -702,24 +796,7 @@ public class GUI extends javax.swing.JFrame {
 	 *            the arguments
 	 */
 	public static void main(String args[]) {
-		/*
-		 * try { for (javax.swing.UIManager.LookAndFeelInfo info :
-		 * javax.swing.UIManager.getInstalledLookAndFeels()) { if
-		 * ("Nimbus".equals(info.getName())) {
-		 * javax.swing.UIManager.setLookAndFeel(info.getClassName()); break; } }
-		 * } catch (ClassNotFoundException ex) {
-		 * java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util
-		 * .logging.Level.SEVERE, null, ex); } catch (InstantiationException ex)
-		 * {
-		 * java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util
-		 * .logging.Level.SEVERE, null, ex); } catch (IllegalAccessException ex)
-		 * {
-		 * java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util
-		 * .logging.Level.SEVERE, null, ex); } catch
-		 * (javax.swing.UnsupportedLookAndFeelException ex) {
-		 * java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util
-		 * .logging.Level.SEVERE, null, ex); }
-		 */
+
 
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {

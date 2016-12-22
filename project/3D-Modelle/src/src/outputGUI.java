@@ -3,7 +3,12 @@ package src;
 import  java.util.List;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
+import javax.swing.JLabel;
+
+import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Insets;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -16,7 +21,8 @@ import java.net.URL;
 public class outputGUI extends javax.swing.JFrame {
 	
 	//members
-    private javax.swing.JLabel imgLabel;
+	private Container pane =  getContentPane();
+	private Dimension size;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable;
 
@@ -41,13 +47,20 @@ public class outputGUI extends javax.swing.JFrame {
     };
     
     List<Searchobject> foundList = new ArrayList<Searchobject>();
+    List<String>imageList = new ArrayList<String>();
 
     //construstrors
     public outputGUI() {
-        initComponents();
+    	initComponents();
+		Insets insets = getInsets();
+		setSize(1600 + insets.left + insets.right,
+                900 + insets.top + insets.bottom);
+		setVisible(true);
+		setResizable(false);		
+        
     }
     
-    public outputGUI(List<Searchobject> foundList) {
+  /*  public outputGUI(List<Searchobject> foundList) {
         initComponents();
         this.foundList = foundList;
         tm.setRowCount(foundList.size());
@@ -60,14 +73,25 @@ public class outputGUI extends javax.swing.JFrame {
         
         drawImage();
         
+    }*/
+    
+    public outputGUI(List<String> imageList) {
+    	this.imageList = imageList;
+    	initComponents();
+		Insets insets = getInsets();
+		setSize(1600 + insets.left + insets.right,
+                900 + insets.top + insets.bottom);
+		setVisible(true);
+		setResizable(false);
+		drawAll();
     }
 
     //methods
     private void initComponents() {
 
+
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable = new javax.swing.JTable();
-        imgLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -76,53 +100,69 @@ public class outputGUI extends javax.swing.JFrame {
         jTable.setRowSorter(jTable.getRowSorter());
         jTable.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(jTable);
+        
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(158, 158, 158)
-                .addComponent(imgLabel)
-                .addContainerGap(483, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE)
-                .addGap(124, 124, 124))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(80, 80, 80)
-                .addComponent(imgLabel)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+		pane.setLayout(null);
+		
+		pane.add(jScrollPane2);
+	    jScrollPane2.setBounds(20, 20, 300, 500);
+
+	    pane.add(jTable);
+	    size = jTable.getPreferredSize();
+	    jTable.setBounds(25, 25, 295, 495);
+
 
         pack();
     }
     
-    public void drawImage() {
+    private void drawAll() {
+
+    	for(int i=0;i<imageList.size();i++) {
+		javax.swing.JButton jButton = new javax.swing.JButton();
+		pane.add(jButton, "jLabel"+i);
+ 
+        jButton.setBounds(400+i*105, i*105, 122, 122);
         
+
+
+
         try {
-            java.net.URL imgpath = new java.net.URL("file:///C:/Studpro/"+"0"+".png");            
+            java.net.URL imgpath = new java.net.URL("file:///"+imageList.get(i));            
             java.awt.Image img = ImageIO.read(imgpath);
-            java.awt.Image resizedImg = img.getScaledInstance(400,400, Image.SCALE_DEFAULT);
+            javax.swing.ImageIcon popupIcon = new javax.swing.ImageIcon(img);
+            java.awt.Image resizedImg = img.getScaledInstance(100,100, Image.SCALE_DEFAULT);
             javax.swing.ImageIcon icon = new javax.swing.ImageIcon(resizedImg);
-            imgLabel.setIcon(icon);
+            jButton.setIcon(icon);
+            
+    		jButton.addActionListener(new java.awt.event.ActionListener() {
+    			public void actionPerformed(java.awt.event.ActionEvent evt) {
+    				//jButtonActionPerformed(evt);
+    				javax.swing.JOptionPane.showMessageDialog(pane, new JLabel(popupIcon),"", javax.swing.JOptionPane.PLAIN_MESSAGE);
+    			}
+    		});
+
         } catch (MalformedURLException ex) {
-            imgLabel.setText("file:///C:/Studpro/"+jTable.getSelectedRows()+".png");
+        	jButton.setText("not found-1");
+        	System.out.println("AA" + imageList.get(i));
             
         } catch (IOException ex) {
-            imgLabel.setText("file:///C:/Studpro/"+jTable.getSelectedRows()+".png");
+        	jButton.setText("not found-2");
         }
-        
-        
-        
-        
-        
+	}
+    	
+    	
+    	
     }
+    
+	private void jButtonActionPerformed(java.awt.event.ActionEvent evt) {
+		
+	}
+        
+        
+        
+        
+        
+    
     
     /**
      * @param args the command line arguments
