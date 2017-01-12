@@ -7,7 +7,7 @@ public class outGuiTest {
 
 	public static void main(String[] args) {
 
-		int numberObjects = (int)(Math.random()*10+50); 
+		int numberObjects = (int)(Math.random()*10+40); 
 		System.out.println(numberObjects);
 
 		double lenInt = (int)(Math.random()*9+1)+(int)(Math.random()*90)*0.01;

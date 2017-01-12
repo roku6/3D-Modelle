@@ -21,6 +21,7 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -42,12 +43,11 @@ import java.awt.Color;
  * @author Ekaterina Kuzminykh
  */
 public class outputGUI extends javax.swing.JFrame {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 	//members
+	private int width=1200;
+	private int height = 700;
+	Insets insets = new Insets(20,20,45,25);
 	private JLayeredPane pane =  new JLayeredPane(); //getContentPane();
 	//this.setContentPane(pane);
 	private Dimension size;
@@ -181,22 +181,16 @@ public Class<?> getColumnClass(int column) {
             tm.setValueAt(foundList.get(i).getAngSim(),i,2);           
         }
         
+        
+        setSize(width /*+ insets.left + insets.right*/,
+                height/* + insets.top + insets.bottom*/);
       	initComponents();
-        
-		Insets insets = getInsets();
-		setSize(1600 + insets.left + insets.right,
-                900 + insets.top + insets.bottom);
-        
-
 
 
 		setVisible(true);
 		setResizable(false);
 		drawAll();
-		
-		
-
-    	
+	
     
     }
     
@@ -206,7 +200,8 @@ public Class<?> getColumnClass(int column) {
 
     //methods
     private void initComponents() {
-    	imgsize =150;
+
+    	imgsize =(int)(getHeight()/6);
     	butArr =new javax.swing.JButton[foundList.size()];
 
     	
@@ -234,11 +229,11 @@ public Class<?> getColumnClass(int column) {
 		pane.setLayout(null);
 		
 		pane.add(jScrollPane2);
-	    jScrollPane2.setBounds(20, 20, 300, 800);
+	    jScrollPane2.setBounds(insets.left, insets.top, (int)(getWidth()/5), getHeight()-insets.top-insets.bottom);
+
 
 	    pane.add(jTable);
-	    size = jTable.getPreferredSize();
-	    jTable.setBounds(25, 25, 295, 795);
+	    jTable.setBounds(insets.left+5,insets.top+5, (int)(getWidth()/5)-5, getHeight()-insets.top-insets.bottom-5);
 	    
 
         jTable.setAutoCreateRowSorter(true);
@@ -250,10 +245,11 @@ public Class<?> getColumnClass(int column) {
             @Override
             public void valueChanged(javax.swing.event.ListSelectionEvent event) {
                 if (jTable.getSelectedRow() > -1) {
-                	for(int i=0;i<foundList.size();i++) {
+                	for(int i=0;i<foundList.size() && butArr[i]!=null;i++) {
                 		butArr[i].setBorderPainted(false);
+                		butArr[i].getParent().setComponentZOrder(butArr[i], 1);
                 		if (foundList.get(i).getId()==jTable.getValueAt(jTable.getSelectedRow(),0)) {
-                			pane.setLayer(butArr[i], 0,0);
+                			 butArr[i].getParent().setComponentZOrder(butArr[i], 0);
                 			butArr[i].setBorderPainted(true);
                 			jTable.requestFocusInWindow();
                 		}
@@ -266,35 +262,50 @@ public Class<?> getColumnClass(int column) {
 	    {
 	    	public void focusLost(java.awt.event.FocusEvent evt) {    	        
 	    		for(int i=0;i<foundList.size() && butArr[i]!=null;i++) 
-            		butArr[i].setBorderPainted(false); 
+            		butArr[i].setBorderPainted(false);
+	    		//mPanel.getParent().setComponentZOrder(mPanel, 0);
+	        }
+	    });
+	    
+	   jTable.addMouseListener(new java.awt.event.MouseAdapter()
+	    {
+	        public void mouseClicked(java.awt.event.MouseEvent evt)
+	        { 
+	        	if(evt.getClickCount()==2) {
+	        		if (jTable.getSelectedRow() > -1) {
+	                	for(int i=0;i<foundList.size() && butArr[i]!=null;i++) {
+	                		if (foundList.get(i).getId()==jTable.getValueAt(jTable.getSelectedRow(),0)) {
+	                			ArrayList<JButton> overlappingButtons = new ArrayList<JButton>();
+	            				ArrayList<javax.swing.ImageIcon> popupIcons = new ArrayList<javax.swing.ImageIcon>();
+	            				overlappingButtons.add(butArr[i]);
+	            				popupIcons.add((ImageIcon) butArr[i].getClientProperty("popup"));
+	            				jButtonActionPerformed(overlappingButtons,popupIcons);
+	                		}
+	                	}
+	        		
+	        	}
+	        }
 	        }
 	    });
 
 
-	    
+	   
 	    pane.add(mPanel);
 
-	    mPleft =330;
-	    mPtop=20;
+	    mPleft =(int)(getWidth()/5)+2*insets.left;
+	    mPtop=insets.top;
 
-	    mPanel.setBounds(mPleft,mPtop,1250,860);
-	    mPright=mPleft+1250;
-	    mPbottom=mPtop+860;
+	    mPanel.setBounds(mPleft,mPtop,(int)(getWidth()*0.8)-2*insets.left-insets.right,getHeight()-insets.top-insets.bottom);
+	    mPright=mPleft+(int)(getWidth()*0.72);
+	    mPbottom=mPtop+(int)(getHeight()*0.85);
 
 	    mPanel.setBackground(new Color(0, 0, 0, 0));
 
 	    mPanel.setBorder(BorderFactory.createLineBorder(Color.black));
-	    
+
 
 	   
-	    
-	    
 
-
-
-	    
-
-        pack();
     }
     
     private void drawAll() {
@@ -304,8 +315,11 @@ public Class<?> getColumnClass(int column) {
     	int right = mPright-imgsize/2;
     	int top = mPtop+imgsize/2;
     	int bottom = mPbottom-imgsize/2;
-    	int hcenter = (left+right)/2;
-    	int vcenter = (top+bottom)/2;
+    	int hcenter =mPleft+ mPanel.getWidth()/2;
+    	int vcenter = mPtop+mPanel.getHeight()/2;
+ 
+
+
 
 
     	
@@ -333,8 +347,9 @@ public Class<?> getColumnClass(int column) {
 		
 
 
-		int hoffset = (int)(foundList.get(i).getLenSim()/lenInt*(right-left)/2);
-		int voffset = (int)(foundList.get(i).getAngSim()/angInt*(top-bottom)/2);
+		int hoffset = (int)(foundList.get(i).getLenSim()/lenInt* (mPanel.getWidth()-imgsize)/2);
+		int voffset = (int)(foundList.get(i).getAngSim()/angInt* (mPanel.getHeight()-imgsize)/2);
+		//System.out.println(foundList.get(i).getId()+" "+voffset);
 
 		
 		//possible locations of the button in each quarter counterclockwise
@@ -359,6 +374,7 @@ public Class<?> getColumnClass(int column) {
 
 	    Rectangle wantedBounds = list.get(0).getKey();
 	    jButton.setBounds(wantedBounds);
+
 		
 		
 		
@@ -421,6 +437,9 @@ public Class<?> getColumnClass(int column) {
             jButton.setIcon(icon);
             jButton.putClientProperty("popup",popupIcon);
             jButton.putClientProperty("description",foundList.get(i).getDescr());
+            jButton.putClientProperty("x",wantedBounds.getMinX()/getWidth());
+            jButton.putClientProperty("y",wantedBounds.getMinY()/getHeight());
+          
             
        
     		jButton.addActionListener(new java.awt.event.ActionListener() {
@@ -496,7 +515,7 @@ public Class<?> getColumnClass(int column) {
 			JLabel label = new JLabel(icons.get(0));
         	label.setHorizontalTextPosition(JLabel.CENTER);
             label.setVerticalTextPosition(JLabel.BOTTOM);
-            label.setText(descr);
+            label.setText("ID "+buttons.get(0).getName()+", "+descr);
         	//javax.swing.JOptionPane.showMessageDialog(pane,label ,name, javax.swing.JOptionPane.PLAIN_MESSAGE);
 			javax.swing.JOptionPane.showMessageDialog(pane, label,buttons.get(0).getName(), javax.swing.JOptionPane.PLAIN_MESSAGE);
 		}
@@ -531,7 +550,7 @@ public Class<?> getColumnClass(int column) {
 	    	        	JLabel label = new JLabel(ic);
 	    	        	label.setHorizontalTextPosition(JLabel.CENTER);
 	    	            label.setVerticalTextPosition(JLabel.BOTTOM);
-	    	            label.setText(descr);
+	    	            label.setText("ID: "+name+", "+descr);
 
 	    	        	javax.swing.JOptionPane.showMessageDialog(pane,label ,name, javax.swing.JOptionPane.PLAIN_MESSAGE);
 
