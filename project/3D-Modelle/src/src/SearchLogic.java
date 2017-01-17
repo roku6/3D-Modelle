@@ -12,8 +12,6 @@ import org.neo4j.graphdb.Result;
  * Class to gather information about the object to search for
  * and generate the query needed. 
  * 
- * TODO generate Cypher code, implement comparison, 
- * think of a smart way to hand over all the information needed
  * 
  */
 
@@ -28,10 +26,11 @@ public class SearchLogic {
 	
 
 	/**
-	 *This method generates a CQL query string bases on the searchObjects ArrayList Member.
+	 *This method generates a CQL query string based on the searchObjects ArrayList Member.
 	 *To realize the ability of searching with a given tolerance, the query consists of a match for a (relatively)long list of node-rel-node patterns
 	 *and a (relatively)long where clause. 
-	 *The return of the query is the entire node1 and rel.Angle 
+	 *The return of the query is the entire node and rel.Angle. Columns look like this:
+	 * n1.Length | n1.Url | n1.Description | n1.ObjectId | r1.Angle | n2.Length | n2.Url | ... | ... 
 	 *
 	 *    @return The CQL string to query for the properties given in the searchObjects ArrayList
 	 */
@@ -47,14 +46,14 @@ public class SearchLogic {
 			//Length
 			temp=  (sObject.getLength()-toleranceLength)+"<"+"n"+ sObject.getId1().toString()+".LENGTH"+"<"+(sObject.getLength()+toleranceLength) + "AND "+
 			//Angles
-			(sObject.getAngle()-toleranceLength)+"<"+"r"+ sObject.getId1().toString()+".ANGLE"+"<"+(sObject.getAngle()+toleranceLength) + "AND ";
+			(sObject.getAngle()-toleranceAngle)+"<"+"r"+ sObject.getId1().toString()+".ANGLE"+"<"+(sObject.getAngle()+toleranceAngle) + "AND ";
 			whereClausesTemp.concat(temp);
 			//Defining returns
 			temp=
-			"n"+ sObject.getId1().toString()+".LENGTH"+
-			"n"+ sObject.getId1().toString()+".URL"+
-			"n"+ sObject.getId1().toString()+".DESCRIPTION"+
-			"n"+ sObject.getId1().toString()+".id"+
+			"n"+ sObject.getId1().toString()+".LENGTH"+","+
+			"n"+ sObject.getId1().toString()+".URL"+","+
+			"n"+ sObject.getId1().toString()+".DESCRIPTION"+","+
+			"n"+ sObject.getId1().toString()+".OBJECT_ID"+","+
 			",r"+sObject.getId1().toString()+".ANGLE"+","; //+",n"+ sObject.getId2().toString()+ needed? to be tested
 			returnsTemp.concat(temp);
 		}
@@ -71,21 +70,33 @@ public class SearchLogic {
 		return cypher;
 	}
 	/**
-	 * TODO
+	 * This Method calculates the similarity (rather derivation) to the exact pattern entered for query for every row in result and
+	 * creates an array of Foundobjects containing only the most similar representation per Object found.
+	 * To calculate the derivation, the lengths and angles from both the wanted and the found patterns are added up and the difference divided
+	 * by the amount of edges/angles to normalize the result.  
+	 * 
+	 * @param result The result of a CQL query
+	 * @return An ArrayList of Foundobjects, containing only the most similar representation per Object found
+	 * 
 	 */
-	public static void calcSimilarity(Result result){
-		//TODO for each Row "patternFromDD" in Result do
+	@SuppressWarnings("null")
+	public static ArrayList<Foundobject> calcSimilarity(Result result){
+		//for each Row "patternFromDD" in Result do
 		// compare patternFromDB to each Searchobject "object" in this.Searchobjects
 		// find a way to measure similarity (subtraction?) and 
 		// return an average for each pattern found^
-		
-		Map<Integer, String> deviationMap = null;
-		double foundId=0;
+		ArrayList<Foundobject> foundObjectsArray=null;
+		int foundId=0;
 		double foundAngleSum=0;
 		double foundLengthSum=0;
+		String foundUrl="";
+		String foundDescription="";
 		
 		double expectedAngleSum=0;
 		double expectedLengthSum=0;
+		
+		Double devLength=0.;
+		Double devAngle=0.;
 		
 		for (Searchobject sObj : searchObjects){
 			expectedAngleSum += sObj.getAngle();
@@ -96,14 +107,25 @@ public class SearchLogic {
 			foundId=0;
 			foundAngleSum=0;
 			foundLengthSum=0;
+
 			
 			Set<Map.Entry<String,Object>> entries = result.next().entrySet();
 			for (Map.Entry<String, Object> entry : entries ){
 				
-				if (foundId==0){
-					if (entry.getKey().contains("id")){
-					foundId=(double) entry.getValue();
+				if (entry.getKey().contains("OBJECT_ID")){
+					if (foundId==0){
+					foundId=(int) entry.getValue();
 				    }
+				}
+				if (foundUrl=="") {
+					if (entry.getKey().contains("URL")) {
+						foundUrl = entry.getValue().toString();
+					} 
+				}
+				if (foundDescription==""){
+					if (entry.getKey().contains("DESCRIPTION")) {
+						foundDescription = entry.getValue().toString();
+					} 
 				}
 				if (entry.getKey().contains("LENGTH")){
 					foundLengthSum += (double)entry.getValue();
@@ -113,12 +135,25 @@ public class SearchLogic {
 				}
 				
 			}
+			devLength = Math.abs(expectedLengthSum -foundLengthSum )/searchObjects.size();
+			devAngle  = Math.abs(expectedAngleSum  -foundAngleSum  )/searchObjects.size();
+
 			
-			deviationMap.put((int)foundId,Math.abs(expectedLengthSum-foundLengthSum)/searchObjects.size()+", "+ Math.abs(expectedAngleSum-foundAngleSum)/searchObjects.size());
-			//TODO reduzieren auf nur das ähnlichste pattern pro objekt, erdtellen von objekten der neuen klasse 
 			
+			//Only add found object to results if the deviation is less than any existing entry for that Object_id. 
+			//Combined length/angle deviation calculated using the length of the vector(devLength,devAngle). Shorter vector -> obj more likely similar
+		    for (Foundobject fObj : foundObjectsArray){
+		    	if(fObj.getId()==foundId &&  
+		    			Math.sqrt(fObj.getAngSim()*fObj.getAngSim() + fObj.getLenSim()*fObj.getLenSim()) >
+		    			Math.sqrt(devLength*devLength+devAngle*devAngle) ){
+		    		foundObjectsArray.add(new Foundobject(foundId, devLength, devAngle, foundUrl, foundDescription));	
+		    		foundObjectsArray.remove(fObj);
+		    	}
+		    }
+		    
 		}
-		
+		result.close();
+		return foundObjectsArray;
 	}
 
 	

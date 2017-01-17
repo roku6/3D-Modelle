@@ -77,6 +77,7 @@ public class DBController {
 	*When extending this application, consider reworking the id-management to fit large DBs
 	*/
 	private static void fetchUsedIds(){
+		usedIds.clear();
 		ResourceIterator<Integer> tempIterator = executeQuery("MATCH (n) RETURN DISTINCT n.OBJECT_ID").columnAs("OBJECT_ID");
 		tempIterator.forEachRemaining(usedIds::add);
 		tempIterator.close();
@@ -205,6 +206,7 @@ public class DBController {
 					properties.put("LENGTH", edge1.getLength());
 					properties.put("URL", figure.getPictureURL());
 					properties.put("DESCRIPTION", figure.getDescription());
+					properties.put("OBJECT_ID", edgeId1.intValue());
 					
 					inserter.createNode(edgeId1, properties, FigureLabels.EDGE);
 					
@@ -215,6 +217,7 @@ public class DBController {
 					properties.put("LENGTH", edge2.getLength());
 					properties.put("URL", figure.getPictureURL());
 					properties.put("DESCRIPTION", figure.getDescription());
+					properties.put("OBJECT_ID", edgeId2.intValue());
 					
 					inserter.createNode(edgeId2, properties, FigureLabels.EDGE);
 					
