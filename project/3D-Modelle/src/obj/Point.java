@@ -15,7 +15,7 @@
 
 package obj;
 
-public class Point<T extends Number>
+public abstract class Point<T extends Number>
 {		
 	private Vertex<T> aVertex;
 	private Texture<T> aTexture;
@@ -80,7 +80,21 @@ public class Point<T extends Number>
 		}
 		return false;
 	}
-	
+
+	public boolean rEquals(Object obj)
+	{
+		Point<Double> aPoint = obj instanceof Point ? (Point<Double>)obj : null;
+		if (aPoint != null)
+		{
+		if (this.getAVertex().equals(aPoint.getAVertex()) &&
+			this.getATexture().equals(aPoint.getATexture()) &&
+			this.getANormal().equals(aPoint.getANormal()))
+			{
+				return true;			
+			}
+		}
+		return false;			
+	}
 	/** To String Methode
 	 * Overrides the standard to String methode
 	 * @return String aString shows Vertex-/Texture- and NormalID

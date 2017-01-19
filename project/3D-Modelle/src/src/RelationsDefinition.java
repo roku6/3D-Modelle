@@ -13,7 +13,12 @@ public class RelationsDefinition
 	private Edge<Double> edge2;	//komplett alles
 	private double angle;	
 	
+	
 	//Constructors
+	/**
+	 * Empty Constructor
+	 */
+	public RelationsDefinition(){}
 	/**
 	 * Constructor setting all 3 values
 	 * 
@@ -51,5 +56,35 @@ public class RelationsDefinition
 	public double getWinkel() {
 		return angle;
 	}
+	public double getAngle() {
+		return angle;
+	}
+	/**
+	 * Setter for edge1 
+	 * @param edge1
+	 */
+	public void setEdge1(Edge<Double> edge1) {
+		this.edge1 = edge1;
+	}
+	/**
+	 * Setter for edge2
+	 * @param edge2
+	 */
+	public void setEdge2(Edge<Double> edge2) {
+		this.edge2 = edge2;
+	}
+	/**
+	 * Setter for angle
+	 * @param angle
+	 */
+	public void setAngle(double angle) {
+		this.angle = angle;
+	}
 
+	@Override
+	public String toString()
+	{
+		return getEdge1().toString() + " | " + getEdge2().toString() + " | " + getWinkel();
+	}
+	
 }

@@ -17,31 +17,35 @@ package obj;
 
 import java.util.ArrayList;
 
+/**
+ * @author Login
+ *
+ */
 public class Face 
 {
 	private static int number = 0;
 	private int id = 0;
-	private ArrayList<Point<Double>> pointList;
+	private ArrayList<PointExt<Double>> pointExtList;
 	
-	public int getId() 								{return id;}
-	public ArrayList<Point<Double>> getPointList() 	{return pointList;}
+	public int getId() 										{return id;}
+	public ArrayList<PointExt<Double>> getPointExtList() 	{return pointExtList;}
 	
 	public void setId(int id) 										{this.id = id;}
-	public void setPointList(ArrayList<Point<Double>> pointList) 	{this.pointList = pointList;}
+	public void setPointList(ArrayList<PointExt<Double>> pointList) {this.pointExtList = pointList;}
 
 	Face(){}
 	
-	Face(ArrayList<Point<Double>> aPointList)
+	Face(ArrayList<PointExt<Double>> aPointExtList)
 	{
 		Face.number++;
 		this.id = number;
-		this.pointList = aPointList;
+		this.pointExtList = aPointExtList;
 	}
 	
 	public String toString()
 	{
 		String aString = "" + this.getId() + "\t";
-		for (Point<Double> aPoint : pointList)
+		for (PointExt<Double> aPoint : pointExtList)
 		{
 			aString += aPoint.toString() + "\t";
 		}

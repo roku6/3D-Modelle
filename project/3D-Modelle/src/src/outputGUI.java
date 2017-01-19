@@ -406,10 +406,13 @@ public Class<?> getColumnClass(int column) {
 
            
         } catch (MalformedURLException ex) {
+            //imgLabel.setText("file:///C:/Studpro/"+jTable.getSelectedRow()+".png");
         	img =defimg;
         	
             
         } catch (IOException ex) {
+            
+        	//imgLabel.setText("file:///C:/Studpro/"+jTable.getSelectedRow()+".png");
         	img =defimg;
         	
         	

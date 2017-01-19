@@ -702,8 +702,8 @@ public class GUI extends javax.swing.JFrame {
 			System.out.println(obj.getId1() + "  " + obj.getLength() + "  " + obj.getAngle() + "  " + obj.getId2());
 		}
 		System.out.println(lenInterval + " " + angleInterval);
-		outputGUI outg = new outputGUI();
-		outg.setVisible(true);
+		//outputGUI outg = new outputGUI();
+		//outg.setVisible(true);
 	}
 
 	/**
@@ -724,9 +724,9 @@ public class GUI extends javax.swing.JFrame {
 
 			// System.out.println("getSelectedFiles() : " +
 			// chooser.getSelectedFiles());
-			// BuildLogic aBuildLogic = BuildLogic.getBuildLogic();
-			// aBuildLogic.createOBJ(chooser.getSelectedFile().getPath());
-			// aBuildLogic.createFigure();
+			 BuildLogic aBuildLogic = BuildLogic.getBuildLogic();
+			 aBuildLogic.createOBJ(chooser.getSelectedFile().getPath());
+			 //aBuildLogic.createFigure();
 
 			// 
 		}
@@ -784,8 +784,8 @@ public class GUI extends javax.swing.JFrame {
 			imageList.add(nameWithPng);
 		}
 		//remove later
-		outputGUI outg2 = new outputGUI(imageList);
-		outg2.setVisible(true);
+		//outputGUI outg2 = new outputGUI(imageList);
+		//outg2.setVisible(true);
 
 	}
 

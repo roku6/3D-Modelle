@@ -91,7 +91,7 @@ public class OBJ
 	 **/
 	public OBJ(int pointsNr, int facesNr, ArrayList<Point<Double>> pointList, ArrayList<Face> faceList)
 	{
-		setFaceIndicesNr(faceList.get(0).getPointList().size());
+		setFaceIndicesNr(faceList.get(0).getPointExtList().size());
 		setPointsNr(pointsNr);
 		setFacesNr(facesNr);
 		setPointList(pointList);
@@ -105,9 +105,9 @@ public class OBJ
 	 * @param normalId
 	 * @return aPoint
 	 */
-	private Point<Double> createPoint(int vertexId, int textureId, int normalId)
+	private PointExt<Double> createPoint(int vertexId, int textureId, int normalId)
 	{
-		Point<Double> aPoint = new Point<>();
+		PointExt<Double> aPoint = new PointExt<>();
 		for(Vertex<Double> aVertex : vertexList)
 		{
 			if (aVertex.getId() == vertexId) {aPoint.setAVertex(aVertex); break;}
@@ -121,6 +121,18 @@ public class OBJ
 			if (aNormal.getId() == normalId) {aPoint.setANormal(aNormal); break;}
 		}
 		return aPoint;
+	}
+	
+	private String[] convertNegativeZeros(String splitted[], int size)
+	{
+		for (int i = 1; i<size+1;i++)
+		{
+			if (Double.valueOf(splitted[i]) == -0.0) 
+			{
+				splitted[i] = "0.0";
+			}
+		}
+		return splitted;
 	}
 	
 	/** Method for loading an Obj-File
@@ -145,43 +157,49 @@ public class OBJ
 			{
 				splitted = s.split(" +");
 				//Reads Coordinates of a vertex (3D)
-				if (splitted[0].equals("v")) vertexList.add(new Vertex<>(	Double.valueOf(splitted[1]), 
-																			Double.valueOf(splitted[2]), 
-																			Double.valueOf(splitted[3]),
-																			0.0));				
+				if (splitted[0].equals("v")) 
+				{
+					splitted = convertNegativeZeros(splitted, 3);
+					vertexList.add(new Vertex<>(	Double.valueOf(splitted[1]), 
+													Double.valueOf(splitted[2]), 
+													Double.valueOf(splitted[3]),
+													0.0));				
+				}
 				//Reads Coordinates of a texture (2D)
 				else if (splitted[0].equals("vt")) 
 				{
-				textureList.add(new Texture<>(	Double.valueOf(splitted[1]),
-												Double.valueOf(splitted[2]),
-												0.0, 0.0));
+					splitted = convertNegativeZeros(splitted, 2);
+					textureList.add(new Texture<>(	Double.valueOf(splitted[1]),
+													Double.valueOf(splitted[2]),
+													0.0, 0.0));
 				}
 				//Reads Coordinates of a normalvector (3D)
 				else if (splitted[0].equals("vn")) 
 				{
-				normalList.add(new Normal<>( 	Double.valueOf(splitted[1]),
-												Double.valueOf(splitted[2]),
-												Double.valueOf(splitted[3]), 
-												0.0));
+					splitted = convertNegativeZeros(splitted, 3);
+					normalList.add(new Normal<>( 	Double.valueOf(splitted[1]),
+													Double.valueOf(splitted[2]),
+													Double.valueOf(splitted[3]), 
+													0.0));
 				}
 				//Reads indices of a face
 				else if (splitted[0].equals("f")) 
 				{
 					faceIndicesNrLocal = splitted.length - 1; //amount of indices in a row (2 - 4) FaceRepresentation
-					ArrayList<Point<Double>> aPointList = new ArrayList<>();
+					ArrayList<PointExt<Double>> aPointExtList = new ArrayList<>();
 					for(int i = 0; i<faceIndicesNrLocal; i++)
 					{
 						String splitted2[] = splitted[i+1].split("/");
 						splittedV = splitted2[0];
 						splittedT = splitted2[1];
 						splittedN = splitted2[2];
-						Point<Double> aPoint = createPoint(	Integer.valueOf(splittedV),
-															Integer.valueOf(splittedT),
-															Integer.valueOf(splittedN));
+						PointExt<Double> aPoint = createPoint(	Integer.valueOf(splittedV),
+																Integer.valueOf(splittedT),
+																Integer.valueOf(splittedN));
 						pointList.add(aPoint);
-						aPointList.add(aPoint);
+						aPointExtList.add(aPoint);
 					}
-					Face aFace = new Face(aPointList);
+					Face aFace = new Face(aPointExtList);
 					faceList.add(aFace);
 				}
 			}
@@ -191,7 +209,7 @@ public class OBJ
 		}
 		catch (IOException e)
 		{
-			
+			System.out.println("Exception!! " + e);
 		}
 	}
 	
