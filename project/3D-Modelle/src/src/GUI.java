@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.awt.Container;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.Dimension;
 import java.util.Objects;
 
@@ -45,6 +46,11 @@ public class GUI extends javax.swing.JFrame {
 	private Double angleInterval = 0.0;
 	private boolean editClicked = false;
 	private int index = -1;
+	private javax.swing.JLabel outputLabel;
+	private javax.swing.JLabel widthLabel;
+	private javax.swing.JLabel heightLabel;
+	private javax.swing.JTextField widthTF;
+	private javax.swing.JTextField heightTF;
 
 	/**
 	 * Constructor
@@ -83,6 +89,11 @@ public class GUI extends javax.swing.JFrame {
 		lenIntervalTF = new javax.swing.JTextField();
 		angleIntervalLabel = new javax.swing.JLabel();
 		angleIntervalTF = new javax.swing.JTextField();
+		outputLabel = new javax.swing.JLabel();
+		widthLabel = new javax.swing.JLabel();
+		heightLabel = new javax.swing.JLabel();
+		widthTF = new javax.swing.JTextField();
+		heightTF = new javax.swing.JTextField();
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 		setTitle("Input-GUI");
@@ -201,6 +212,22 @@ public class GUI extends javax.swing.JFrame {
 				angleIntervalTFActionPerformed(evt);
 			}
 		});
+			
+			outputLabel.setText("Ausgabefenster:");
+			outputLabel.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+			widthLabel.setText("Breite");
+			widthLabel.setVerticalAlignment(javax.swing.JTextField.BOTTOM);
+			heightLabel.setText("Hoehe");
+			heightLabel.setVerticalAlignment(javax.swing.JTextField.BOTTOM);
+			
+			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+			int width = (int)screenSize.getWidth()-100;
+			int height = (int)screenSize.getHeight()-100;
+			widthTF.setText(java.util.Objects.toString(width));
+			widthTF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+			heightTF.setText(java.util.Objects.toString(height));
+			heightTF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+		
 		
 		//pack();
 		
@@ -292,6 +319,31 @@ public class GUI extends javax.swing.JFrame {
 	    pane.add(searchButton);
 	    size = searchButton.getPreferredSize();
 	    searchButton.setBounds(400, 280, size.width, size.height);
+	    
+	    pane.add(outputLabel);
+	    size = outputLabel.getPreferredSize();
+	    outputLabel.setBounds(500, 280,  size.width, size.height);
+	    
+	    pane.add(widthLabel);
+	    size = widthLabel.getPreferredSize();
+	    widthLabel.setBounds(600, 260,  size.width, size.height);
+	    
+	    pane.add(heightLabel);
+	    size = heightLabel.getPreferredSize();
+	    heightLabel.setBounds(670, 260,  size.width, size.height);
+	    
+	    pane.add(widthTF);
+	    size = widthTF.getPreferredSize();
+	    widthTF.setBounds(600, 280,  size.width+20, size.height);
+	    
+	    pane.add(heightTF);
+	    size = heightTF.getPreferredSize();
+	    heightTF.setBounds(670, 280,  size.width+20, size.height);
+	    
+	    
+	    
+	    
+	    
 
 
 
@@ -316,6 +368,23 @@ public class GUI extends javax.swing.JFrame {
 	 */
 	private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {
 		searchSearchobject();
+		//remove later, test!
+		int numberObjects = (int)(Math.random()*10+40); 
+		System.out.println(numberObjects);
+
+		double lenInt = (int)(Math.random()*9+1)+(int)(Math.random()*90)*0.01;
+		double angInt = (int)(Math.random()*9+1)+(int)(Math.random()*90)*0.01;
+		List<Foundobject> foundList = new ArrayList<Foundobject>();
+		String[] pics={"D:\\Informatik\\TortoiseOrdner\\3D-Modelle\\trunk\\resources\\cube_100x100x100.png","D:\\Informatik\\TortoiseOrdner\\3D-Modelle\\trunk\\resources\\cube_hole_100x100x100.png",""};
+		
+		for(int i=0;i<numberObjects;i++) {
+			Foundobject f = new Foundobject((Integer)(int)(Math.random()*1000),(double)(int)(Math.random()*lenInt*100)/100,(double)(int)(Math.random()*angInt*100)/100,pics[(int)(Math.random()*pics.length)],null);
+			foundList.add(f);
+		}
+		
+		outputGUI outg3 = new outputGUI(foundList,lenInt,angInt,Integer.valueOf(widthTF.getText()),Integer.valueOf(heightTF.getText()));
+		outg3.setVisible(true);
+		
 	}
 
 	private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {

@@ -165,12 +165,14 @@ public Class<?> getColumnClass(int column) {
 
     
 
-    public outputGUI(List<Foundobject> foundList, double lenInt, double angInt ) {
+    public outputGUI(List<Foundobject> foundList, double lenInt, double angInt, int width, int height ) {
 
 
     	this.lenInt = lenInt;
     	this.angInt = angInt;
-    	this.foundList = foundList;    	
+    	this.foundList = foundList;
+    	this.width=width;
+    	this.height=height;
     	setContentPane(pane);
 
         tm.setRowCount(foundList.size());
