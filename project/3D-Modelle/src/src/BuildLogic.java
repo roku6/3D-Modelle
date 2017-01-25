@@ -52,6 +52,7 @@ public class BuildLogic
 	public ArrayList<PointExt<Double>> getPointExtList(){return pointExtList;}
 	public ArrayList<Edge<Double>> getEdgeList() 		{return edgeList;}
 	
+	
 	public void setaOBJ(OBJ aOBJ) 										{this.aOBJ = aOBJ;}
 	public void setPointExtList(ArrayList<PointExt<Double>> pointList) 	{this.pointExtList = pointList;}
 	public void setEdgeList(ArrayList<Edge<Double>> edgeList) 			{this.edgeList = edgeList;}
@@ -75,7 +76,7 @@ public class BuildLogic
 		aOBJ.load(filename);
 		//System.out.println(aOBJ.toString());
 	}
-	public void createFigure()
+	public GeometricFigure createFigure()
 	{
 		sortAll();
 		removeDoubles();
@@ -85,10 +86,12 @@ public class BuildLogic
 		createNormalVertexList();
 		fillCornerPointList();
 		changeCornerNeighbours();
-		System.out.println("Size2: " + cornerPointExtList.size() + " ");
-		printConnections();
+		//System.out.println("Size2: " + cornerPointExtList.size() + " ");
+		//printConnections();
 		fillRDL();
-		System.out.println(aRelationsDefinitionList.toString());
+		GeometricFigure figureCreated = new GeometricFigure (this.aRelationsDefinitionList, 1,"testobject","path");
+		return figureCreated;
+		//System.out.println(aRelationsDefinitionList.toString());
 		//saveToDatabase();
 	}
 		

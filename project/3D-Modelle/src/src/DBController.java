@@ -4,6 +4,7 @@ package src;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -24,7 +25,7 @@ import org.neo4j.unsafe.batchinsert.BatchInserters;
  * and the shutdown method once your transactions are done.
  *  
  *  
- *  TODO drop constructor? to be discussed 
+ *   
  *
  */
 public class DBController {
@@ -32,10 +33,10 @@ public class DBController {
 	//Members
 	private static DBController instance;
 	private static File directory;
-	private static GraphDatabaseService graphDb;
-	private static ArrayList<Integer> usedIds;
-	private static enum FigureLabels implements Label {EDGE;};
-	private static enum FigureRelTypes implements RelationshipType{CONNECTED;};
+	private GraphDatabaseService graphDb;
+	private ArrayList<Integer> usedIds = new ArrayList<Integer>();
+	private enum FigureLabels implements Label {EDGE;};
+	private enum FigureRelTypes implements RelationshipType{CONNECTED;};
 	//Constructors
 	/**
 	 * Constructor. Creates an DBController, sets up a Neo4J DB at given directory and initializes it. 
@@ -58,7 +59,7 @@ public class DBController {
 	 * 
 	 * @param GraphDatabaseService GDBService to link the hook to
 	 */
-	private static void registerShutdownHook( final GraphDatabaseService graphDb )
+	private void registerShutdownHook( final GraphDatabaseService graphDb )
 	{
 	    Runtime.getRuntime().addShutdownHook( new Thread()
 	    {
@@ -76,11 +77,15 @@ public class DBController {
 	*PROBABLY INEFFICIENT
 	*When extending this application, consider reworking the id-management to fit large DBs
 	*/
-	private static void fetchUsedIds(){
-		usedIds.clear();
+	@SuppressWarnings("unused")
+	private void fetchUsedIds(){//TODO foreachremaining throws nullpointerexception bcs action is null
+		if(!(usedIds.isEmpty())){
+			usedIds.clear();
+		}
 		ResourceIterator<Integer> tempIterator = executeQuery("MATCH (n) RETURN DISTINCT n.OBJECT_ID").columnAs("OBJECT_ID");
 		tempIterator.forEachRemaining(usedIds::add);
 		tempIterator.close();
+		
 		Collections.sort(usedIds);
 	}
 	
@@ -93,20 +98,22 @@ public class DBController {
 	 * @param id2 EdgeId
 	 * @return the new Double Id: ObjectId.EgdeId
 	 */
-	@SuppressWarnings("null")
-	private static Long concatIds(Integer id1, Integer id2){
-		String id2ZeroPadding = null;
+	private Long concatIds(Integer id1, Integer id2){
+		String id2ZeroPadding ="";
 		int zeroesToAdd = 5-id2.toString().length();
 		for(int i = 0; i < zeroesToAdd; i++){
-			id2ZeroPadding.concat("0");
+			id2ZeroPadding = id2ZeroPadding.concat("0");
 		}
-		id2ZeroPadding.concat(id2.toString());
+		id2ZeroPadding = id2ZeroPadding.concat(id2.toString());
 		
-		Long newId = Long.parseLong( id1.toString().concat(".").concat(id2ZeroPadding) );
+		String temp = id1.toString();
+		
+		temp= temp.concat(id2ZeroPadding);
+		
+		Long newId = Long.valueOf( temp.trim());
 		return newId;
 	}
 	
-	//Public
 	
 	/**
 	 * Instantiate a GraphDatabaseService to
@@ -114,12 +121,14 @@ public class DBController {
 	 * 
 	 * @param directory Target directory to initialize DB
 	 */
-	public static void initializeDB(){
+	private void initializeDB(){
 		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase( directory );
 		registerShutdownHook( graphDb );
 		
-		fetchUsedIds();
+		//fetchUsedIds();
 	}
+	
+	//Public
 	
 	/**
 	 * Method to realize Singleton-Pattern
@@ -141,7 +150,7 @@ public class DBController {
 	 * @param cypher CQL code to execute
 	 * @return query result as Neo4J {@code Result} type
 	 */
-	public static Result executeQuery(String cypher){
+	public Result executeQuery(String cypher){
 		Result result;
 		 try ( Transaction tx = graphDb.beginTx() )
 		 {
@@ -156,9 +165,9 @@ public class DBController {
 	 * Removes all nodes with given Object-ID from DB
 	 * @param id Object ID to remove
 	 */
-	public static void removeByOBJ_ID(Integer id){
+	public void removeByOBJ_ID(Integer id){
 		String cypher = "MATCH (n) WHERE n.OBJECT_ID = ";
-		cypher.concat(id.toString() + " DETACH DELETE n");
+		cypher=cypher.concat(id.toString() + " DETACH DELETE n");
 		
 		executeQuery(cypher);
 	}
@@ -174,20 +183,21 @@ public class DBController {
 	 *
 	 * @param figure An object defining the object containing edges and their relations, ids, description etc
 	 */
-	@SuppressWarnings("null")
-	public static void writeObjToDB(GeometricFigure figure ) throws Exception {
+	public void writeObjToDB(GeometricFigure figure ) throws Exception {
 		
-		if (usedIds.contains(figure.getObjectID())) {
-			throw new Exception("ID already used. Check the usedIds ArrayList of your DBController and use the GeoFigure ID setter to adjust");
-			}
+	//if (usedIds.contains(figure.getObjectID())) {
+	//	throw new Exception("ID already used. Check the usedIds ArrayList of your DBController and use the GeoFigure ID setter to adjust");
+	//	}  
 		
 		ArrayList<RelationsDefinition> relationsArray = figure.getEdgeRelations();
         
+		graphDb.shutdown();
+		
 		new BatchInserters();
 		BatchInserter inserter = BatchInserters.inserter(directory);
 		Long edgeId1, edgeId2;
 		Edge<?> edge1, edge2;
-		Map<String, Object> properties = null;
+		Map<String, Object> properties = new HashMap<String, Object> ();
 		
 		try{
 			//schema index not needed if this works as intended
@@ -206,7 +216,7 @@ public class DBController {
 					properties.put("LENGTH", edge1.getLength());
 					properties.put("URL", figure.getPictureURL());
 					properties.put("DESCRIPTION", figure.getDescription());
-					properties.put("OBJECT_ID", edgeId1.intValue());
+					properties.put("OBJECT_ID", figure.getObjectID());
 					
 					inserter.createNode(edgeId1, properties, FigureLabels.EDGE);
 					
@@ -217,7 +227,7 @@ public class DBController {
 					properties.put("LENGTH", edge2.getLength());
 					properties.put("URL", figure.getPictureURL());
 					properties.put("DESCRIPTION", figure.getDescription());
-					properties.put("OBJECT_ID", edgeId2.intValue());
+					properties.put("OBJECT_ID", figure.getObjectID());
 					
 					inserter.createNode(edgeId2, properties, FigureLabels.EDGE);
 					
@@ -239,6 +249,8 @@ public class DBController {
 			inserter.shutdown();
 		}
 		inserter.shutdown();
+		
+		initializeDB();
 	}
 	
 	/**
@@ -246,11 +258,9 @@ public class DBController {
 	 * you no longer plan on using transactions.
 	 * 
 	 */
- 	public static void shutdownDB(){
+ 	public void shutdownDB(){
 		graphDb.shutdown();
 		}
- 	
- 	
  	
  	
 	//Getters
@@ -268,5 +278,7 @@ public class DBController {
 	public ArrayList<Integer> getUsedIds() {
 		return usedIds;
 	}
+
 	
 }
+
