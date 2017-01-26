@@ -54,7 +54,7 @@ public class GUI extends javax.swing.JFrame {
 	private javax.swing.JLabel heightLabel;
 	private javax.swing.JTextField widthTF;
 	private javax.swing.JTextField heightTF;
-	private Modelle2 modelle;
+	private Modelle modelle;
 
 	List<String[]> namesList;
 	int width;
@@ -65,7 +65,7 @@ public class GUI extends javax.swing.JFrame {
 	 */
 	public GUI() {
 		
-		this.modelle = Modelle2.getInstance();
+		this.modelle = Modelle.getInstance();
 		initComponents();
 		Insets insets = getInsets();
 		setSize(830 + insets.left + insets.right,
@@ -832,8 +832,8 @@ public class GUI extends javax.swing.JFrame {
 
 			// System.out.println("getSelectedFiles() : " +
 			// chooser.getSelectedFiles());
-			 BuildLogic aBuildLogic = BuildLogic.getBuildLogic();
-			 aBuildLogic.createOBJ(chooser.getSelectedFile().getPath());
+			// BuildLogic aBuildLogic = BuildLogic.getBuildLogic();
+			// aBuildLogic.createOBJ(chooser.getSelectedFile().getPath());
 			 //aBuildLogic.createFigure();
 
 			// 
@@ -919,7 +919,7 @@ public class GUI extends javax.swing.JFrame {
 	 * @param args
 	 *            the arguments
 	 */
-/*	public static void main(String args[]) {
+	public static void main(String args[]) {
 
 
 		java.awt.EventQueue.invokeLater(new Runnable() {
@@ -927,6 +927,6 @@ public class GUI extends javax.swing.JFrame {
 				new GUI().setVisible(true);
 			}
 		});
-	}*/
+	}
 
 }

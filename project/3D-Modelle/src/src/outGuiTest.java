@@ -20,8 +20,8 @@ public class outGuiTest {
 			foundList.add(f);
 		}
 		
-		outputGUI outg3 = new outputGUI(foundList,lenInt,angInt);
-		outg3.setVisible(true);
+		//outputGUI outg3 = new outputGUI(foundList,lenInt,angInt);
+		//outg3.setVisible(true);
 		
 
 

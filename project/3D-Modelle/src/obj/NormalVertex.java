@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Login
+ * @author Robert Külpmann
  *
  * @param <T>
  */

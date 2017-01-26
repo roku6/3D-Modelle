@@ -3,7 +3,7 @@ package src;
 import java.util.ArrayList;
 
 /**
- * @author Lennard Flegel
+ * @author Lennard Flegel, Robert Külpmann
  *
  * Simple class providing a data structure to represent a geom. object for easy access whilst writing to DB
  *
@@ -11,8 +11,9 @@ import java.util.ArrayList;
 public class GeometricFigure
 {
 	//Members
-	private ArrayList<RelationsDefinition> edgeRelations;
+	public static Integer number = 0;
 	private Integer objectID;
+	private ArrayList<RelationsDefinition> edgeRelations;
 	private String description;
 	private String pictureURL;
 	
@@ -27,6 +28,21 @@ public class GeometricFigure
 			String pictureURL) {
 		this.edgeRelations = edgeRelations;
 		this.objectID = objectID;
+		this.description = description;
+		this.pictureURL = pictureURL;
+	}
+
+	/**
+	 * 
+	 * @param edgeRelations
+	 * @param description
+	 * @param pictureURL
+	 */
+	public GeometricFigure(ArrayList<RelationsDefinition> edgeRelations, String description,
+			String pictureURL) {
+		this.edgeRelations = edgeRelations;
+		this.objectID = number;
+		GeometricFigure.number++;
 		this.description = description;
 		this.pictureURL = pictureURL;
 	}
