@@ -9,6 +9,7 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.Dimension;
 import java.util.Objects;
+import java.util.Observable;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -34,11 +35,13 @@ public class GUI extends javax.swing.JFrame {
 	private javax.swing.JButton readDirButton;
 	private javax.swing.JButton readFileButton;
 	private javax.swing.JButton removeButton;
+	private javax.swing.JButton removeObjFromDB;
 	private javax.swing.JButton searchButton;
 	private javax.swing.JLabel toEdgeLabel;
 	private javax.swing.JTextField toEdgeTF;
 	private javax.swing.DefaultListModel listModel = new javax.swing.DefaultListModel();
 	private List<Searchobject> searchList = new ArrayList<Searchobject>();
+	 
 	private javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
 	private javax.swing.filechooser.FileNameExtensionFilter objFilter = new javax.swing.filechooser.FileNameExtensionFilter(
 			"OBJ-Dateien", "obj");
@@ -51,12 +54,18 @@ public class GUI extends javax.swing.JFrame {
 	private javax.swing.JLabel heightLabel;
 	private javax.swing.JTextField widthTF;
 	private javax.swing.JTextField heightTF;
+	private Modelle2 modelle;
+
+	List<String[]> namesList;
+	int width;
+	int height;
 
 	/**
 	 * Constructor
 	 */
 	public GUI() {
-
+		
+		this.modelle = Modelle2.getInstance();
 		initComponents();
 		Insets insets = getInsets();
 		setSize(830 + insets.left + insets.right,
@@ -94,6 +103,13 @@ public class GUI extends javax.swing.JFrame {
 		heightLabel = new javax.swing.JLabel();
 		widthTF = new javax.swing.JTextField();
 		heightTF = new javax.swing.JTextField();
+		namesList = new ArrayList<String[]>();
+		removeObjFromDB = new javax.swing.JButton();
+		
+
+			
+	
+		
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 		setTitle("Input-GUI");
@@ -182,6 +198,15 @@ public class GUI extends javax.swing.JFrame {
 				readDirButtonActionPerformed(evt);
 			}
 		});
+		
+		removeObjFromDB.setText("Objekt loeschen");
+		removeObjFromDB.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				removeObjFromDBActionPerformed(evt);
+			}
+		});
+		
+		
 
 		lenIntervalLabel.setText("Laengenintervall:");
 
@@ -221,8 +246,8 @@ public class GUI extends javax.swing.JFrame {
 			heightLabel.setVerticalAlignment(javax.swing.JTextField.BOTTOM);
 			
 			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-			int width = (int)screenSize.getWidth()-100;
-			int height = (int)screenSize.getHeight()-100;
+		    width = (int)screenSize.getWidth()-100;
+			height = (int)screenSize.getHeight()-100;
 			widthTF.setText(java.util.Objects.toString(width));
 			widthTF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 			heightTF.setText(java.util.Objects.toString(height));
@@ -308,11 +333,16 @@ public class GUI extends javax.swing.JFrame {
 
 
 	    pane.add(readDirButton);
+	    size = removeObjFromDB.getPreferredSize();
 	    size = readDirButton.getPreferredSize();
 	    readDirButton.setBounds(610,125 , size.width, size.height);
 
 	    pane.add(readFileButton);
 	    readFileButton.setBounds(610, 85, size.width, size.height);
+	    
+	    pane.add(removeObjFromDB);
+	    size = removeObjFromDB.getPreferredSize();
+	    removeObjFromDB.setBounds(610, 165, size.width, size.height);
 
 
 
@@ -384,6 +414,7 @@ public class GUI extends javax.swing.JFrame {
 		
 		outputGUI outg3 = new outputGUI(foundList,lenInt,angInt,Integer.valueOf(widthTF.getText()),Integer.valueOf(heightTF.getText()));
 		outg3.setVisible(true);
+
 		
 	}
 
@@ -410,6 +441,10 @@ public class GUI extends javax.swing.JFrame {
 	private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {
 		if (editClicked) replaceSearchobject(index);
 		else addSearchobject(searchList.size());
+		//searchlistobs.changeData(searchList);
+		//observable.notifyObservers(searchList);
+		//remove later
+		modelle.search(searchList,angleInterval,lenInterval,width,height);
 	}
 
 	/**
@@ -506,6 +541,10 @@ public class GUI extends javax.swing.JFrame {
 	 */
 	private void readDirButtonActionPerformed(java.awt.event.ActionEvent evt) {
 		readDir();
+	}
+	
+	private void removeObjFromDBActionPerformed(java.awt.event.ActionEvent evt) {
+		removeObjFromDB();
 	}
 
 	// logic methods
@@ -680,7 +719,7 @@ public class GUI extends javax.swing.JFrame {
 			if(listModel.size() <= index)listModel.add(index,newLine);
 			else listModel.setElementAt(newLine,index);
 			//rework?
-			if(!edgeExists(toEdgeTF)) {
+			if(!edgeExists(toEdgeTF) && id2!=null) {
 				searchObj = new Searchobject(id2, null, null, null);
 				searchList.add(index+1,searchObj);
 				newLine = "Kante " + id2 + ":      " + "Laenge: " + null + ",      Winkel: " + null
@@ -830,7 +869,7 @@ public class GUI extends javax.swing.JFrame {
 	 */
 	private void matchTxtPng(File[] fl) {
 		//rem
-		List<String> imageList = new ArrayList<String>();
+		
 
 		for (File file : fl) {
 			String nameWithObj = java.util.Objects.toString(file);
@@ -849,14 +888,30 @@ public class GUI extends javax.swing.JFrame {
 			System.out.println(nameWithObj);
 			System.out.println(nameWithTxt);
 			System.out.println(nameWithPng);
-			//rem
-			imageList.add(nameWithPng);
+
+			String[] names = new String[3];
+			names[0]=nameWithObj;
+			names[1]=nameWithTxt;
+			names[2]=nameWithPng;
+			namesList.add(names);
+			
 		}
 		//remove later
 		//outputGUI outg2 = new outputGUI(imageList);
 		//outg2.setVisible(true);
 
 	}
+	
+	private void removeObjFromDB() {
+		 String id = javax.swing.JOptionPane.showInputDialog("Objekt-ID eingeben:");
+		 modelle.deleteObjFromDB(id);
+		
+		
+		
+	}
+	
+
+	
 
 	/**
 	 * The main method.
@@ -864,7 +919,7 @@ public class GUI extends javax.swing.JFrame {
 	 * @param args
 	 *            the arguments
 	 */
-	public static void main(String args[]) {
+/*	public static void main(String args[]) {
 
 
 		java.awt.EventQueue.invokeLater(new Runnable() {
@@ -872,6 +927,6 @@ public class GUI extends javax.swing.JFrame {
 				new GUI().setVisible(true);
 			}
 		});
-	}
+	}*/
 
 }
