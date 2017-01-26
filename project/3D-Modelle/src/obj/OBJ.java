@@ -123,6 +123,12 @@ public class OBJ
 		return aPoint;
 	}
 	
+	/**
+	 * 
+	 * @param splitted
+	 * @param size
+	 * @return
+	 */
 	private String[] convertNegativeZeros(String splitted[], int size)
 	{
 		for (int i = 1; i<size+1;i++)
@@ -286,6 +292,9 @@ public class OBJ
 		}
 	}
 	
+	/**
+	 * Overrides toString Method
+	 */
 	@Override
 	public String toString()
 	{

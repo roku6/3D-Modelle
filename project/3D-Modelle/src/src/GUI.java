@@ -793,8 +793,8 @@ public class GUI extends javax.swing.JFrame {
 
 			// System.out.println("getSelectedFiles() : " +
 			// chooser.getSelectedFiles());
-			 BuildLogic aBuildLogic = BuildLogic.getBuildLogic();
-			 aBuildLogic.createOBJ(chooser.getSelectedFile().getPath());
+			 //BuildLogic aBuildLogic = BuildLogic.getBuildLogic();
+			 //aBuildLogic.createOBJ(chooser.getSelectedFile().getPath());
 			 //aBuildLogic.createFigure();
 
 			// 
@@ -830,7 +830,8 @@ public class GUI extends javax.swing.JFrame {
 	 */
 	private void matchTxtPng(File[] fl) {
 		//rem
-		List<String> imageList = new ArrayList<String>();
+		String[] urls = new String[3];
+		List<String[]> urlList = new ArrayList<String[]>();
 
 		for (File file : fl) {
 			String nameWithObj = java.util.Objects.toString(file);
@@ -850,28 +851,15 @@ public class GUI extends javax.swing.JFrame {
 			System.out.println(nameWithTxt);
 			System.out.println(nameWithPng);
 			//rem
-			imageList.add(nameWithPng);
+			urls[0] = nameWithObj;
+			urls[0] = nameWithTxt;
+			urls[0] = nameWithPng;
+			
+			urlList.add(urls);
 		}
 		//remove later
 		//outputGUI outg2 = new outputGUI(imageList);
 		//outg2.setVisible(true);
 
 	}
-
-	/**
-	 * The main method.
-	 *
-	 * @param args
-	 *            the arguments
-	 */
-	public static void main(String args[]) {
-
-
-		java.awt.EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				new GUI().setVisible(true);
-			}
-		});
-	}
-
 }

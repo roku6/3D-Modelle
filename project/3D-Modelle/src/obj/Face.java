@@ -18,7 +18,7 @@ package obj;
 import java.util.ArrayList;
 
 /**
- * @author Login
+ * @author Robert Külpmann
  *
  */
 public class Face 
@@ -42,6 +42,7 @@ public class Face
 		this.pointExtList = aPointExtList;
 	}
 	
+	@Override
 	public String toString()
 	{
 		String aString = "" + this.getId() + "\t";

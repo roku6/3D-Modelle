@@ -21,6 +21,12 @@ package obj;
 public abstract class Operation
 {
 
+	/**
+	 * Generalized Setterfunction
+	 * 
+	 * @param value1
+	 * @return
+	 */
 	public static <T extends Number> T set(T value1)
 	{
 		Class<? extends Number> cls = value1.getClass();
@@ -43,6 +49,13 @@ public abstract class Operation
 		return value1;
 	}
 
+	/**
+	 * Multiplies two NumberObjects
+	 * 
+	 * @param value1
+	 * @param value2
+	 * @return
+	 */
 	public static <T extends Number, L extends Number> T multiply2(T value1, L value2)
 	{
 		Class<? extends Number> cls = value1.getClass();
@@ -66,6 +79,13 @@ public abstract class Operation
 		return value1;
 	}
 	
+	/**
+	 * divides two NumberObjects
+	 * 
+	 * @param value1
+	 * @param value2
+	 * @return
+	 */
 	public static <T extends Number, L extends Number> T divide2(T value1, L value2)
 	{
 		Class<? extends Number> cls = value1.getClass();
@@ -93,6 +113,13 @@ public abstract class Operation
 		return value1;
 	}
 
+	/**
+	 * Adds two NumberObjects
+	 * 
+	 * @param value1
+	 * @param value2
+	 * @return
+	 */
 	public static <T extends Number> T add2(T value1, T value2)
 	{
 		Class<? extends Number> cls = value1.getClass();
@@ -116,6 +143,13 @@ public abstract class Operation
 		return value1;
 	}
 
+	/**
+	 * Subtracts second NumberObject from first
+	 * 
+	 * @param value1
+	 * @param value2
+	 * @return
+	 */
 	public static <T extends Number> T sub2(T value1, T value2)
 	{
 		Class<? extends Number> cls = value1.getClass();
@@ -139,6 +173,13 @@ public abstract class Operation
 		return value1;
 	}
 	
+	/**
+	 * calculates the first NumberObject to the power of the second NumberObject
+	 * 
+	 * @param value1
+	 * @param value2
+	 * @return
+	 */
 	public static <T extends Number, L extends Number> T powerOf(T value1, L value2)
 	{
 		Class<? extends Number> cls = value1.getClass();
@@ -165,6 +206,13 @@ public abstract class Operation
 		return value1;
 	}
 	
+	/**
+	 * 
+	 * 
+	 * @param value
+	 * @param length
+	 * @return
+	 */
 	public static <T extends Number, L extends Number> L squareRoot(T value, L length)
 	{
 		Double temp;

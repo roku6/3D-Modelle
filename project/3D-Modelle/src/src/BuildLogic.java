@@ -1,6 +1,6 @@
 /**
  * DONE: 
- * 	Erased same values (vertecies, textures, normals)
+ * 	Erased same values (vertecies, textures, normals, faces)
  * 	Filled the pointList with every single Point (every Point just once)
  *  Added all neighbours to every single Point
  *  Created a List of cornerPoints
@@ -8,7 +8,7 @@
  *  Connected cornerPoints with each other(lineTracking)
  *  Created edges 
  *  Filled RelationDefinition
- * TODO:  + remove duplicated Faces (later), look for possible Errors
+ * TODO: look for possible Errors
  * BUGS: a bug occured with generated Cube
  * 
  * @author Robert Külpmann
@@ -17,6 +17,10 @@
 
 package src;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -39,6 +43,7 @@ public class BuildLogic
 	private static BuildLogic instance = null;
 	
 	private OBJ aOBJ;
+	private GeometricFigure aFigure;
 	private ArrayList<PointExt<Double>> pointExtList = new ArrayList<>();
 	private ArrayList<Edge<Double>> edgeList = new ArrayList<>();
 	private ArrayList<RelationsDefinition> aRelationsDefinitionList = new ArrayList<>();
@@ -49,6 +54,7 @@ public class BuildLogic
 	private ArrayList<PointExt<Double>> cornerPointExtList = new ArrayList<>();
 	
 	public OBJ getaOBJ() 								{return aOBJ;}
+	public GeometricFigure getGeometricFigure()			{return aFigure;}
 	public ArrayList<PointExt<Double>> getPointExtList(){return pointExtList;}
 	public ArrayList<Edge<Double>> getEdgeList() 		{return edgeList;}
 	
@@ -59,6 +65,10 @@ public class BuildLogic
 
 	private BuildLogic(){}
 	
+	/**
+	 * Singleton Pattern implementation
+	 * @return the only instance of the BuildLogic
+	 */
 	public static BuildLogic getBuildLogic()
 	{
 		if (BuildLogic.instance == null) BuildLogic.instance = new BuildLogic(); 
@@ -70,13 +80,63 @@ public class BuildLogic
 	 * creates OBJ File
 	 * @param filename
 	 */
-	public void createOBJ(String filename)
+	private void loadOBJ(String filename)
 	{
 		aOBJ = new OBJ();
 		aOBJ.load(filename);
+		
 		//System.out.println(aOBJ.toString());
 	}
-	public GeometricFigure createFigure()
+		
+	/**
+	 * This function reads a Filename of a Description file and returns the Description as a String
+	 * 
+	 * @param descriptionURL
+	 * @return description
+	 */
+	private String loadDescription(String descriptionURL)
+	{
+		String s = "", description = "";
+		try
+		{
+			File aFile = new File(descriptionURL);
+			FileReader fr = new FileReader(aFile);
+			BufferedReader br = new BufferedReader(fr);
+			while((s = br.readLine()) != null)
+			{
+				description.concat(s);
+			}
+			br.close();
+			fr.close();
+			return description;
+		}
+		catch(IOException e)
+		{
+			System.out.println("Can't load File!");
+			description = "No Description available.";
+			return description;
+		}
+	}
+	
+	/**
+	 * Public Function which will load an Object and create the GeometricFigure from it
+	 * 
+	 * @param objURL
+	 * @param descriptionURL
+	 * @param pictureURL
+	 */
+	public void buildAFigure(String objURL, String descriptionURL, String pictureURL)
+	{
+		loadOBJ(objURL);
+		createFigure(descriptionURL, pictureURL);
+	}	
+	/**
+	 * This function creates the Geometric Figure and saves it in the global geometricFigure variable
+	 * 
+	 * @param descriptionURL
+	 * @param pictureURL
+	 */
+	private void createFigure(String descriptionURL, String pictureURL)
 	{
 		sortAll();
 		removeDoubles();
@@ -86,15 +146,16 @@ public class BuildLogic
 		createNormalVertexList();
 		fillCornerPointList();
 		changeCornerNeighbours();
+		remove1DLines();
 		//System.out.println("Size2: " + cornerPointExtList.size() + " ");
 		//printConnections();
 		fillRDL();
-		GeometricFigure figureCreated = new GeometricFigure (this.aRelationsDefinitionList, 1,"testobject","path");
-		return figureCreated;
 		//System.out.println(aRelationsDefinitionList.toString());
-		//saveToDatabase();
+		aFigure = new GeometricFigure(aRelationsDefinitionList, loadDescription(descriptionURL), pictureURL);
 	}
-		
+	/**
+	* This Function removes all doubleVertecies existing in the VertexList
+	*/
 	private void removeDoubleVertecies()
 	{		
 		Vector4id<Double> oldVector4id = null;	//lastVertex (Vertex[i-1])
@@ -134,7 +195,9 @@ public class BuildLogic
 			}
 		}
 	}
-	
+	/**
+	 * This Function removes all doubleTextures existing in the TextureList
+	 */
 	private void removeDoubleTextures()
 	{
 		
@@ -175,7 +238,9 @@ public class BuildLogic
 			}
 		}
 	}
-
+	/**
+	 * This Function removes all doubleNormals existing in the NormalList
+	 */
 	private void removeDoubleNormals()
 	{		
 		Vector4id<Double> oldVector4id = null;	//lastVertex (Vertex[i-1])
@@ -215,7 +280,9 @@ public class BuildLogic
 			}
 		}
 	}
-	
+	/**
+	 * This function removes all doublePoints, existing in the PointList
+	 */
 	private void removeDoublePoints()
 	{
 		for(Face aFace : aOBJ.getFaceList())
@@ -233,58 +300,53 @@ public class BuildLogic
 		}
 	}
 	
-	/**
-	 *	Not completed! 
-	 *  Is not so important right now! 
+	/*
+	 *  Algorithm:
+	 *  Wähle ein Face1 von allen Faces
+	 *   Wähle ein Face2 von allen Faces
+	 *    Wenn sie nicht dasselbe Face sind(id Vergleich)
+	 *     überprüfe, ob die PunkteIds gleich sind
+	 *     ist ein Punkt gleich, addiere 1
+	 *     ergibt sich die Zahl der Punkte entferne das 2. Face aus der Liste
+	 *      
 	 */
 	private void removeDoubleFaces()
 	{
-		Face oldVector4id = null;	//lastFace (Face[i-1])
-		Face actVector4id = null;	//activeFace (Face[i])
 		//Iteration over the list of Faces
-		Iterator<Face> iterator = aOBJ.getFaceList().iterator();
+		ListIterator<Face> iterator = aOBJ.getFaceList().listIterator();
 		while (iterator.hasNext())
-		{
-			//saves last activeVertex in oldVertex and changes activeVertex to the next Vertex
-			if (actVector4id == null) 
-			{
-				oldVector4id = iterator.next();
-				actVector4id = iterator.next();
-			}
-			else 
-			{
-				oldVector4id = actVector4id;
-				actVector4id = iterator.next();
-			}
-			/*
-			if (Double.compare(oldVector4id.getX(), actVector4id.getX()) == 0 && 
-				Double.compare(oldVector4id.getY(), actVector4id.getY()) == 0 &&
-				Double.compare(oldVector4id.getZ(), actVector4id.getZ()) == 0)
-			{
-				//Iteration over all Faces
-				for (int i = 0; i<aOBJ.getFaceList().size(); i++)
+		{			
+			Face aFace = iterator.next();
+			//Iteration over all Faces
+			ListIterator<Face> iterator2 = aOBJ.getFaceList().listIterator();
+			while (iterator2.hasNext())
+			{			
+				Face aFace2 = iterator2.next();
+				if (aFace.getId() != aFace2.getId()) 
 				{
-					for (int j = 0; j<aOBJ.getFaceList().get(i).getPointList().size(); j++)
+					int anz = 0;
+					for (PointExt<Double> aPoint: aFace.getPointExtList())
 					{
-						if (aOBJ.getFaceList().get(i).getPointList().get(j).getANormal().getId() == actVector4id.getId()) 
+						for (PointExt<Double> aPoint2: aFace2.getPointExtList())
 						{
-							aOBJ.getFaceList().get(i).getPointList().get(j).getANormal().setId(oldVector4id.getId());
-						}					
+							if (aPoint2.equals(aPoint)) anz++;
+						}						
 					}
+					if (anz == aFace.getPointExtList().size()) iterator2.remove();
 				}
-				iterator.remove();
 			}
-			*/
 		}
 	}
-	
+	/**
+	 * This Function removes all Doubles, using different subfunctions
+	 */
 	private void removeDoubles()
 	{
 		removeDoubleVertecies();
 		removeDoubleTextures();
 		removeDoubleNormals();
 		removeDoublePoints();
-		//removeDoubleFaces();
+		removeDoubleFaces();		//needs testing
 	}
 	
 	/**
@@ -332,7 +394,6 @@ public class BuildLogic
 			}
 		}
 	}
-
 	
 	/*
 	 * Algorithm:
@@ -444,22 +505,25 @@ public class BuildLogic
 			else if (aVertexNormal.getNormalMap().size() == 3)  aCornerVertexList.add(aVertexNormal);
 			else 
 			{
+				System.out.println("OBJ - CreateVertexList-Error!");
 				System.out.println(aVertexNormal.getNormalMap().size() + " Normalen - Fehler! Zuviele Normalen!!");
 				System.out.println(aVertexNormal.getNormalMap().toString());
 				aCornerVertexList.add(aVertexNormal);
 			}
 		}
-		System.out.println("OriginalSize: " + aVertexNormalList.size());
-		System.out.println("1Size: " + a1NormalVertexList.size());
-		System.out.println("2Size: " + aEdgeVertexList.size());
-		System.out.println("3Size: " + aCornerVertexList.size());
+		//System.out.println("OriginalSize: " + aVertexNormalList.size());
+		//System.out.println("1Size: " + a1NormalVertexList.size());
+		//System.out.println("2Size: " + aEdgeVertexList.size());
+		//System.out.println("3Size: " + aCornerVertexList.size());
 
 	}
-	
+	/**
+	 * This function adds every possible cornerPoint to a List
+	 */
 	private void fillCornerPointList()
 	{
-		System.out.println("Size pointExtList: " + pointExtList.size());
-		System.out.println("Size aCornerVertexList: " + aCornerVertexList.size());
+		//System.out.println("Size pointExtList: " + pointExtList.size());
+		//System.out.println("Size aCornerVertexList: " + aCornerVertexList.size());
 		cornerPointExtList.clear();
 		for(int i = 0; i<pointExtList.size();i++)
 		{
@@ -473,16 +537,9 @@ public class BuildLogic
 			}
 		}
 	}
-	
-	
+		
 	/**
-	 * Check what kind of Edge the neighbour is
-	 * @param aPoint
-	 * @return int
-	 */
-	
-	/*
-	 * Create DirectionVector
+	 * Creates DirectionVector
 	 */
 	private Vector4id<Double> createDirectionVector(Point<Double> aStartPoint, Point<Double> aEndPoint)
 	{
@@ -493,8 +550,8 @@ public class BuildLogic
 		return dVector;
 	}
 	
-	/*
-	 * change the Neighbours of the cornerPoints to other cornerPoints
+	/**
+	 * changes the Neighbours of the cornerPoints to other cornerPoints
 	 */
 	private void changeCornerNeighbours()
 	{
@@ -524,6 +581,12 @@ public class BuildLogic
 		}
 	}
 	
+	/**
+	 * 
+	 * @param aPoint
+	 * @param dVector
+	 * @return an updated NeighbourPoint
+	 */
 	private PointExt<Double> updateCornerNeighbour(PointExt<Double> aPoint, Vector4id<Double> dVector)
 	{		
 		if (aPoint == null) System.out.println("Großes Problem!!");
@@ -580,9 +643,9 @@ public class BuildLogic
 			}
 		}
 	}
-	
+		
 	/**
-	 * Calculating all Angles
+	 * Calculating all Angles //NOT USED!
 	 * @param a
 	 * @param b
 	 * @param c
@@ -624,6 +687,33 @@ public class BuildLogic
 	}
 	
 	/**
+	 * removes all Lines from an Edge which appear twice as neighbours
+	 * If they appear twice it is a Line which is not an Edge, but lies on the surface
+	 */
+	private void remove1DLines()
+	{
+		boolean samePoint = false, removePoint = false;
+		for(PointExt<Double> aCorner : cornerPointExtList)
+		{
+			ListIterator<PointExt<Double>> iterator = aCorner.getNeighbourList().listIterator();
+			while(iterator.hasNext())
+			{
+				PointExt<Double> aPoint = iterator.next();
+				samePoint = false;
+				ListIterator<PointExt<Double>> iterator2 = aCorner.getNeighbourList().listIterator();
+				while(iterator2.hasNext())
+				{
+					PointExt<Double> aPoint2 = iterator2.next();
+					if(aPoint.equals(aPoint2) && samePoint == false) samePoint = true; 
+					else if(aPoint.equals(aPoint2) && samePoint == true) {iterator.remove(); iterator2.remove(); removePoint = true;}
+					if (removePoint == true) break;
+				}				
+				if (removePoint == true) removePoint = false; break;
+			}
+		}
+	}
+	
+	/**
 	 * Algorithm:
 	 * For each cornerPoint in cornerList
 	 *  create Edge1(cornerPoint, cornerEndPoint1)
@@ -661,11 +751,5 @@ public class BuildLogic
 			aRelationsDefinition = new RelationsDefinition(aEdge, bEdge, aCorner.getAngle());
 			aRelationsDefinitionList.add(aRelationsDefinition);
 		}
-	}
-	
-	private void saveToDatabase()
-	{
-		
-	}
-	
+	}	
 }
