@@ -20,8 +20,9 @@ public class PointExt<T extends Number> extends Point<T>
 	public ArrayList<PointExt<Double>> getCornerPointList() {return cornerPointList;}
 	public double getAngle()								{return angle;}
 	
-	public void setAngle(double angle)	{this.angle = angle;}		
-	private void setId(int id) 			{this.id = id;}
+	public void setAngle(double angle)										{this.angle = angle;}		
+	private void setId(int id) 												{this.id = id;}
+	public void setNeighbourList(ArrayList<PointExt<Double>> neighbourList)	{this.neighbourList = neighbourList;}
 	
 	/**
 	 * 

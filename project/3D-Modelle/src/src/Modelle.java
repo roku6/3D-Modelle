@@ -52,7 +52,7 @@ public static Modelle getInstance()
 		System.out.println("finished.");
 		
 		//Initialize aFigure for Testing
-		String[] urls	= {"../../resources/cube_100x100x100_Subdivided.obj", 
+		String[] urls	= {"../../resources/cube_100x100x100.obj", 
 		              	   "../../resources/cube_100x100x100.txt", 
 		              	   "../../resources/cube_100x100x100.png"};
 		urlList.add(urls);
@@ -79,7 +79,7 @@ public static Modelle getInstance()
 			}
 		}				
 		//dbCtrl.executeQuery("Create (n{OBJECT_ID : 5})");
-		dbCtrl.removeByOBJ_ID(5);
+		//dbCtrl.removeByOBJ_ID(5);
 		dbCtrl.shutdownDB();
 		
 		long tEnd = System.currentTimeMillis();

@@ -104,10 +104,13 @@ public abstract class Point<T extends Number>
 	{
 		String aString = "";
 		if (this.aVertex != null) aString += this.aVertex.getId() + "/";
+		//if (this.aVertex != null) aString += this.aVertex.toString() + "/";
 		else aString += "-/";
 		if (this.aTexture != null) aString += this.aTexture.getId() + "/";
+		//if (this.aTexture != null) aString += this.aTexture.toString() + "/";
 		else aString += "-/";
 		if (this.aNormal != null) aString += this.aNormal.getId() + "/";
+		//if (this.aNormal != null) aString += this.aNormal.toString() + "/";
 		else aString += "-/";
 		return aString;
 	}

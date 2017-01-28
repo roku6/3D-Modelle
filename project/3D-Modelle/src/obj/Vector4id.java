@@ -48,11 +48,19 @@ public class Vector4id<T extends Number> extends Vector4<T>
 		{
 			Vector4id<Double> aVector = (Vector4id<Double>) obj;
 			Vector4id<Double> aVector2 = (Vector4id<Double>) this;
+			
 			if (Math.abs(aVector.getX() - aVector2.getX()) <= epsilon &&
 				Math.abs(aVector.getY() - aVector2.getY()) <= epsilon &&
 				Math.abs(aVector.getZ() - aVector2.getZ()) <= epsilon &&
 				Math.abs(aVector.getW() - aVector2.getW()) <= epsilon
 				)
+				
+				/*
+			if (aVector.getX().compareTo(aVector2.getX()) == 0 &&
+				aVector.getY().compareTo(aVector2.getY()) == 0 &&
+				aVector.getZ().compareTo(aVector2.getZ()) == 0 &&
+				aVector.getW().compareTo(aVector2.getW()) == 0)
+				*/
 				return true;	
 		}
 		else
@@ -64,6 +72,6 @@ public class Vector4id<T extends Number> extends Vector4<T>
 
 	public String toString()
 	{
-		return 	this.getId() + " " + this.getX() + " " + this.getY() + " " + this.getZ();
+		return 	this.getId() + "(" + this.getX() + "|" + this.getY() + "|" + this.getZ() + "|" + this.getW() +")";
 	}
 }

@@ -73,3 +73,8 @@
 2017-01-26 01:02:16.540+0000 INFO  [o.n.k.i.s.c.CountsTracker] About to rotate counts store at transaction 7 to [..\..\database\neostore.counts.db.a], from [..\..\database\neostore.counts.db.b].
 2017-01-26 01:02:16.553+0000 INFO  [o.n.k.i.s.c.CountsTracker] Successfully rotated counts store at transaction 7 to [..\..\database\neostore.counts.db.a], from [..\..\database\neostore.counts.db.b].
 2017-01-26 01:02:17.321+0000 INFO  [o.n.u.b.i.BatchInserterImpl] Thread[main,5,main] Clean shutdown on BatchInserter(EmbeddedBatchInserter[..\..\database])
+2017-01-28 02:02:50.258+0000 INFO  [o.n.k.i.s.f.RecordFormatSelector] Format not configured. Selected format from the store: RecordFormat:StandardV3_0[v0.A.7]
+2017-01-28 02:02:50.258+0000 INFO  [o.n.u.b.i.BatchInserterImpl] Thread[main,5,main] Starting BatchInserter(EmbeddedBatchInserter[..\..\database])
+2017-01-28 02:02:51.298+0000 INFO  [o.n.k.i.s.c.CountsTracker] About to rotate counts store at transaction 7 to [..\..\database\neostore.counts.db.b], from [..\..\database\neostore.counts.db.a].
+2017-01-28 02:02:51.328+0000 INFO  [o.n.k.i.s.c.CountsTracker] Successfully rotated counts store at transaction 7 to [..\..\database\neostore.counts.db.b], from [..\..\database\neostore.counts.db.a].
+2017-01-28 02:02:53.756+0000 INFO  [o.n.u.b.i.BatchInserterImpl] Thread[main,5,main] Clean shutdown on BatchInserter(EmbeddedBatchInserter[..\..\database])
