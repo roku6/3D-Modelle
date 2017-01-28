@@ -139,6 +139,7 @@ public class BuildLogic
 	private void createFigure(String descriptionURL, String pictureURL)
 	{
 		sortAll();
+		//changeNegativeNormals();
 		removeDoubles();
 		fillPointList();
 		addPointNeighbours();		
@@ -146,6 +147,7 @@ public class BuildLogic
 		createNormalVertexList();
 		fillCornerPointList();
 		changeCornerNeighbours();
+		calcAllCornerAngles();
 		remove1DLines();
 		//System.out.println("Size2: " + cornerPointExtList.size() + " ");
 		//printConnections();
@@ -153,6 +155,29 @@ public class BuildLogic
 		//System.out.println(aRelationsDefinitionList.toString());
 		aFigure = new GeometricFigure(aRelationsDefinitionList, loadDescription(descriptionURL), pictureURL);
 	}
+	
+	/**
+	 * Sorts the VertexList/TextureList/NormalList of an OBJ File
+	**/
+	private void sortAll()
+	{
+		Collections.sort(aOBJ.getVertexList());	
+		Collections.sort(aOBJ.getTextureList());	
+		Collections.sort(aOBJ.getNormalList());	
+	}
+
+	
+	private void changeNegativeNormals()
+	{
+		for (Normal<Double> aNormal : aOBJ.getNormalList())
+		{
+			if (aNormal.getX() < 0) aNormal.setX(aNormal.getX()*-1.0);
+			if (aNormal.getY() < 0) aNormal.setY(aNormal.getY()*-1.0);
+			if (aNormal.getZ() < 0) aNormal.setZ(aNormal.getZ()*-1.0);
+			if (aNormal.getW() < 0) aNormal.setW(aNormal.getW()*-1.0);			
+		}
+	}
+	
 	/**
 	* This Function removes all doubleVertecies existing in the VertexList
 	*/
@@ -348,17 +373,7 @@ public class BuildLogic
 		removeDoublePoints();
 		removeDoubleFaces();		//needs testing
 	}
-	
-	/**
-	 * Sorts the VertexList/TextureList/NormalList of an OBJ File
-	**/
-	private void sortAll()
-	{
-		Collections.sort(aOBJ.getVertexList());	
-		Collections.sort(aOBJ.getTextureList());	
-		Collections.sort(aOBJ.getNormalList());	
-	}
-	
+		
 	/**
 	 * 	Fills a List with all possible Points, without adding any Neighbours
 	 * Iterates over alle Faces
@@ -420,25 +435,10 @@ public class BuildLogic
 							{
 								if (j != i)										//For all Points in the Face except the point itself
 								{
-									ListIterator<PointExt<Double>> iterator = pointExtList.get(k).getNeighbourList().listIterator();
-									elementExists = false;
-									while (iterator.hasNext())
+									for (PointExt<Double> aPoint : pointExtList)
 									{
-										PointExt<Double> aTestPoint = iterator.next();
-										if ((aTestPoint.getAVertex().getId() == aFace.getPointExtList().get(j).getAVertex().getId()) &&
-											(aTestPoint.getATexture().getId() == aFace.getPointExtList().get(j).getATexture().getId()) &&
-											(aTestPoint.getANormal().getId() == aFace.getPointExtList().get(j).getANormal().getId()))
-										{	
-											elementExists = true;
-										}
-									}
-									if (!elementExists) 
-									{ 
-										for (PointExt<Double> aPoint : pointExtList)
-										{
-											if (aFace.getPointExtList().get(j).equals(aPoint))
-													pointExtList.get(k).getNeighbourList().add(aPoint);										
-										}
+										if (aFace.getPointExtList().get(j).equals(aPoint))
+											pointExtList.get(k).getNeighbourList().add(aPoint);										
 									}
 								}
 							}
@@ -508,7 +508,7 @@ public class BuildLogic
 				System.out.println("OBJ - CreateVertexList-Error!");
 				System.out.println(aVertexNormal.getNormalMap().size() + " Normalen - Fehler! Zuviele Normalen!!");
 				System.out.println(aVertexNormal.getNormalMap().toString());
-				aCornerVertexList.add(aVertexNormal);
+				aEdgeVertexList.add(aVertexNormal);
 			}
 		}
 		//System.out.println("OriginalSize: " + aVertexNormalList.size());
@@ -532,10 +532,12 @@ public class BuildLogic
 				if (pointExtList.get(i).getAVertex().equals(aVertexNormal.getVertex())) 
 				{					
 					cornerPointExtList.add(pointExtList.get(i));
+					//System.out.println("Corner: " + pointExtList.get(i));
 					break;
 				}
 			}
 		}
+		//System.out.println("CornerListSize: " + cornerPointExtList.size());
 	}
 		
 	/**
@@ -552,6 +554,15 @@ public class BuildLogic
 	
 	/**
 	 * changes the Neighbours of the cornerPoints to other cornerPoints
+	 * 
+	 * Algorithmus:
+	 * Für jede Normale
+	 * 	Durchlaufe alle Eckpunkte
+	 *   wenn die Normale der Normale des Eckpunktes entspricht:
+	 *   Für jeden Nachbarn:
+	 *    Berechne den Richtungsvektor ausgehend von dem Punkt
+	 *    füge dem Eckpunkt einen Nachbar hinzu
+	 * 	
 	 */
 	private void changeCornerNeighbours()
 	{
@@ -566,6 +577,7 @@ public class BuildLogic
 					for(PointExt<Double> neighbour : cornerPointExtList.get(k).getNeighbourList())
 					{
 						Vector4id<Double> dVector2 = createDirectionVector(cornerPointExtList.get(k), neighbour);
+						//cornerPointExtList.get(k).addCornerPoint(updateCornerNeighbour(neighbour, dVector2));	
 						cornerPointExtList.get(k).addCornerPoint(updateCornerNeighbour(neighbour, dVector2));	
 						
 						//remove all null elements
@@ -675,13 +687,14 @@ public class BuildLogic
 	private double calcAngle(Edge<Double> a, Edge<Double> b)
 	{
 		//Convention a,b have same point
-		Edge<Double> c = new Edge<>(a.getPoint1(),b.getPoint1());
+		Edge<Double> c = new Edge<>(a.getVertex1(),b.getVertex1());
 		double angle;
 		angle = Math.acos( (Math.pow(a.getLength(),2) + 
 							Math.pow(b.getLength(),2) - 
 							Math.pow(c.getLength(),2)) / 
 							(2 * a.getLength() * b.getLength()));
 		
+		angle = angle  * 360 / (2 * Math.PI) * angle;
 		if (angle > 180.0) angle = 360.0 - angle;		
 		return angle;
 	}
@@ -692,23 +705,75 @@ public class BuildLogic
 	 */
 	private void remove1DLines()
 	{
-		boolean samePoint = false, removePoint = false;
-		for(PointExt<Double> aCorner : cornerPointExtList)
+		boolean addPoint = true; 
+		ArrayList<PointExt<Double>> aTempList = new ArrayList<>();
+		boolean samePoint = false;
+		for(int k = 0; k<cornerPointExtList.size(); k++)
 		{
-			ListIterator<PointExt<Double>> iterator = aCorner.getNeighbourList().listIterator();
+			aTempList.clear();
+			for(int i= 0; i<cornerPointExtList.get(k).getNeighbourList().size(); i++)
+			{
+				samePoint = false;
+				addPoint = true;
+				for(int j = 0; j<cornerPointExtList.get(k).getNeighbourList().size(); j++)
+				{					
+					if(cornerPointExtList.get(k).getNeighbourList().get(i).equals(cornerPointExtList.get(k).getNeighbourList().get(j)) && (samePoint == true)) 
+					{ addPoint = false;}
+					else if(cornerPointExtList.get(k).getNeighbourList().get(i).equals(cornerPointExtList.get(k).getNeighbourList().get(j))  && (samePoint == false)) 
+					{ samePoint = true;}
+				}				
+				if (addPoint) {aTempList.add(cornerPointExtList.get(k).getNeighbourList().get(i));}
+			}
+			boolean inList = false;
+			ListIterator<PointExt<Double>> iterator = cornerPointExtList.get(k).getNeighbourList().listIterator();
 			while(iterator.hasNext())
 			{
 				PointExt<Double> aPoint = iterator.next();
-				samePoint = false;
-				ListIterator<PointExt<Double>> iterator2 = aCorner.getNeighbourList().listIterator();
-				while(iterator2.hasNext())
+				for(PointExt<Double> aPoint2 : aTempList)
 				{
-					PointExt<Double> aPoint2 = iterator2.next();
-					if(aPoint.equals(aPoint2) && samePoint == false) samePoint = true; 
-					else if(aPoint.equals(aPoint2) && samePoint == true) {iterator.remove(); iterator2.remove(); removePoint = true;}
-					if (removePoint == true) break;
-				}				
-				if (removePoint == true) removePoint = false; break;
+					if (aPoint2.equals(aPoint)) inList = true;
+				}
+				if (!inList) iterator.remove();
+				else inList = false;
+			}
+			//System.out.println(cornerPointExtList.get(k).getNeighbourList().toString());
+		}
+	}
+	
+	
+	// Abschneiden bei 90.0 Grad in Grad umrechnen
+	private void calcAllCornerAngles()
+	{
+		boolean firstCorner = false;
+		Edge<Double> aEdge = null, bEdge = null;
+		for(PointExt<Double> aCorner : cornerPointExtList)
+		{
+			for (Face aFace : aOBJ.getFaceList())
+			{
+				for (PointExt<Double> aFacePoint : aFace.getPointExtList())
+				{
+					if (aFacePoint.equals(aCorner))
+					{
+						firstCorner = false;
+						for (PointExt<Double> aFacePoint2 : aFace.getPointExtList())
+						{
+							if (!aFacePoint.equals(aFacePoint2))
+							{
+								if (!firstCorner) 
+								{
+									aEdge = new Edge<>(aFacePoint, aFacePoint2);
+									firstCorner = true;
+								}
+								else if (firstCorner)
+								{
+									bEdge = new Edge<>(aFacePoint, aFacePoint2);			
+									aCorner.setAngle(aCorner.getAngle() + calcAngle(aEdge, bEdge));
+								}
+							}
+						}
+						aCorner.setAngle(aCorner.getAngle());
+					}
+				}
 			}
 		}
 	}
@@ -727,6 +792,8 @@ public class BuildLogic
 	 * add to relationsDefinitionList
 	 * 
 	 */
+	
+	// Eine ID für eine Edge
 	private void fillRDL()
 	{
 		/*Optimized for Triangles*/
@@ -734,22 +801,22 @@ public class BuildLogic
 		Edge<Double> aEdge, bEdge;
 		for(PointExt<Double> aCorner : cornerPointExtList)
 		{
+			if (aCorner.getNeighbourList().size() > 0)
+			{
 			aEdge = new Edge<>(aCorner, aCorner.getNeighbourList().get(0));
 			bEdge = new Edge<>(aCorner, aCorner.getNeighbourList().get(1));			
-			
-			for (Face aFace : aOBJ.getFaceList())
+						
+			for (RelationsDefinition aRDL : aRelationsDefinitionList)
 			{
-				for (PointExt<Double> aFacePoint : aFace.getPointExtList())
-				{
-					if (aFacePoint.equals(aCorner))
-					{
-						aCorner.setAngle(aCorner.getAngle() + calcAngle(aEdge, bEdge));
-					}
-				}
+				if (aEdge.equals(aRDL.getEdge1())) aEdge = aRDL.getEdge1();
+				else if (aEdge.equals(aRDL.getEdge2())) aEdge = aRDL.getEdge2();
+				if (bEdge.equals(aRDL.getEdge1())) bEdge = aRDL.getEdge1();
+				else if (bEdge.equals(aRDL.getEdge2())) bEdge = aRDL.getEdge2();
 			}
 			
 			aRelationsDefinition = new RelationsDefinition(aEdge, bEdge, aCorner.getAngle());
 			aRelationsDefinitionList.add(aRelationsDefinition);
+			}
 		}
 	}	
 }
