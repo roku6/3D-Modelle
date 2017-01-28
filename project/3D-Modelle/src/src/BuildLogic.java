@@ -139,7 +139,7 @@ public class BuildLogic
 	private void createFigure(String descriptionURL, String pictureURL)
 	{
 		sortAll();
-		//changeNegativeNormals();
+		changeNegativeNormals();
 		removeDoubles();
 		fillPointList();
 		addPointNeighbours();		
@@ -152,7 +152,8 @@ public class BuildLogic
 		//System.out.println("Size2: " + cornerPointExtList.size() + " ");
 		//printConnections();
 		fillRDL();
-		//System.out.println(aRelationsDefinitionList.toString());
+		System.out.println();
+		System.out.println(aRelationsDefinitionList.toString());
 		aFigure = new GeometricFigure(aRelationsDefinitionList, loadDescription(descriptionURL), pictureURL);
 	}
 	
@@ -420,7 +421,6 @@ public class BuildLogic
 	private void addPointNeighbours()
 	{
 		//Optimized for Triangles!!
-		boolean elementExists = false;
 		if (pointExtList.size() != 0 && aOBJ.getFaceList().size() != 0)						//Checks if a PointList exists
 		{
 			for (int k = 0; k<pointExtList.size(); k++)	
@@ -694,7 +694,7 @@ public class BuildLogic
 							Math.pow(c.getLength(),2)) / 
 							(2 * a.getLength() * b.getLength()));
 		
-		angle = angle  * 360 / (2 * Math.PI) * angle;
+		angle = angle  * 360.0 / (2.0 * Math.PI);
 		if (angle > 180.0) angle = 360.0 - angle;		
 		return angle;
 	}
