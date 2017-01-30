@@ -9,21 +9,49 @@ import org.neo4j.graphdb.Result;
 /**
  * @author Lennard Flegel
  *
- * Class to gather information about the object to search for
- * and generate the query needed. 
- * 
+ * Singleton class to gather information about the object to search for, generate the CQL query needed and compute the derivation of the Objects found.
+ * Singleton NOT threadsafe.
  * 
  */
 
 public class SearchLogic {
 
 	//Members
-	private static ArrayList<Searchobject> searchObjects;
-	private static Double toleranceLength,toleranceAngle;
+	private static SearchLogic instance;
+	private ArrayList<Searchobject> searchObjects;
+	private Double toleranceLength,toleranceAngle;
+	
+	//Constructors
+	/**
+	 *Private constructor to apply singleton. Creates a searchlogic. To be called by getInstance().
+	 * 
+	 * @param searchObjects List of Searchobject types describing the pattern to look for defined by the users GUI input.
+	 * @param tolLen Tolerance the user set for edge length
+	 * @param tolAng Tolerance the user set for angles
+	 */
+	private SearchLogic(ArrayList<Searchobject> searchObjects, Double tolLen, Double tolAng) {
+		this.searchObjects = searchObjects;
+		toleranceLength =tolLen;
+		toleranceAngle= tolAng;
+	}
+	
 	
 	//Methods
 
-	
+	/**
+	 * Method to realize Singleton-Pattern
+	 * @param searchObjects List of Searchobject types describing the pattern to look for defined by the users GUI input.
+	 * @param tolLen Tolerance the user set for edge length
+	 * @param tolAng Tolerance the user set for angles
+	 * 
+	 * @return the only SearchLogic object 
+	 */
+	public static SearchLogic getInstance (ArrayList<Searchobject> searchObjects, Double tolLen, Double tolAng) {
+		    if (SearchLogic.instance == null) {
+		    	SearchLogic.instance = new SearchLogic (searchObjects, tolLen, tolAng);
+		    }
+		    return SearchLogic.instance;
+		 }
 
 	/**
 	 *This method generates a CQL query string based on the searchObjects ArrayList Member.
@@ -32,22 +60,22 @@ public class SearchLogic {
 	 *The return of the query is the entire node and rel.Angle. Columns look like this:
 	 * n1.Length | n1.Url | n1.Description | n1.ObjectId | r1.Angle | n2.Length | n2.Url | ... | ... 
 	 *
-	 *    @return The CQL string to query for the properties given in the searchObjects ArrayList
+	 *@return The CQL string to query for the properties given in the searchObjects ArrayList
 	 */
-	public static String generateQuery (){
+	public String generateQuery (){
 		String cypher="Match ";
 		String whereClausesTemp = " Where ";
 		String returnsTemp =" Return ";
 		for (Searchobject sObject : searchObjects){
 			//Defining pattern to look for
 			String temp = "(n"+ sObject.getId1().toString()+":EDGE)-[r"+sObject.getId1().toString()+": CONNECTED]-(n"+sObject.getId2().toString()+"), ";
-			cypher.concat(temp);
+			cypher+=temp;
 			//Defining values to look for
 			//Length
 			temp=  (sObject.getLength()-toleranceLength)+"<"+"n"+ sObject.getId1().toString()+".LENGTH"+"<"+(sObject.getLength()+toleranceLength) + "AND "+
 			//Angles
 			(sObject.getAngle()-toleranceAngle)+"<"+"r"+ sObject.getId1().toString()+".ANGLE"+"<"+(sObject.getAngle()+toleranceAngle) + "AND ";
-			whereClausesTemp.concat(temp);
+			whereClausesTemp+=temp;
 			//Defining returns
 			temp=
 			"n"+ sObject.getId1().toString()+".LENGTH"+","+
@@ -55,7 +83,7 @@ public class SearchLogic {
 			"n"+ sObject.getId1().toString()+".DESCRIPTION"+","+
 			"n"+ sObject.getId1().toString()+".OBJECT_ID"+","+
 			",r"+sObject.getId1().toString()+".ANGLE"+","; //+",n"+ sObject.getId2().toString()+ needed? to be tested
-			returnsTemp.concat(temp);
+			returnsTemp+=temp;
 		}
 		// aus den 3 teilstrings die letzen kommata/AND usw löschen, am ende ist eins zu viel
 		String temp =cypher.substring(0, cypher.length()-2);
@@ -65,7 +93,7 @@ public class SearchLogic {
 		temp= returnsTemp.substring(0, returnsTemp.length()-1);
 		returnsTemp=temp;
 		
-		cypher.concat(whereClausesTemp).concat(returnsTemp);
+		cypher+=(whereClausesTemp+=returnsTemp);
 		
 		return cypher;
 	}
@@ -79,13 +107,12 @@ public class SearchLogic {
 	 * @return An ArrayList of Foundobjects, containing only the most similar representation per Object found
 	 * 
 	 */
-	@SuppressWarnings("null")
-	public static ArrayList<Foundobject> calcSimilarity(Result result){
+	public ArrayList<Foundobject> calcSimilarity(Result result){
 		//for each Row "patternFromDD" in Result do
 		// compare patternFromDB to each Searchobject "object" in this.Searchobjects
 		// find a way to measure similarity (subtraction?) and 
 		// return an average for each pattern found^
-		ArrayList<Foundobject> foundObjectsArray=null;
+		ArrayList<Foundobject> foundObjectsArray= new ArrayList<Foundobject>();
 		int foundId=0;
 		double foundAngleSum=0;
 		double foundLengthSum=0;
@@ -162,44 +189,44 @@ public class SearchLogic {
 	 * 
 	 * @param toAdd The new Searchobject
 	 */
-	public static void addSearchobject(Searchobject toAdd){
+	public void addSearchobject(Searchobject toAdd){
 		searchObjects.add(toAdd);
 	}
 	/**
 	 * @return the searchObjects
 	 */
-	public static ArrayList<Searchobject> getSearchObjects() {
+	public ArrayList<Searchobject> getSearchObjects() {
 		return searchObjects;
 	}
 	/**
 	 * @param searchObjects the searchObjects to set
 	 */
-	public static void setSearchObjects(ArrayList<Searchobject> newSearchObjects) {
+	public void setSearchObjects(ArrayList<Searchobject> newSearchObjects) {
 		searchObjects = newSearchObjects;
 	}
 	/**
 	 * @return the toleranceAngle
 	 */
-	public static Double getToleranceAngle() {
+	public Double getToleranceAngle() {
 		return toleranceAngle;
 	}
 	/**
 	 * @param toleranceAngle the toleranceAngle to set
 	 */
-	public static void setToleranceAngle(Double toleranceAngle) {
-		SearchLogic.toleranceAngle = toleranceAngle;
+	public void setToleranceAngle(Double toleranceAngle) {
+		this.toleranceAngle = toleranceAngle;
 	}
 	/**
 	 * @return the tolerance
 	 */
-	public static Double getToleranceLength() {
+	public Double getToleranceLength() {
 		return toleranceLength;
 	}
 	/**
 	 * @param tolerance the tolerance to set
 	 */
-	public static void setToleranceLength(Double tolerance) {
-		SearchLogic.toleranceLength = tolerance;
+	public void setToleranceLength(Double tolerance) {
+		this.toleranceLength = tolerance;
 	}
 
 	

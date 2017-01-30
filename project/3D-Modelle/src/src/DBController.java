@@ -21,8 +21,7 @@ import org.neo4j.unsafe.batchinsert.BatchInserters;
  * @author Lennard Flegel
  *
  * Singleton-class for DB-access. Singleton NOT threadsafe.
- * Make sure to invoke initializeDB to get started 
- * and the shutdown method once your transactions are done.
+ * Make sure to invoke the shutdown method once your transactions are done.
  *  
  *  
  *   
@@ -37,6 +36,7 @@ public class DBController {
 	private ArrayList<Integer> usedIds = new ArrayList<Integer>();
 	private enum FigureLabels implements Label {EDGE;};
 	private enum FigureRelTypes implements RelationshipType{CONNECTED;};
+	
 	//Constructors
 	/**
 	 * Constructor. Creates an DBController, sets up a Neo4J DB at given directory and initializes it. 
@@ -90,13 +90,13 @@ public class DBController {
 	}
 	
 	/**
-	 * Concatenates ObjectId and EdgeId to a new, unique Long type Id. EdgeId is ZeroPadded (5-> 00005, 12->00012) 
-	 * to ensure that the Id of edge 12 is greater than edge 2 (Unwanted: 1.12 < 1.2 , now: 1.00012 > 1.00002 ).
+	 * Concatenates ObjectId and EdgeId to a new, unique Long type Id. EdgeId is ZeroPadded (5-> 00005, 12->00012,
+	 * so Object 1 edge 12 would be 100012, edge 5 would be 100005) for consistent indexes and the possibility to resepereate them.
 	 * This Limits a Figure to max 99999 edges. If more is needed, edit this function or rework the indexing
 	 * 
 	 * @param id1 ObjectId
 	 * @param id2 EdgeId
-	 * @return the new Double Id: ObjectId.EgdeId
+	 * @return the new Long Id: ObjectId.EgdeId
 	 */
 	private Long concatIds(Integer id1, Integer id2){
 		String id2ZeroPadding ="";
@@ -134,6 +134,7 @@ public class DBController {
 	 * Method to realize Singleton-Pattern
 	 * 
 	 * @param directory  Target directory to initialize DB
+	 * 
 	 * @return instance of DBController to access DB
 	 */
 	public static DBController getInstance (File directory) {
@@ -173,6 +174,16 @@ public class DBController {
 	}
 	
 	/**
+	 * Removes all nodes and relations from DB
+	 */
+	public void clearAll(){
+		String cypher = "MATCH (n) DETACH DELETE n";
+		
+		executeQuery(cypher);
+	}
+	
+	
+	/**
 	 * Writes an GeometricFigure object to the DB.
 	 * Currently no check if same Obj already in Db only having a different ID.
 	 * The ID consists of ObjectId.EdgeId. 
@@ -200,8 +211,6 @@ public class DBController {
 		Map<String, Object> properties = new HashMap<String, Object> ();
 		
 		try{
-			//schema index not needed if this works as intended
-			//inserter.createDeferredSchemaIndex(FigureLabels.EDGE).on("EDGE_ID").create();
 			
 			for(RelationsDefinition relation:relationsArray){
 				//if NOT in DB
