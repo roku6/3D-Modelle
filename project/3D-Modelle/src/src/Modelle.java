@@ -10,6 +10,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.neo4j.graphdb.Result;
+
+@SuppressWarnings("unused")
 public class Modelle
 {
 
@@ -25,17 +28,20 @@ public static Modelle getInstance()
 	public static void main(String [ ] args)
 	{
 		
-		//-------------------------------Starting GUI
-		/*
-		System.out.println("Starting GUI...");
-		java.awt.EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				new GUI().setVisible(true);
-			}
-		});
-		*/
+
+//	}
 		
-		// Just for testing 
+//		//-------------------------------Starting GUI
+//		/*
+//		System.out.println("Starting GUI...");
+//		java.awt.EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				new GUI().setVisible(true);
+//			}
+//		});
+//		*/
+//		
+//		// Just for testing 
 		ArrayList<String[]> urlList = new ArrayList<>(); 
 		
 		long tStart = System.currentTimeMillis(); //to keep track of time
@@ -50,6 +56,7 @@ public static Modelle getInstance()
 		File dbpath = new File("../../database");
 		DBController dbCtrl = DBController.getInstance(dbpath);	
 		System.out.println("finished.");
+		dbCtrl.clearAll();
 		
 		//Initialize aFigure for Testing
 		String[] urls	= {"../../resources/cube_100x100x100.obj", 
@@ -65,6 +72,7 @@ public static Modelle getInstance()
 			System.out.print("Build GeometricFigure from File " + objURL + "...");
 			aBuildLogic.buildAFigure(objURL,descriptionURL,pictureURL);
 			System.out.println("finished.");
+			aBuildLogic.getGeometricFigure().setObjectID(1);
 			try
 			{
 				System.out.print("Writing OBJ to Database...");
@@ -78,8 +86,33 @@ public static Modelle getInstance()
 				dbCtrl.shutdownDB();
 			}
 		}				
-		//dbCtrl.executeQuery("Create (n{OBJECT_ID : 5})");
-		//dbCtrl.removeByOBJ_ID(5);
+		
+		//vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvTESTING SEARCHLOGICvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+		
+		ArrayList<Searchobject> aSObjList = new ArrayList<Searchobject>();
+		
+		Searchobject sObj1 = new Searchobject(1,100.0,90.0,2);
+		Searchobject sObj2 = new Searchobject(2,100.0,90.0,4);
+		//Searchobject sObj3 = new Searchobject(4,100.0,90.0,2);
+		
+		aSObjList.add(sObj1);
+		aSObjList.add(sObj2);
+		
+		SearchLogic theSearchLogic = SearchLogic.getInstance(aSObjList, 1., 1.);
+		
+		String cypher = theSearchLogic.generateQuery();
+		System.out.print("Starting query...");
+		Result aResult = dbCtrl.executeQuery(cypher);
+		System.out.println("done.");
+		
+		ArrayList<Foundobject> foundObjects = theSearchLogic.calcSimilarity(aResult);
+		
+		for(Foundobject fobj: foundObjects){
+			System.out.println(fobj.toString());
+		}
+		
+		//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^TESTING SLOGIC END^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+		
 		dbCtrl.shutdownDB();
 		
 		long tEnd = System.currentTimeMillis();
@@ -87,25 +120,27 @@ public static Modelle getInstance()
 		double elapsedSeconds = tDelta / 1000.0;
 		
 		System.out.println("Program completed in " + elapsedSeconds + " Seconds with " + urlList.size() + " Objects.");
+		
+		
 	}
-	
-	
-	public void search( List<Searchobject> searchList, double angInt, double lenInt, int width, int height) {
-		//Searchlogic... searchList, angInt, lenInt
-		this.width = width;
-		this.height = height;
-		this.lenInt = lenInt;
-		this.angInt = angInt;
-	}
-	
-	//to be used by searchlogic after finished search
-	public void displayOutput(List<Foundobject> foundList) {
-		outputGUI outg = new outputGUI(foundList, lenInt,angInt, width, height);
-	}
-	
-	public void deleteObjFromDB(String id) {
-		//dbcontroller remove obj
-	}
+//	
+//	
+//	public void search( List<Searchobject> searchList, double angInt, double lenInt, int width, int height) {
+//		//Searchlogic... searchList, angInt, lenInt
+//		this.width = width;
+//		this.height = height;
+//		this.lenInt = lenInt;
+//		this.angInt = angInt;
+//	}
+//	
+//	//to be used by searchlogic after finished search
+//	public void displayOutput(List<Foundobject> foundList) {
+//		outputGUI outg = new outputGUI(foundList, lenInt,angInt, width, height);
+//	}
+//	
+//	public void deleteObjFromDB(String id) {
+//		//dbcontroller remove obj
+//	}
 
  
 }

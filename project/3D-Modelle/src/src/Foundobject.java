@@ -28,6 +28,15 @@ public class Foundobject {
         this.description = description;
     }
     
+    /* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Foundobject [id=" + id + ", lenSim=" + lenSim + ", angSim=" + angSim + ", picture=" + picture
+				+ ", description=" + description + "]";
+	}
+    
     public void setId(Integer id) {
         this.id = id;  
     }

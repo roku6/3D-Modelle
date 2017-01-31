@@ -15,10 +15,13 @@ public class RelationsDefinition
 	
 	
 	//Constructors
+	
 	/**
 	 * Empty Constructor
 	 */
 	public RelationsDefinition(){}
+	
+	
 	/**
 	 * Constructor setting all 3 values
 	 * 
@@ -32,7 +35,18 @@ public class RelationsDefinition
 		this.angle = angle;
 	}
 	
+	
 	//Methods
+	
+	@Override
+	public String toString()
+	{
+		return getEdge1().toString() + " | " + getEdge2().toString() + " | " + getAngle();
+	}
+	
+	
+	//Getters and setters
+	
 	/**
 	 * Getter for edge1
 	 * @return edge1
@@ -40,7 +54,6 @@ public class RelationsDefinition
 	public Edge<Double> getEdge1() {
 		return edge1;
 	}
-
 	/**
 	 * Getter for edge2
 	 * @return edge2
@@ -48,14 +61,10 @@ public class RelationsDefinition
 	public Edge<Double> getEdge2() {
 		return edge2;
 	}
-
 	/**
 	 * Getter for angle
 	 * @return angle
 	 */
-	public double getWinkel() {
-		return angle;
-	}
 	public double getAngle() {
 		return angle;
 	}
@@ -81,10 +90,6 @@ public class RelationsDefinition
 		this.angle = angle;
 	}
 
-	@Override
-	public String toString()
-	{
-		return getEdge1().toString() + " | " + getEdge2().toString() + " | " + getWinkel();
-	}
+
 	
 }

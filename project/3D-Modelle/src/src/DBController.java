@@ -89,6 +89,7 @@ public class DBController {
 		Collections.sort(usedIds);
 	}
 	
+	
 	/**
 	 * Concatenates ObjectId and EdgeId to a new, unique Long type Id. EdgeId is ZeroPadded (5-> 00005, 12->00012,
 	 * so Object 1 edge 12 would be 100012, edge 5 would be 100005) for consistent indexes and the possibility to resepereate them.
@@ -128,21 +129,21 @@ public class DBController {
 		//fetchUsedIds();
 	}
 	
+	
 	//Public
 	
 	/**
 	 * Method to realize Singleton-Pattern
 	 * 
 	 * @param directory  Target directory to initialize DB
-	 * 
 	 * @return instance of DBController to access DB
 	 */
 	public static DBController getInstance (File directory) {
-		    if (DBController.instance == null) {
-		    	DBController.instance = new DBController (directory);
-		    }
-		    return DBController.instance;
-		 }
+		if (DBController.instance == null) {
+		   	DBController.instance = new DBController (directory);
+		}
+		return DBController.instance;
+	}
 	  
 
 	/**
@@ -153,8 +154,7 @@ public class DBController {
 	 */
 	public Result executeQuery(String cypher){
 		Result result;
-		 try ( Transaction tx = graphDb.beginTx() )
-		 {
+		try ( Transaction tx = graphDb.beginTx() ){
 		     result= graphDb.execute(cypher);
 		     
 		     tx.success();
@@ -162,8 +162,10 @@ public class DBController {
 		return result;
 	}
 
+	
 	/**
 	 * Removes all nodes with given Object-ID from DB
+	 * 
 	 * @param id Object ID to remove
 	 */
 	public void removeByOBJ_ID(Integer id){
@@ -172,6 +174,7 @@ public class DBController {
 		
 		executeQuery(cypher);
 	}
+	
 	
 	/**
 	 * Removes all nodes and relations from DB
@@ -202,8 +205,10 @@ public class DBController {
 		
 		ArrayList<RelationsDefinition> relationsArray = figure.getEdgeRelations();
         
+		//The batch Inserter replaces the standard graphDBservice for writing access, thus the graphDBservice is shut down here
 		graphDb.shutdown();
 		
+		//Initializing the BatchInserter
 		new BatchInserters();
 		BatchInserter inserter = BatchInserters.inserter(directory);
 		Long edgeId1, edgeId2;
@@ -222,7 +227,7 @@ public class DBController {
 				edgeId2 = concatIds(figure.getObjectID(), edge2.getId()); 
 				
 				if(!inserter.nodeExists(edgeId1)){
-					properties.put("LENGTH", edge1.getLength());
+					properties.put("LENGTH", ((double)Math.round(edge1.getLength() * 100d) / 100d));
 					properties.put("URL", figure.getPictureURL());
 					properties.put("DESCRIPTION", figure.getDescription());
 					properties.put("OBJECT_ID", figure.getObjectID());
@@ -233,7 +238,7 @@ public class DBController {
 				}
 				
 				if(!inserter.nodeExists(edgeId2)){
-					properties.put("LENGTH", edge2.getLength());
+					properties.put("LENGTH",  ((double)Math.round(edge2.getLength() * 100d) / 100d));
 					properties.put("URL", figure.getPictureURL());
 					properties.put("DESCRIPTION", figure.getDescription());
 					properties.put("OBJECT_ID", figure.getObjectID());
@@ -244,7 +249,7 @@ public class DBController {
 					
 				}
 				
-				properties.put("ANGLE", relation.getWinkel());
+				properties.put("ANGLE", ((double)Math.round(relation.getAngle() * 100d) / 100d));
 				
 				inserter.createRelationship(edgeId1, edgeId2, FigureRelTypes.CONNECTED, properties);
 				
@@ -259,8 +264,10 @@ public class DBController {
 		}
 		inserter.shutdown();
 		
+		//Now that the BatchInserter is shut down, set up the regular graphDBservice again
 		initializeDB();
 	}
+	
 	
 	/**
 	 * Shuts down the DB. Make sure to call this once 

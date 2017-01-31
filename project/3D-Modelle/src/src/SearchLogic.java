@@ -53,6 +53,7 @@ public class SearchLogic {
 		    return SearchLogic.instance;
 		 }
 
+	
 	/**
 	 *This method generates a CQL query string based on the searchObjects ArrayList Member.
 	 *To realize the ability of searching with a given tolerance, the query consists of a match for a (relatively)long list of node-rel-node patterns
@@ -63,40 +64,44 @@ public class SearchLogic {
 	 *@return The CQL string to query for the properties given in the searchObjects ArrayList
 	 */
 	public String generateQuery (){
-		String cypher="Match ";
-		String whereClausesTemp = " Where ";
-		String returnsTemp =" Return ";
+		String cypher="MATCH ";
+		String whereClausesTemp = " WHERE ";
+		String returnsTemp =" RETURN DISTINCT ";
 		for (Searchobject sObject : searchObjects){
 			//Defining pattern to look for
 			String temp = "(n"+ sObject.getId1().toString()+":EDGE)-[r"+sObject.getId1().toString()+": CONNECTED]-(n"+sObject.getId2().toString()+"), ";
 			cypher+=temp;
 			//Defining values to look for
 			//Length
-			temp=  (sObject.getLength()-toleranceLength)+"<"+"n"+ sObject.getId1().toString()+".LENGTH"+"<"+(sObject.getLength()+toleranceLength) + "AND "+
+			temp=  (sObject.getLength()-toleranceLength)+"<"+"n"+ sObject.getId1().toString()+".LENGTH"+"<"+(sObject.getLength()+toleranceLength) + " AND "+
 			//Angles
-			(sObject.getAngle()-toleranceAngle)+"<"+"r"+ sObject.getId1().toString()+".ANGLE"+"<"+(sObject.getAngle()+toleranceAngle) + "AND ";
+			(sObject.getAngle()-toleranceAngle)+"<"+"r"+ sObject.getId1().toString()+".ANGLE"+"<"+(sObject.getAngle()+toleranceAngle) + " AND ";
 			whereClausesTemp+=temp;
 			//Defining returns
 			temp=
-			"n"+ sObject.getId1().toString()+".LENGTH"+","+
-			"n"+ sObject.getId1().toString()+".URL"+","+
-			"n"+ sObject.getId1().toString()+".DESCRIPTION"+","+
-			"n"+ sObject.getId1().toString()+".OBJECT_ID"+","+
-			",r"+sObject.getId1().toString()+".ANGLE"+","; //+",n"+ sObject.getId2().toString()+ needed? to be tested
+			"n"+ sObject.getId1().toString()+".LENGTH"+", "+
+			"n"+ sObject.getId1().toString()+".URL"+", "+
+			"n"+ sObject.getId1().toString()+".DESCRIPTION"+", "+
+			"n"+ sObject.getId1().toString()+".OBJECT_ID"+", "+
+			"r"+sObject.getId1().toString()+".ANGLE"+", "; 
 			returnsTemp+=temp;
 		}
-		// aus den 3 teilstrings die letzen kommata/AND usw löschen, am ende ist eins zu viel
+		// the generated substrings must be shortened to not include the last, redundant comma/space
 		String temp =cypher.substring(0, cypher.length()-2);
 		cypher = temp;
 		temp= whereClausesTemp.substring(0, whereClausesTemp.length()-4);
 		whereClausesTemp = temp;
-		temp= returnsTemp.substring(0, returnsTemp.length()-1);
+		temp= returnsTemp.substring(0, returnsTemp.length()-2);
 		returnsTemp=temp;
+		returnsTemp+= " ORDER BY n1.OBJECT_ID";
 		
+		//Concatenate all substrings
 		cypher+=(whereClausesTemp+=returnsTemp);
 		
 		return cypher;
 	}
+	
+	
 	/**
 	 * This Method calculates the similarity (rather derivation) to the exact pattern entered for query for every row in result and
 	 * creates an array of Foundobjects containing only the most similar representation per Object found.
@@ -125,17 +130,18 @@ public class SearchLogic {
 		Double devLength=0.;
 		Double devAngle=0.;
 		
+		//Calc expected sum
 		for (Searchobject sObj : searchObjects){
 			expectedAngleSum += sObj.getAngle();
 			expectedLengthSum += sObj.getLength();
 		}
 		
+		//Calc found sum for each row of the result table and gather information like object id, description etc
 		while (result.hasNext()){
 			foundId=0;
 			foundAngleSum=0;
 			foundLengthSum=0;
 
-			
 			Set<Map.Entry<String,Object>> entries = result.next().entrySet();
 			for (Map.Entry<String, Object> entry : entries ){
 				
@@ -144,40 +150,47 @@ public class SearchLogic {
 					foundId=(int) entry.getValue();
 				    }
 				}
-				if (foundUrl=="") {
+				else if (foundUrl=="") {
 					if (entry.getKey().contains("URL")) {
 						foundUrl = entry.getValue().toString();
 					} 
 				}
-				if (foundDescription==""){
+				else if (foundDescription==""){
 					if (entry.getKey().contains("DESCRIPTION")) {
 						foundDescription = entry.getValue().toString();
 					} 
 				}
-				if (entry.getKey().contains("LENGTH")){
+				else if (entry.getKey().contains("LENGTH")){
 					foundLengthSum += (double)entry.getValue();
 				}
 				else if(entry.getKey().contains("ANGLE")){
 					foundAngleSum += (double)entry.getValue();
 				}
-				
 			}
+			//Calc derivation from expectedSums and normalize it
 			devLength = Math.abs(expectedLengthSum -foundLengthSum )/searchObjects.size();
 			devAngle  = Math.abs(expectedAngleSum  -foundAngleSum  )/searchObjects.size();
 
-			
-			
-			//Only add found object to results if the deviation is less than any existing entry for that Object_id. 
+			//Only add found object to results if the deviation is less than any existing entry for that object_id. 
 			//Combined length/angle deviation calculated using the length of the vector(devLength,devAngle). Shorter vector -> obj more likely similar
-		    for (Foundobject fObj : foundObjectsArray){
-		    	if(fObj.getId()==foundId &&  
-		    			Math.sqrt(fObj.getAngSim()*fObj.getAngSim() + fObj.getLenSim()*fObj.getLenSim()) >
-		    			Math.sqrt(devLength*devLength+devAngle*devAngle) ){
-		    		foundObjectsArray.add(new Foundobject(foundId, devLength, devAngle, foundUrl, foundDescription));	
-		    		foundObjectsArray.remove(fObj);
+		    boolean mustBeWrittenToResults = true;
+			for (Foundobject fObj : foundObjectsArray){
+		    	if(fObj.getId()==foundId){  
+		    		if(Math.sqrt(fObj.getAngSim()*fObj.getAngSim() + fObj.getLenSim()*fObj.getLenSim()) >  Math.sqrt(devLength*devLength+devAngle*devAngle) ){
+		    			foundObjectsArray.add(new Foundobject(foundId, devLength, devAngle, foundUrl, foundDescription));
+		    			mustBeWrittenToResults=false;
+		    			foundObjectsArray.remove(fObj);
+		    		}else{
+		    			//Same object but higher derivation -> don't add to results
+		    			mustBeWrittenToResults=false;
+		    		}
 		    	}
 		    }
-		    
+			//If the mustbewritten flag is true at this point, the results array does not contain any other representation of this object yet,
+			//so this is automatically the most similar one -> add this one to results
+			if(mustBeWrittenToResults){
+				foundObjectsArray.add(new Foundobject(foundId, devLength, devAngle, foundUrl, foundDescription));
+			}
 		}
 		result.close();
 		return foundObjectsArray;
@@ -192,6 +205,10 @@ public class SearchLogic {
 	public void addSearchobject(Searchobject toAdd){
 		searchObjects.add(toAdd);
 	}
+	
+	
+	//Getters and Setters
+	
 	/**
 	 * @return the searchObjects
 	 */
