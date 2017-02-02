@@ -39,16 +39,14 @@ public class GUI extends javax.swing.JFrame {
 	private javax.swing.JButton searchButton;
 	private javax.swing.JLabel toEdgeLabel;
 	private javax.swing.JTextField toEdgeTF;
-	private javax.swing.DefaultListModel listModel = new javax.swing.DefaultListModel();
-	private List<Searchobject> searchList = new ArrayList<Searchobject>();
-	 
-	private javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
-	private javax.swing.filechooser.FileNameExtensionFilter objFilter = new javax.swing.filechooser.FileNameExtensionFilter(
-			"OBJ-Dateien", "obj");
-	private Double lenInterval = 0.0;
-	private Double angleInterval = 0.0;
-	private boolean editClicked = false;
-	private int index = -1;
+	private javax.swing.DefaultListModel listModel;
+	private List<Searchobject> searchList;	 
+	private javax.swing.JFileChooser chooser;
+	private javax.swing.filechooser.FileNameExtensionFilter objFilter;
+	private Double lenInterval;
+	private Double angleInterval;
+	private boolean editClicked;
+	private int index;
 	private javax.swing.JLabel outputLabel;
 	private javax.swing.JLabel widthLabel;
 	private javax.swing.JLabel heightLabel;
@@ -105,6 +103,14 @@ public class GUI extends javax.swing.JFrame {
 		heightTF = new javax.swing.JTextField();
 		namesList = new ArrayList<String[]>();
 		removeObjFromDB = new javax.swing.JButton();
+		listModel = new javax.swing.DefaultListModel();
+		searchList = new ArrayList<Searchobject>();
+		chooser = new javax.swing.JFileChooser();
+		objFilter = new javax.swing.filechooser.FileNameExtensionFilter("OBJ-Dateien", "obj");
+		lenInterval = 0.0;
+		angleInterval = 0.0;
+		editClicked = false;
+		index = -1;
 		
 
 			
@@ -398,8 +404,9 @@ public class GUI extends javax.swing.JFrame {
 	 */
 	private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {
 		searchSearchobject();
+		modelle.search(searchList,angleInterval,lenInterval,width,height);
 		//remove later, test!
-		int numberObjects = (int)(Math.random()*10+40); 
+	/*	int numberObjects = (int)(Math.random()*10+40); 
 		System.out.println(numberObjects);
 
 		double lenInt = (int)(Math.random()*9+1)+(int)(Math.random()*90)*0.01;
@@ -413,7 +420,7 @@ public class GUI extends javax.swing.JFrame {
 		}
 		
 		outputGUI outg3 = new outputGUI(foundList,lenInt,angInt,Integer.valueOf(widthTF.getText()),Integer.valueOf(heightTF.getText()));
-		outg3.setVisible(true);
+		outg3.setVisible(true);*/
 
 		
 	}
@@ -441,10 +448,8 @@ public class GUI extends javax.swing.JFrame {
 	private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {
 		if (editClicked) replaceSearchobject(index);
 		else addSearchobject(searchList.size());
-		//searchlistobs.changeData(searchList);
-		//observable.notifyObservers(searchList);
-		//remove later
-		modelle.search(searchList,angleInterval,lenInterval,width,height);
+
+		
 	}
 
 	/**
@@ -719,14 +724,14 @@ public class GUI extends javax.swing.JFrame {
 			if(listModel.size() <= index)listModel.add(index,newLine);
 			else listModel.setElementAt(newLine,index);
 			//rework?
-			if(!edgeExists(toEdgeTF) && id2!=null) {
+			/*if(!edgeExists(toEdgeTF) && id2!=null) {
 				searchObj = new Searchobject(id2, null, null, null);
 				searchList.add(index+1,searchObj);
 				newLine = "Kante " + id2 + ":      " + "Laenge: " + null + ",      Winkel: " + null
 						+ "   zur Kante " + null;
 				listModel.add(index+1,newLine);
 
-			}
+			}*/
 		
 
 			edgeTF.setText("");
@@ -896,9 +901,8 @@ public class GUI extends javax.swing.JFrame {
 			namesList.add(names);
 			
 		}
-		//remove later
-		//outputGUI outg2 = new outputGUI(imageList);
-		//outg2.setVisible(true);
+
+		modelle.buildObjects(namesList);
 
 	}
 	

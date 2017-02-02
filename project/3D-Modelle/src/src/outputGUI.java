@@ -45,15 +45,13 @@ import java.awt.Color;
 public class outputGUI extends javax.swing.JFrame {
 
 	//members
-	private int width=1200;
-	private int height = 700;
-	Insets insets = new Insets(20,20,45,25);
-	private JLayeredPane pane =  new JLayeredPane(); //getContentPane();
-	//this.setContentPane(pane);
+	private int width;
+	private int height;
+	Insets insets;
+	private JLayeredPane pane; 
 	private Dimension size;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable;
-    //remove later
     private double lenInt;
     private double angInt;
     private int imgsize;
@@ -61,102 +59,12 @@ public class outputGUI extends javax.swing.JFrame {
     private int mPtop;
     private int mPright;
     private int mPbottom;
-	private List<Foundobject> foundList = new ArrayList<Foundobject>();
+	private List<Foundobject> foundList;
 	private Image defimg;
 	private Graphics g;
-	private javax.swing.JButton[] butArr;
-
-    
-    private JPanel mPanel = new JPanel(){
-    	/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		@Override
-        public void paintComponent(Graphics g) {
-            super.paintComponent(g); 
-            g.setFont(new Font("default", Font.BOLD, 16));
-            // Draw Text
-            int w = getWidth()/2;
-            int h = getHeight()/2;
-            
-            //x-Axis   
-            g.drawLine(imgsize/2,h,getWidth()-imgsize/2,h);
-            //y-Axis
-            g.drawLine(w,imgsize/2,w,getHeight()-imgsize/2);
-            
-            // create hatch marks for x axis.             
-            for (int i = 0; i <11; i++) {
-               int y = h;
-               int x = w+i*(getWidth()-imgsize)/20;
-               g.drawLine(x, y, x, y+5);
-               BigDecimal mark = new BigDecimal(String.valueOf((double)i*lenInt/10)).setScale(2, BigDecimal.ROUND_HALF_UP).stripTrailingZeros();
-               g.setColor(Color.blue);
-
-               g.drawString(mark.toString(),x,y-2);
-               
-               x = w-i*(getWidth()-imgsize)/20;
-               g.drawLine(x, y, x, y+5);       
-               g.drawString(mark.toString(),x,y-2);    
-            }
-            
-            
-            // create hatch marks for y axis.             
-            for (int i = 0; i <11; i++) {
-               int x = w;
-               int y = h+i*(getHeight()-imgsize)/20;
-               g.drawLine(x-5, y, x, y);
-               BigDecimal mark = new BigDecimal(String.valueOf((double)i*angInt/10)).setScale(2, BigDecimal.ROUND_HALF_UP).stripTrailingZeros();
-               if(i!=0) g.drawString(mark.toString(),x+2,y);
-               
-               y = h-i*(getHeight()-imgsize)/20;
-               g.drawLine(x-5, y, x, y);
-               if(i!=0) g.drawString(mark.toString(),x+2,y);
-               
-               
-            }
-            
-        } 
-    };
-    
-
-
-
-    javax.swing.table.DefaultTableModel tm = new javax.swing.table.DefaultTableModel(
-    new Object [][] {
-     //   {null, null, null, null},
-      //  {null, null, null, null},
-      //  {null, null, null, null}
-    },
-    new String [] {
-        "ID", "LenSim", "AngleSim"
-    }
-            
-    ){
-
-   /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-@Override
-   public boolean isCellEditable(int row, int column) {
-     
-       return false;
-   }
-
-@Override
-public Class<?> getColumnClass(int column) {
-    if (column == 0) {
-        return Integer.class;
-    }
-    if (column == 1 || column == 2) {
-        return Double.class;
-    }
-    return super.getColumnClass(column);
-}
-    };
+	private javax.swing.JButton[] butArr;  
+    private JPanel mPanel;
+    private javax.swing.table.DefaultTableModel tm;
     
 
 
@@ -166,7 +74,21 @@ public Class<?> getColumnClass(int column) {
     
 
     public outputGUI(List<Foundobject> foundList, double lenInt, double angInt, int width, int height ) {
+    	if(foundList.size()==0) {
+    		
+    		javax.swing.JOptionPane.showMessageDialog(this, "Es wurden keine Objekte gefunden.","keine Objekte gefunden", javax.swing.JOptionPane.ERROR_MESSAGE);
+    	
 
+    		dispose();
+    		setVisible(false);
+    		
+    		
+    	}
+    	else {
+    	
+    	
+    	
+    	pane =  new JLayeredPane();		
 
     	this.lenInt = lenInt;
     	this.angInt = angInt;
@@ -175,6 +97,12 @@ public Class<?> getColumnClass(int column) {
     	this.height=height;
     	setContentPane(pane);
 
+      
+        
+        
+        setSize(width /*+ insets.left + insets.right*/,
+                height/* + insets.top + insets.bottom*/);
+      	initComponents();
         tm.setRowCount(foundList.size());
         tm.setColumnCount(3);
         for (int i = 0; i<foundList.size();i++) {
@@ -182,16 +110,13 @@ public Class<?> getColumnClass(int column) {
             tm.setValueAt(foundList.get(i).getLenSim(),i,1);
             tm.setValueAt(foundList.get(i).getAngSim(),i,2);           
         }
-        
-        
-        setSize(width /*+ insets.left + insets.right*/,
-                height/* + insets.top + insets.bottom*/);
-      	initComponents();
 
 
 		setVisible(true);
 		setResizable(false);
 		drawAll();
+    	}
+    	
 	
     
     }
@@ -202,6 +127,9 @@ public Class<?> getColumnClass(int column) {
 
     //methods
     private void initComponents() {
+    	//width=1200;
+    	//height=700;
+    	insets = new Insets(20,20,45,25);
 
     	imgsize =(int)(getHeight()/6);
     	butArr =new javax.swing.JButton[foundList.size()];
@@ -212,20 +140,109 @@ public Class<?> getColumnClass(int column) {
     	 g.setColor(Color.white);
          g.fillRect(imgsize/4,imgsize/4,imgsize/2,imgsize/2);
     	g.setColor(Color.black);
-    	g.drawString("Kein Bild", imgsize/3, imgsize*2/3);
+    	g.drawString("Kein", imgsize/3, imgsize*1/2);
+    	g.drawString("Bild", imgsize/3, imgsize*1/2+15);
+
     	g.drawLine(imgsize/4, imgsize/4, imgsize*3/4, imgsize/4);
     	g.drawLine(imgsize/4, imgsize*3/4, imgsize*3/4, imgsize*3/4);
     	
     	g.drawLine(imgsize/4, imgsize/4, imgsize/4, imgsize*3/4);
     	g.drawLine(imgsize*3/4, imgsize/4, imgsize*3/4, imgsize*3/4);
     	
-    	
+    	mPanel = new JPanel(){
+        	/**
+    		 * 
+    		 */
+    		private static final long serialVersionUID = 1L;
+
+    		@Override
+            public void paintComponent(Graphics g) {
+                super.paintComponent(g); 
+                g.setFont(new Font("default", Font.BOLD, 16));
+                // Draw Text
+                int w = getWidth()/2;
+                int h = getHeight()/2;
+                
+                //x-Axis   
+                g.drawLine(imgsize/2,h,getWidth()-imgsize/2,h);
+                //y-Axis
+                g.drawLine(w,imgsize/2,w,getHeight()-imgsize/2);
+                
+                // create hatch marks for x axis.             
+                for (int i = 0; i <11; i++) {
+                   int y = h;
+                   int x = w+i*(getWidth()-imgsize)/20;
+                   g.drawLine(x, y, x, y+5);
+                   BigDecimal mark = new BigDecimal(String.valueOf((double)i*lenInt/10)).setScale(2, BigDecimal.ROUND_HALF_UP).stripTrailingZeros();
+                   g.setColor(Color.blue);
+
+                   g.drawString(mark.toString(),x,y-2);
+                   
+                   x = w-i*(getWidth()-imgsize)/20;
+                   g.drawLine(x, y, x, y+5);       
+                   g.drawString(mark.toString(),x,y-2);    
+                }
+                
+                
+                // create hatch marks for y axis.             
+                for (int i = 0; i <11; i++) {
+                   int x = w;
+                   int y = h+i*(getHeight()-imgsize)/20;
+                   g.drawLine(x-5, y, x, y);
+                   BigDecimal mark = new BigDecimal(String.valueOf((double)i*angInt/10)).setScale(2, BigDecimal.ROUND_HALF_UP).stripTrailingZeros();
+                   if(i!=0) g.drawString(mark.toString(),x+2,y);
+                   
+                   y = h-i*(getHeight()-imgsize)/20;
+                   g.drawLine(x-5, y, x, y);
+                   if(i!=0) g.drawString(mark.toString(),x+2,y);
+                   
+                   
+                }
+                
+            } 
+        };
+        
+        tm = new javax.swing.table.DefaultTableModel(
+        	    new Object [][] {
+        	     //   {null, null, null, null},
+        	      //  {null, null, null, null},
+        	      //  {null, null, null, null}
+        	    },
+        	    new String [] {
+        	        "ID", "LenSim", "AngleSim"
+        	    }
+        	            
+        	    ){
+
+        	   /**
+        			 * 
+        			 */
+        			private static final long serialVersionUID = 1L;
+
+        	@Override
+        	   public boolean isCellEditable(int row, int column) {
+        	     
+        	       return false;
+        	   }
+
+        	@Override
+        	public Class<?> getColumnClass(int column) {
+        	    if (column == 0) {
+        	        return Integer.class;
+        	    }
+        	    if (column == 1 || column == 2) {
+        	        return Double.class;
+        	    }
+        	    return super.getColumnClass(column);
+        	}
+        	    };
+        
 
 
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable = new javax.swing.JTable();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+       //setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         
         
 		pane.setLayout(null);
