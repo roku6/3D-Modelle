@@ -73,9 +73,9 @@ public class SearchLogic {
 			cypher+=temp;
 			//Defining values to look for
 			//Length
-			temp=  (sObject.getLength()-toleranceLength)+"<"+"n"+ sObject.getId1().toString()+".LENGTH"+"<"+(sObject.getLength()+toleranceLength) + " AND "+
+			temp=  (sObject.getLength()-toleranceLength)+"<="+"n"+ sObject.getId1().toString()+".LENGTH"+"<="+(sObject.getLength()+toleranceLength) + " AND "+
 			//Angles
-			(sObject.getAngle()-toleranceAngle)+"<"+"r"+ sObject.getId1().toString()+".ANGLE"+"<"+(sObject.getAngle()+toleranceAngle) + " AND ";
+			(sObject.getAngle()-toleranceAngle)+"<="+"r"+ sObject.getId1().toString()+".ANGLE"+"<="+(sObject.getAngle()+toleranceAngle) + " AND ";
 			whereClausesTemp+=temp;
 			//Defining returns
 			temp=
@@ -97,7 +97,7 @@ public class SearchLogic {
 		
 		//Concatenate all substrings
 		cypher+=(whereClausesTemp+=returnsTemp);
-		
+		System.out.println(cypher);
 		return cypher;
 	}
 	
@@ -193,6 +193,7 @@ public class SearchLogic {
 			}
 		}
 		result.close();
+		System.out.println(foundObjectsArray.size()+" Objects found");
 		return foundObjectsArray;
 	}
 

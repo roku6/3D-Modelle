@@ -914,6 +914,14 @@ public class GUI extends javax.swing.JFrame {
 		
 	}
 	
+	/**
+	 * Close DBController on exit
+	 */
+	@Override
+	public void dispose() {
+	    modelle.getDBController().shutdownDB();
+	    super.dispose();
+	}
 
 	
 

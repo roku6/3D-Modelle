@@ -127,8 +127,8 @@ public class outputGUI extends javax.swing.JFrame {
 
     //methods
     private void initComponents() {
-    	//width=1200;
-    	//height=700;
+//    	width=1200;
+//    	height=700;
     	insets = new Insets(20,20,45,25);
 
     	imgsize =(int)(getHeight()/6);
