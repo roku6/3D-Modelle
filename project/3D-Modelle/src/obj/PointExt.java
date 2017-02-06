@@ -1,5 +1,6 @@
 package obj;
 
+
 import java.util.ArrayList;
 
 /**
@@ -7,13 +8,14 @@ import java.util.ArrayList;
  *
  * @param <T>
  */
-public class PointExt<T extends Number> extends Point<T>
+public class PointExt<T extends Number> extends Point<T> implements Comparable<PointExt<T>>
 {
 	private static int number = 0;
 	private int id = 0;
 	private ArrayList<PointExt<Double>> neighbourList = new ArrayList<>(); 
 	private ArrayList<PointExt<Double>> cornerPointList = new ArrayList<>();
 	private double angle = 0;
+	private double epsilon = 0.0001;
 	
 	public int getId() 										{return id;}
 	public ArrayList<PointExt<Double>> getNeighbourList() 	{return neighbourList;}
@@ -71,6 +73,35 @@ public class PointExt<T extends Number> extends Point<T>
 	{
 		cornerPointList.add(aPoint);
 	}
+	/**
+	 * 
+	 * @param angle
+	 * @return
+	 */
+	public boolean compareAngle(double angle)
+	{
+		if (Math.abs(this.getAngle() - angle) <= epsilon)	return true;
+		else return false;
+	}
+
+	@Override
+	public int compareTo(PointExt<T> aPointExt)
+	{
+		int comparisonX = this.getAVertex().getId() > aPointExt.getAVertex().getId() ? 1 : 
+							this.getAVertex().getId() < aPointExt.getAVertex().getId() ? -1 : 0; 
+		if (comparisonX != 0) return comparisonX;
+		else 
+		{
+			int comparisonY = this.getATexture().getId() > aPointExt.getATexture().getId() ? 1 : 
+								this.getATexture().getId() < aPointExt.getATexture().getId() ? -1 : 0; 
+			if (comparisonY != 0) return comparisonY;
+			else
+				return this.getANormal().getId() > aPointExt.getANormal().getId() ? 1 : 
+						this.getANormal().getId() < aPointExt.getANormal().getId() ? -1 : 0; 
+		}
+
+	}
+	
 	@Override
 	public boolean equals(Object obj)
 	{

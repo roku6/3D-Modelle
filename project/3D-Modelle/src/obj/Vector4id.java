@@ -9,7 +9,7 @@ public class Vector4id<T extends Number> extends Vector4<T>
 {
 	private static int number = 0;
 	protected int id = 0;
-	private double epsilon = 0.01;
+	private double epsilon = 0.00001;
 	
 	public int getId() 				{return id;}
 	public void setId(int id) 		{this.id = id;}

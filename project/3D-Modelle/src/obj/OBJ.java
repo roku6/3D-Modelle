@@ -32,7 +32,7 @@ public class OBJ
 	private int faceIndicesNr;					//Amount of indices of a face (2-4)
 	private int pointsNr;						//Amount of points
 	private int facesNr; 						//Amount of faces
-	private ArrayList<Point<Double>> pointList;	//Array of all points
+	private ArrayList<PointExt<Double>> pointList;	//Array of all points
 	private ArrayList<Face> faceList;			//Array of all faces
 	
 	private ArrayList<Vertex<Double>> vertexList = new ArrayList<>();	//Format x/y/z
@@ -43,7 +43,7 @@ public class OBJ
 	public void setFaceIndicesNr(int faceIndicesNr)				{this.faceIndicesNr = faceIndicesNr;}
 	public void setPointsNr(int pointsNr)						{this.pointsNr = pointsNr;}
 	public void setFacesNr(int facesNr)							{this.facesNr = facesNr;}
-	public void setPointList(ArrayList<Point<Double>> pointList){this.pointList = pointList;}
+	public void setPointList(ArrayList<PointExt<Double>> pointList){this.pointList = pointList;}
 	public void setFaceList(ArrayList<Face> faceList)			{this.faceList = faceList;}		
 	
 	public void setVertexList(ArrayList<Vertex<Double>> vertexList) 	{this.vertexList = vertexList;}
@@ -54,7 +54,7 @@ public class OBJ
 	public int getFaceIndicesNr()					{return faceIndicesNr;}
 	public int getPointsNr()						{return pointsNr;}
 	public int getFacesNr()							{return facesNr;}
-	public ArrayList<Point<Double>> getPointList()	{return pointList;}
+	public ArrayList<PointExt<Double>> getPointList()	{return pointList;}
 	public ArrayList<Face> getFaceList()			{return faceList;}		
 	
 	public ArrayList<Vertex<Double>> getVertexList() 	{return vertexList;}
@@ -89,7 +89,7 @@ public class OBJ
 	 * @param ArrayList<Point<Double>> pointList
 	 * @param ArrayList<Face> faceList
 	 **/
-	public OBJ(int pointsNr, int facesNr, ArrayList<Point<Double>> pointList, ArrayList<Face> faceList)
+	public OBJ(int pointsNr, int facesNr, ArrayList<PointExt<Double>> pointList, ArrayList<Face> faceList)
 	{
 		setFaceIndicesNr(faceList.get(0).getPointExtList().size());
 		setPointsNr(pointsNr);

@@ -71,7 +71,7 @@ public abstract class Point<T extends Number>
 		if (aPoint != null)
 		{
 			if (this.getAVertex().getId() == aPoint.getAVertex().getId() &&
-				this.getATexture().getId() == aPoint.getATexture().getId() &&
+				//this.getATexture().getId() == aPoint.getATexture().getId() &&
 				this.getANormal().getId() == aPoint.getANormal().getId())
 			{
 				return true;
@@ -87,7 +87,7 @@ public abstract class Point<T extends Number>
 		if (aPoint != null)
 		{
 		if (this.getAVertex().equals(aPoint.getAVertex()) &&
-			this.getATexture().equals(aPoint.getATexture()) &&
+			//this.getATexture().equals(aPoint.getATexture()) &&
 			this.getANormal().equals(aPoint.getANormal()))
 			{
 				return true;			

@@ -48,7 +48,7 @@ public class Edge<T extends Number>
 		this.vertex0 = point0.getAVertex();
 		this.vertex1 = point1.getAVertex();
 		calculateLength();
-		calculateRVector();
+		//calculateRVector();
 	}
 
 	Edge(Vertex<T> vertex0, Vertex<T> vertex1)
@@ -58,7 +58,7 @@ public class Edge<T extends Number>
 		this.vertex0 = vertex0;
 		this.vertex1 = vertex1;
 		calculateLength();
-		calculateRVector();
+		//calculateRVector();
 	}
 
 	private void calculateLength()
@@ -70,9 +70,12 @@ public class Edge<T extends Number>
 								Operation.powerOf(Operation.sub2(vertex1.getZ(), vertex0.getZ()), 2.0),
 								Operation.powerOf(Operation.sub2(vertex1.getW(), vertex0.getW()), 2.0)));
 	}
+	
+	
 	/**
 	 * Normalized Directionvector
 	 */
+	/*
 	private void calculateRVector()
 	{
 		rVector.setX(1.0/this.length * (double)Operation.sub2(vertex1.getX(),(double)vertex0.getX()));
@@ -80,6 +83,7 @@ public class Edge<T extends Number>
 		rVector.setZ(1.0/this.length * (double)Operation.sub2(vertex1.getZ(),(double)vertex0.getZ()));
 		rVector.setW(1.0/this.length * (double)Operation.sub2(vertex1.getW(),(double)vertex0.getW()));
 	}
+	*/
 	
 	/**
 	 * 

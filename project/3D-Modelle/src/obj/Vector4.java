@@ -190,7 +190,8 @@ public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 															),
 				 							(T) Float.valueOf(1.f/4.f)));		
 	}
-		
+	
+	@Override
 	public int compareTo(Vector4<T> aVector4)
 	{
 		int comparisonX = (double)this.getX() > (double)aVector4.getX() ? 1 : 

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Login
+ * @author Robert Külpmann
  *
  * @param <T>
  */
@@ -13,14 +13,11 @@ public class VertexNormal<T extends Number>
 {
 	private Vertex<T> vertex;
 	private Map<Normal<T>, Double> normalMap = new HashMap<>();
-	private int normalAmount;
 	
 	public Vertex<T> getVertex() 					{return vertex;}
 	public Map<Normal<T>, Double> getNormalMap() 	{return normalMap;}
-	public int getNormalAmount() 					{return normalAmount;}
 	public void setVertex(Vertex<T> vertex) 						{this.vertex = vertex;}
 	public void setNormalList(Map<Normal<T>, Double> normalMap) 	{this.normalMap = normalMap;}
-	public void setNormalAmount(int normalAmount) 					{this.normalAmount = normalAmount;}
 	
 	
 	public VertexNormal(){}
