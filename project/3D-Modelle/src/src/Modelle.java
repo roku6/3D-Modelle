@@ -19,8 +19,8 @@ public class Modelle
 private static Modelle instance = null;
 private int width, height;
 private double lenInt, angInt;
-private File dbpath = new File("../../database");
-private DBController dbCtrl = DBController.getInstance(dbpath);	
+private static DBController dbCtrl;
+private static BuildLogic aBuildLogic;
 
 public static Modelle getInstance()
 {
@@ -29,8 +29,28 @@ public static Modelle getInstance()
 }
 	public static void main(String [ ] args)
 	{
+		long tStart = System.currentTimeMillis(); //to keep track of time
 		
+		/**
+		 * Initializing BuildLogic and DBController
+		 */		
+		System.out.print("Creating BUILDLogic...");
+		aBuildLogic = BuildLogic.getBuildLogic();
+		System.out.println("finished.");
+		System.out.print("Loading DBController...");
+		File dbpath = new File("../../database");
+		dbCtrl = DBController.getInstance(dbpath);	
+		System.out.println("finished.");
+		dbCtrl.clearAll();
 
+		//Initialize aFigure for Testing
+		/*
+		String[] urls	= {"../../resources/cube_hole_100x100x100.obj", 
+		              	   "../../resources/cube_100x100x100.txt", 
+		              	   "../../resources/cube_100x100x100.png"};
+		namesList.add(urls);
+		*/
+		
 //	}
 		
 //		//-------------------------------Starting GUI
@@ -38,57 +58,10 @@ public static Modelle getInstance()
 		System.out.println("Starting GUI...");
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				new GUI().setVisible(true);
+				new InputGUI().setVisible(true);
 			}
 		});
 		
-/*		Just for testing 
-		ArrayList<String[]> urlList = new ArrayList<>(); 
-		
-		long tStart = System.currentTimeMillis(); //to keep track of time
-
-		/**
-		 * Initializing BuildLogic and DBController
-		 */
-		/*
-		System.out.print("Creating BUILDLogic...");
-		BuildLogic aBuildLogic = BuildLogic.getBuildLogic();
-		System.out.println("finished.");
-		System.out.print("Loading DBController...");
-		File dbpath = new File("../../database");
-		DBController dbCtrl = DBController.getInstance(dbpath);	
-		System.out.println("finished.");
-		dbCtrl.clearAll();
-		
-		//Initialize aFigure for Testing
-		String[] urls	= {"../../resources/cube_hole_100x100x100.obj", 
-		              	   "../../resources/cube_100x100x100.txt", 
-		              	   "../../resources/cube_100x100x100.png"};
-		urlList.add(urls);
-				
-		for (String[] url : urlList)
-		{
-			String objURL = url[0];
-			String descriptionURL = url[1];
-			String pictureURL = url[2];
-			System.out.print("Build GeometricFigure from File " + objURL + "...");
-			aBuildLogic.buildAFigure(objURL,descriptionURL,pictureURL);
-			System.out.println("finished.");
-			aBuildLogic.getGeometricFigure().setObjectID(1);
-			try
-			{
-				System.out.print("Writing OBJ to Database...");
-				dbCtrl.writeObjToDB(aBuildLogic.getGeometricFigure());
-				System.out.println("finished.");
-			}	 
-			catch (Exception e) 
-			{
-				e.printStackTrace();
-				System.out.println("WriteObjToDB() failed");
-				dbCtrl.shutdownDB();
-			}
-		}						
-*/
 		//vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvTESTING SEARCHLOGICvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 //		
 //		ArrayList<Searchobject> aSObjList = new ArrayList<Searchobject>();
@@ -139,16 +112,39 @@ public static Modelle getInstance()
 	
 	//to be used by searchlogic after finished search
 	public void displayOutput(List<Foundobject> foundList) {
-		outputGUI outg = new outputGUI(foundList, lenInt,angInt, width, height);
+		OutputGUI outg = new OutputGUI(foundList, lenInt,angInt, width, height);
 	}
 	
 	public void deleteObjFromDB(String id) {
 		dbCtrl.removeByOBJ_ID(Integer.parseInt(id));
 		}
 	
-	public void buildObjects(List<String[]> namesList) {
-		// TODO Auto-generated method stub
-		
+	public void buildObjects(List<String[]> namesList) 
+	{				
+		int id = 0;
+		for (String[] url : namesList)
+		{
+			String objURL = url[0];
+			String descriptionURL = url[1];
+			String pictureURL = url[2];
+			System.out.print("Build GeometricFigure from Files " + objURL + "...");
+			aBuildLogic.buildAFigure(objURL,descriptionURL,pictureURL);
+			System.out.println("finished.");
+			id++;
+			aBuildLogic.getGeometricFigure().setObjectID(id);
+			try
+			{
+				System.out.print("Writing OBJ to Database...");
+				dbCtrl.writeObjToDB(aBuildLogic.getGeometricFigure());
+				System.out.println("finished.");
+			}	 
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+				System.out.println("WriteObjToDB() failed");
+				dbCtrl.shutdownDB();
+			}
+		}								
 	}
 	
 	public DBController getDBController(){

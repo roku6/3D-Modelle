@@ -92,6 +92,12 @@ public class BuildLogic
 	private String loadDescription(String descriptionURL)
 	{
 		String s = "", description = "";
+		if (descriptionURL == null)
+		{
+			System.out.println("Can't load File! No Description File available.");
+			description = "No Description available.";
+			return description;						
+		}
 		try
 		{
 			File aFile = new File(descriptionURL);
@@ -108,7 +114,7 @@ public class BuildLogic
 		}
 		catch(IOException e)
 		{
-			System.out.println("Can't load File!");
+			System.out.println("Can't load File! Error in File!");
 			description = "No Description available.";
 			return description;
 		}
