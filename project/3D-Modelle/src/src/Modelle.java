@@ -20,6 +20,7 @@ private static Modelle instance = null;
 private int width, height;
 private double lenInt, angInt;
 private static DBController dbCtrl;
+private static SearchLogic theSearchLogic = SearchLogic.getInstance();
 private static BuildLogic aBuildLogic;
 
 public static Modelle getInstance()
@@ -41,7 +42,7 @@ public static Modelle getInstance()
 		File dbpath = new File("../../database");
 		dbCtrl = DBController.getInstance(dbpath);	
 		System.out.println("finished.");
-		dbCtrl.clearAll();
+		//dbCtrl.clearAll();
 
 		//Initialize aFigure for Testing
 		/*
@@ -52,6 +53,7 @@ public static Modelle getInstance()
 		*/
 		
 //	}
+		dbCtrl.printOBJAmount();
 		
 //		//-------------------------------Starting GUI
 		
@@ -101,13 +103,17 @@ public static Modelle getInstance()
 	
 	
 	public void search( List<Searchobject> searchList, double angInt, double lenInt, int width, int height) {
-		SearchLogic theSearchLogic = SearchLogic.getInstance(new ArrayList<Searchobject>(searchList), lenInt,angInt);
-		String cypher = theSearchLogic.generateQuery();
-		displayOutput(theSearchLogic.calcSimilarity(dbCtrl.executeQuery(cypher)));
 		this.width = width;
 		this.height = height;
 		this.lenInt = lenInt;
 		this.angInt = angInt;
+		
+		theSearchLogic.setToleranceAngle(angInt);
+		theSearchLogic.setToleranceLength(lenInt);
+		theSearchLogic.setSearchObjects((ArrayList<Searchobject>) searchList);
+		String cypher = theSearchLogic.generateQuery();
+		displayOutput(theSearchLogic.calcSimilarity(dbCtrl.executeQuery(cypher)));
+
 	}
 	
 	//to be used by searchlogic after finished search
@@ -137,6 +143,7 @@ public static Modelle getInstance()
 				System.out.print("Writing OBJ to Database...");
 				dbCtrl.writeObjToDB(aBuildLogic.getGeometricFigure());
 				System.out.println("finished.");
+				dbCtrl.printOBJAmount();
 			}	 
 			catch (Exception e) 
 			{

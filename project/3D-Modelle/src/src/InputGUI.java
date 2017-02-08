@@ -726,7 +726,7 @@ public class InputGUI extends javax.swing.JFrame {
 
 		if (valuesMatch(id1, length, angle, id2, searchList)) {
 			// will possibly bug
-			Searchobject searchObj = new Searchobject(Math.min(id1, id2), length, angle, Math.max(id1, id2));
+			Searchobject searchObj = new Searchobject(id1, length, angle,id2);
 
 			if (searchList.size() <= index)
 				searchList.add(index, searchObj);

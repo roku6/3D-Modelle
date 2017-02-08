@@ -184,7 +184,7 @@ public class DBController {
 		
 		executeQuery(cypher);
 	}
-	
+
 	
 	/**
 	 * Writes an GeometricFigure object to the DB.
@@ -295,6 +295,16 @@ public class DBController {
 		return usedIds;
 	}
 
-	
+	/**
+	 * 
+	 */
+	public void printOBJAmount(){
+		String result;
+		try ( Transaction tx = graphDb.beginTx() ){
+		     result= ( graphDb.execute("MATCH (n) Return COUNT(distinct n.OBJ_ID)").resultAsString());
+		     tx.success();
+		 }
+		System.out.println(result);
+	}
 }
 

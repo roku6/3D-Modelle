@@ -35,6 +35,13 @@ public class SearchLogic {
 		toleranceAngle= tolAng;
 	}
 	
+	/**
+	 * Empty constructor
+	 */
+	private SearchLogic(){
+		
+	}
+	
 	
 	//Methods
 
@@ -53,6 +60,16 @@ public class SearchLogic {
 		    return SearchLogic.instance;
 		 }
 
+	/**
+	 * Same for empty cons.
+	 */
+	public static SearchLogic getInstance () {
+	    if (SearchLogic.instance == null) {
+	    	SearchLogic.instance = new SearchLogic ();
+	    }
+	    return SearchLogic.instance;
+	 }
+	
 	
 	/**
 	 *This method generates a CQL query string based on the searchObjects ArrayList Member.
