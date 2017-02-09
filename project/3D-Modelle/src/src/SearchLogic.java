@@ -2,8 +2,6 @@ package src;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Set;
-
 import org.neo4j.graphdb.Result;
 
 /**
@@ -76,14 +74,14 @@ public class SearchLogic {
 	 *To realize the ability of searching with a given tolerance, the query consists of a match for a (relatively)long list of node-rel-node patterns
 	 *and a (relatively)long where clause. 
 	 *The return of the query is the entire node and rel.Angle. Columns look like this:
-	 * n1.Length | n1.Url | n1.Description | n1.ObjectId | r1.Angle | n2.Length | n2.Url | ... | ... 
+	 * n1.Url | n1.Description | n1.ObjectId |  n1.Length | r1.Angle | n2.Length | r2.Angle | n3.Length | r3.Angle | ... | ... 
 	 *
 	 *@return The CQL string to query for the properties given in the searchObjects ArrayList
 	 */
 	public String generateQuery (){
 		String cypher="MATCH ";
 		String whereClausesTemp = " WHERE ";
-		String returnsTemp =" RETURN DISTINCT ";
+		String returnsTemp =" RETURN DISTINCT n1.URL, n1.DESCRIPTION, n1.OBJECT_ID, ";
 		for (Searchobject sObject : searchObjects){
 			//Defining pattern to look for
 			String temp = "(n"+ sObject.getId1().toString()+":EDGE)-[r"+sObject.getId1().toString()+": CONNECTED]-(n"+sObject.getId2().toString()+"), ";
@@ -97,13 +95,10 @@ public class SearchLogic {
 			//Defining returns
 			temp=
 			"n"+ sObject.getId1().toString()+".LENGTH"+", "+
-			"n"+ sObject.getId1().toString()+".URL"+", "+
-			"n"+ sObject.getId1().toString()+".DESCRIPTION"+", "+
-			"n"+ sObject.getId1().toString()+".OBJECT_ID"+", "+
 			"r"+sObject.getId1().toString()+".ANGLE"+", "; 
 			returnsTemp+=temp;
 		}
-		// the generated substrings must be shortened to not include the last, redundant comma/space
+		// the generated substrings must be shortened to not include the last, redundant comma/space/AND
 		String temp =cypher.substring(0, cypher.length()-2);
 		cypher = temp;
 		temp= whereClausesTemp.substring(0, whereClausesTemp.length()-4);
@@ -122,8 +117,8 @@ public class SearchLogic {
 	/**
 	 * This Method calculates the similarity (rather derivation) to the exact pattern entered for query for every row in result and
 	 * creates an array of Foundobjects containing only the most similar representation per Object found.
-	 * To calculate the derivation, the lengths and angles from both the wanted and the found patterns are added up and the difference divided
-	 * by the amount of edges/angles to normalize the result.  
+	 * To calculate the derivation, the lengths and angles from both the wanted and the found patterns are compared in pairs and the sum of those 
+	 * differences divided by the amount of edges/angles to normalize the result.  
 	 * 
 	 * @param result The result of a CQL query
 	 * @return An ArrayList of Foundobjects, containing only the most similar representation per Object found
@@ -134,59 +129,83 @@ public class SearchLogic {
 		// compare patternFromDB to each Searchobject "object" in this.Searchobjects
 		// find a way to measure similarity (subtraction?) and 
 		// return an average for each pattern found^
+		ArrayList<Double> expectedAnglesArray= new ArrayList<>();
+		ArrayList<Double> expectedLengthsArray = new ArrayList<>();
+		ArrayList<Double> foundAnglesArray = new ArrayList<>();
+		ArrayList<Double> foundLengthsArray = new ArrayList<>();
 		ArrayList<Foundobject> foundObjectsArray= new ArrayList<Foundobject>();
-		int foundId=0;
-		double foundAngleSum=0;
-		double foundLengthSum=0;
 		String foundUrl="";
 		String foundDescription="";
-		
-		double expectedAngleSum=0;
-		double expectedLengthSum=0;
-		
+		Integer foundId = 0;
 		Double devLength=0.;
 		Double devAngle=0.;
 		
-		//Calc expected sum
+		//Store expected values
 		for (Searchobject sObj : searchObjects){
-			expectedAngleSum += sObj.getAngle();
-			expectedLengthSum += sObj.getLength();
+			expectedAnglesArray.add(sObj.getAngle());
+			expectedLengthsArray.add(sObj.getLength());
 		}
 		
 		//Calc found sum for each row of the result table and gather information like object id, description etc
 		while (result.hasNext()){
 			foundId=0;
-			foundAngleSum=0;
-			foundLengthSum=0;
+			foundAnglesArray.clear();
+			foundLengthsArray.clear();
+			devLength=0.;
+			devAngle=0.;
 
-			Set<Map.Entry<String,Object>> entries = result.next().entrySet();
-			for (Map.Entry<String, Object> entry : entries ){
-				
-				if (entry.getKey().contains("OBJECT_ID")){
-					if (foundId==0){
-					foundId=(int) entry.getValue();
-				    }
-				}
-				else if (foundUrl=="") {
-					if (entry.getKey().contains("URL")) {
-						foundUrl = entry.getValue().toString();
-					} 
-				}
-				else if (foundDescription==""){
-					if (entry.getKey().contains("DESCRIPTION")) {
-						foundDescription = entry.getValue().toString();
-					} 
-				}
-				else if (entry.getKey().contains("LENGTH")){
-					foundLengthSum += (double)entry.getValue();
-				}
-				else if(entry.getKey().contains("ANGLE")){
-					foundAngleSum += (double)entry.getValue();
-				}
+			Map<String,Object> rowFromResult = result.next();
+			
+			foundId= (int) rowFromResult.get("n1.OBJECT_ID");
+			//rowFromResult.remove("n1.OBJECT_ID");
+			foundDescription = rowFromResult.get("n1.DESCRIPTION").toString();
+			//rowFromResult.remove("n1.DESCRIPTION");
+			foundUrl= rowFromResult.get("n1.URL").toString();
+			//rowFromResult.remove("n1.URL");
+			
+			//Now, the result map only contains n1.Length, r1.Angle, n2.Length, [...]
+			//Extract those values to the "foundArrays"
+			rowFromResult.forEach( (k,v)  ->   {if(k.contains("LENGTH")){foundLengthsArray.add((Double) v);} else if(k.contains("ANGLE")) {foundAnglesArray.add((Double)v);}}   );
+			
+			
+//			Set<Map.Entry<String,Object>> entries = result.next().entrySet();
+//			for (Map.Entry<String, Object> entry : entries ){
+//				
+//				if (entry.getKey().contains("OBJECT_ID")){
+//					if (foundId==0){
+//					foundId=(int) entry.getValue();
+//				    }
+//				}
+//				else if (foundUrl=="") {
+//					if (entry.getKey().contains("URL")) {
+//						foundUrl = entry.getValue().toString();
+//					} 
+//				}
+//				else if (foundDescription==""){
+//					if (entry.getKey().contains("DESCRIPTION")) {
+//						foundDescription = entry.getValue().toString();
+//					} 
+//				}
+//				else if (entry.getKey().contains("LENGTH")){
+//					foundLengthsArray += (double)entry.getValue();
+//				}
+//				else if(entry.getKey().contains("ANGLE")){
+//					foundAnglesArray += (double)entry.getValue();
+//				}
+//			}
+			
+			//Are found and expexted arrays match in size?
+			if(expectedLengthsArray.size()!=foundLengthsArray.size() || expectedAnglesArray.size()!=foundAnglesArray.size() ){
+				System.out.println("!!!!!!!!!!!!!!!!!!!!!!Array missmatch  in calcSimilarity!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			}
-			//Calc derivation from expectedSums and normalize it
-			devLength = Math.abs(expectedLengthSum -foundLengthSum )/searchObjects.size();
-			devAngle  = Math.abs(expectedAngleSum  -foundAngleSum  )/searchObjects.size();
+			
+	     	//Calc derivation from expectedSums and normalize it
+			for(int i =0; i<searchObjects.size(); i++){
+				devLength += Math.abs(expectedLengthsArray.get(i)-foundLengthsArray.get(i));
+				devAngle += Math.abs(expectedAnglesArray.get(i)-foundAnglesArray.get(i));
+			}
+     	   devLength/=searchObjects.size();
+	       devAngle/=searchObjects.size();
 
 			//Only add found object to results if the deviation is less than any existing entry for that object_id. 
 			//Combined length/angle deviation calculated using the length of the vector(devLength,devAngle). Shorter vector -> obj more likely similar

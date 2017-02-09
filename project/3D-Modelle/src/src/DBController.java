@@ -77,15 +77,20 @@ public class DBController {
 	*PROBABLY INEFFICIENT
 	*When extending this application, consider reworking the id-management to fit large DBs
 	*/
-	@SuppressWarnings("unused")
-	private void fetchUsedIds(){//TODO foreachremaining throws nullpointerexception bcs action is null
+	private void fetchUsedIds(){
 		if(!(usedIds.isEmpty())){
 			usedIds.clear();
 		}
-		ResourceIterator<Integer> tempIterator = executeQuery("MATCH (n) RETURN DISTINCT n.OBJECT_ID").columnAs("OBJECT_ID");
-		tempIterator.forEachRemaining(usedIds::add);
-		tempIterator.close();
-		
+		Result result;
+		try ( Transaction tx = graphDb.beginTx() ){
+		     result= graphDb.execute("MATCH (n) RETURN DISTINCT n.OBJECT_ID");
+			 ResourceIterator<Integer> tempIterator = result.columnAs("n.OBJECT_ID");
+			 tempIterator.forEachRemaining(usedIds::add);
+			 tempIterator.close();
+		     
+		     tx.success();
+		 }
+
 		Collections.sort(usedIds);
 	}
 	
@@ -126,7 +131,7 @@ public class DBController {
 		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase( directory );
 		registerShutdownHook( graphDb );
 		
-		//fetchUsedIds();
+		fetchUsedIds();
 	}
 	
 	
@@ -199,9 +204,9 @@ public class DBController {
 	 */
 	public void writeObjToDB(GeometricFigure figure ) throws Exception {
 		
-	//if (usedIds.contains(figure.getObjectID())) {
-	//	throw new Exception("ID already used. Check the usedIds ArrayList of your DBController and use the GeoFigure ID setter to adjust");
-	//	}  
+		if (usedIds.contains(figure.getObjectID())) {
+			throw new Exception("ID already used. Check the usedIds ArrayList of your DBController and use the GeoFigure ID setter to adjust");
+		}  
 		
 		ArrayList<RelationsDefinition> relationsArray = figure.getEdgeRelations();
         
@@ -265,7 +270,8 @@ public class DBController {
 		inserter.shutdown();
 		
 		//Now that the BatchInserter is shut down, set up the regular graphDBservice again
-		initializeDB();
+		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase( directory );
+		registerShutdownHook( graphDb );
 	}
 	
 	
@@ -299,12 +305,9 @@ public class DBController {
 	 * 
 	 */
 	public void printOBJAmount(){
-		String result;
-		try ( Transaction tx = graphDb.beginTx() ){
-		     result= ( graphDb.execute("MATCH (n) Return COUNT(distinct n.OBJ_ID)").resultAsString());
-		     tx.success();
-		 }
-		System.out.println(result);
+		int objsInDb = usedIds.size();
+	    
+		System.out.println(objsInDb + " Objects currrently stored in DB ");
 	}
 }
 
