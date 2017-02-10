@@ -157,52 +157,13 @@ public class SearchLogic {
 			Map<String,Object> rowFromResult = result.next();
 			
 			foundId= (int) rowFromResult.get("n1.OBJECT_ID");
-			//rowFromResult.remove("n1.OBJECT_ID");
 			foundDescription = rowFromResult.get("n1.DESCRIPTION").toString();
-			//rowFromResult.remove("n1.DESCRIPTION");
 			foundUrl= rowFromResult.get("n1.URL").toString();
-			//rowFromResult.remove("n1.URL");
 			
-			//Now, the result map only contains n1.Length, r1.Angle, n2.Length, [...]
-			//Extract those values to the "foundArrays"
-			rowFromResult.forEach( (k,v)  ->   {if(k.contains("LENGTH")){foundLengthsArray.add((Double) v);} else if(k.contains("ANGLE")) {foundAnglesArray.add((Double)v);}}   );
-			
-			
-//			Set<Map.Entry<String,Object>> entries = result.next().entrySet();
-//			for (Map.Entry<String, Object> entry : entries ){
-//				
-//				if (entry.getKey().contains("OBJECT_ID")){
-//					if (foundId==0){
-//					foundId=(int) entry.getValue();
-//				    }
-//				}
-//				else if (foundUrl=="") {
-//					if (entry.getKey().contains("URL")) {
-//						foundUrl = entry.getValue().toString();
-//					} 
-//				}
-//				else if (foundDescription==""){
-//					if (entry.getKey().contains("DESCRIPTION")) {
-//						foundDescription = entry.getValue().toString();
-//					} 
-//				}
-//				else if (entry.getKey().contains("LENGTH")){
-//					foundLengthsArray += (double)entry.getValue();
-//				}
-//				else if(entry.getKey().contains("ANGLE")){
-//					foundAnglesArray += (double)entry.getValue();
-//				}
-//			}
-			
-			//Are found and expexted arrays match in size?
-			if(expectedLengthsArray.size()!=foundLengthsArray.size() || expectedAnglesArray.size()!=foundAnglesArray.size() ){
-				System.out.println("!!!!!!!!!!!!!!!!!!!!!!Array missmatch  in calcSimilarity!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-			}
-			
-	     	//Calc derivation from expectedSums and normalize it
+			//Calc derivation from expectedSums and normalize it
 			for(int i =0; i<searchObjects.size(); i++){
-				devLength += Math.abs(expectedLengthsArray.get(i)-foundLengthsArray.get(i));
-				devAngle += Math.abs(expectedAnglesArray.get(i)-foundAnglesArray.get(i));
+				devLength += Math.abs(expectedLengthsArray.get(i)- (Double)rowFromResult.get("n"+(i+1)+".LENGTH"));
+				devAngle += Math.abs(expectedAnglesArray.get(i)-(Double)rowFromResult.get("r"+(i+1)+".ANGLE"));
 			}
      	   devLength/=searchObjects.size();
 	       devAngle/=searchObjects.size();
