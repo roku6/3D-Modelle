@@ -8,6 +8,7 @@ package src;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.neo4j.graphdb.Result;
@@ -136,8 +137,11 @@ public static Modelle getInstance()
 			System.out.print("Build GeometricFigure from Files " + objURL + "...");
 			aBuildLogic.buildAFigure(objURL,descriptionURL,pictureURL);
 			System.out.println("finished.");
-			id++;
-			aBuildLogic.getGeometricFigure().setObjectID(id);
+			
+			if (!dbCtrl.getUsedIds().isEmpty()){
+				aBuildLogic.getGeometricFigure().setObjectID(Collections.max(dbCtrl.getUsedIds()));
+			}else{aBuildLogic.getGeometricFigure().setObjectID(1);}
+			
 			try
 			{
 				System.out.print("Writing OBJ to Database...");
