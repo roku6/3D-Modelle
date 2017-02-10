@@ -123,7 +123,8 @@ public static Modelle getInstance()
 	}
 	
 	public void deleteObjFromDB(String id) {
-		dbCtrl.removeByOBJ_ID(Integer.parseInt(id));
+		dbCtrl.removeByOBJ_ID(id);
+		dbCtrl.printOBJAmount();
 		}
 	
 	public void buildObjects(List<String[]> namesList) 
@@ -139,7 +140,7 @@ public static Modelle getInstance()
 			System.out.println("finished.");
 			
 			if (!dbCtrl.getUsedIds().isEmpty()){
-				aBuildLogic.getGeometricFigure().setObjectID(Collections.max(dbCtrl.getUsedIds()));
+				aBuildLogic.getGeometricFigure().setObjectID(Collections.max(dbCtrl.getUsedIds()) + 1);
 			}else{aBuildLogic.getGeometricFigure().setObjectID(1);}
 			
 			try

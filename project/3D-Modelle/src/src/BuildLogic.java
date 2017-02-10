@@ -92,12 +92,6 @@ public class BuildLogic
 	private String loadDescription(String descriptionURL)
 	{
 		String s = "", description = "";
-		if (descriptionURL == null)
-		{
-			System.out.println("Can't load File! No Description File available.");
-			description = "No Description available.";
-			return description;						
-		}
 		try
 		{
 			File aFile = new File(descriptionURL);
@@ -118,8 +112,19 @@ public class BuildLogic
 			description = "No Description available.";
 			return description;
 		}
+		/*
+		if (descriptionURL == null)
+		{
+			System.out.println("Can't load File! No Description File available.");
+			description = "No Description available.";
+			return description;						
+		}
+		*/
 	}
 	
+	/**
+	 * 
+	 */
 	private void createCornerVertexList()
 	{
 		boolean addVertex = true;
@@ -146,7 +151,10 @@ public class BuildLogic
 		}
 	}
 	
-	private void removeWrongPlanes()
+	/**
+	 * 
+	 */
+	private void remove2DPlanes()
 	{
 		ListIterator<VertexNormal<Double>> iter = aCornerVertexList.listIterator();
 		while(iter.hasNext())
@@ -201,6 +209,18 @@ public class BuildLogic
 		//System.out.println();
 		//System.out.println(aRelationsDefinitionList.toString());
 		aFigure = new GeometricFigure(aRelationsDefinitionList, loadDescription(descriptionURL), pictureURL);
+		
+	}
+
+	public void clearAll()
+	{
+		aFigure = null;
+		aOBJ = null;
+		pointExtList.clear();
+		edgeList.clear();
+		aRelationsDefinitionList.clear();
+		aCornerVertexList.clear();
+		cornerPointExtList.clear();
 	}
 	
 	/**
@@ -214,6 +234,12 @@ public class BuildLogic
 		Collections.sort(aOBJ.getPointList());
 	}
 	
+	/**
+	 * 
+	 * @param lastPoint
+	 * @param actPoint
+	 * @return
+	 */
 	private PointExt<Double> getCornerPoint(PointExt<Double> lastPoint, PointExt<Double> actPoint)
 	{
 		Vector4id<Double> direction = createDirectionVector(lastPoint, actPoint);
@@ -234,7 +260,9 @@ public class BuildLogic
 		}
 		return null;
 	}
-	
+	/**
+	 * 
+	 */
 	private void updateCornerList()
 	{
 		boolean pointAdded = false;
@@ -265,6 +293,9 @@ public class BuildLogic
 		}
 	}
 	
+	/**
+	 * 
+	 */
 	private void removeDoubleLines()
 	{
 		for (PointExt<Double> aCornerPoint : cornerPointExtList)
@@ -297,6 +328,9 @@ public class BuildLogic
 		}
 	}
 	
+	/**
+	 * 
+	 */
 	private void fillCornerList()
 	{
 		boolean firstCorner = false;
@@ -429,11 +463,13 @@ public class BuildLogic
 			}
 		}
 	}
+	
 	/**
 	 * This Function removes all doubleNormals existing in the NormalList
 	 */
 	private void removeDoubleNormals()
 	{		
+		System.out.println("Old Size: " + aOBJ.getNormalList().size());
 		if (aOBJ.getNormalList().size() <= 1) return;
 		Vector4id<Double> oldVector4id = null;	//lastVertex (Vertex[i-1])
 		Vector4id<Double> actVector4id = null;	//activeVertex (Vertex[i])
@@ -471,13 +507,14 @@ public class BuildLogic
 				iterator.remove();
 			}
 		}
+		System.out.println("New Size: " + aOBJ.getNormalList().size());
 	}
+
 	/**
 	 * This function removes all doublePoints, existing in the PointList
 	 */
 	private void removeDoublePoints()
-	{
-		
+	{		
 		for (Vertex<Double> aVertex : aOBJ.getVertexList())
 		{
 			for(PointExt<Double> aPoint : aOBJ.getPointList())
@@ -511,6 +548,9 @@ public class BuildLogic
 	 *     ergibt sich die Zahl der Punkte entferne das 2. Face aus der Liste
 	 *      
 	 */
+	/**
+	 * 
+	 */
 	private void removeDoubleFaces()
 	{
 		//Iteration over the list of Faces
@@ -538,6 +578,7 @@ public class BuildLogic
 			}
 		}
 	}
+	
 	/**
 	 * This Function removes all Doubles, using different subfunctions
 	 */

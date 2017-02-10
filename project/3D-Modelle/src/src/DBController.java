@@ -173,11 +173,15 @@ public class DBController {
 	 * 
 	 * @param id Object ID to remove
 	 */
-	public void removeByOBJ_ID(Integer id){
-		String cypher = "MATCH (n) WHERE n.OBJECT_ID = ";
-		cypher=cypher.concat(id.toString() + " DETACH DELETE n");
-		
-		executeQuery(cypher);
+	public void removeByOBJ_ID(String id){
+		if (usedIds.contains(Integer.parseInt(id)))
+		{
+			String cypher = "MATCH (n) WHERE n.OBJECT_ID = ";
+			cypher=cypher.concat(id + " DETACH DELETE n");
+			executeQuery(cypher);
+			usedIds.remove(Integer.parseInt(id));
+		}
+		else System.out.println(id + " nicht in der Datenbank vorhanden");
 	}
 	
 	
@@ -188,6 +192,7 @@ public class DBController {
 		String cypher = "MATCH (n) DETACH DELETE n";
 		
 		executeQuery(cypher);
+		usedIds.clear();
 	}
 
 	
