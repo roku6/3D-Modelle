@@ -75,11 +75,11 @@ public class BuildLogic
 	 * creates OBJ File
 	 * @param filename
 	 */
-	private void loadOBJ(String filename)
+	private boolean loadOBJ(String filename)
 	{
 		aOBJ = new OBJ();
-		aOBJ.load(filename);
-		
+		return aOBJ.load(filename);
+				
 		//System.out.println(aOBJ.toString());
 	}
 		
@@ -90,8 +90,15 @@ public class BuildLogic
 	 * @return description
 	 */
 	private String loadDescription(String descriptionURL)
-	{
+	{		
 		String s = "", description = "";
+		if (descriptionURL == "")
+		{
+			System.out.println();
+			System.out.println("Can't load DescriptionFile! No Description File available.");
+			description = "No Description available.";
+			return description;						
+		}
 		try
 		{
 			File aFile = new File(descriptionURL);
@@ -103,23 +110,15 @@ public class BuildLogic
 			}
 			br.close();
 			fr.close();
-			System.out.println(description);
 			return description;
 		}
 		catch(IOException e)
 		{
-			System.out.println("Can't load File! Error in File!");
+			System.out.println();
+			System.out.println("Can't load DescriptionFile! Error in File!");
 			description = "No Description available.";
 			return description;
 		}
-		/*
-		if (descriptionURL == null)
-		{
-			System.out.println("Can't load File! No Description File available.");
-			description = "No Description available.";
-			return description;						
-		}
-		*/
 	}
 	
 	/**
@@ -183,10 +182,11 @@ public class BuildLogic
 	 * @param descriptionURL
 	 * @param pictureURL
 	 */
-	public void buildAFigure(String objURL, String descriptionURL, String pictureURL)
+	public boolean buildAFigure(String objURL, String descriptionURL, String pictureURL)
 	{
-		loadOBJ(objURL);
-		createFigure(descriptionURL, pictureURL);
+		
+		if (loadOBJ(objURL)) return createFigure(descriptionURL, pictureURL);
+		return false;
 	}	
 	/**
 	 * This function creates the Geometric Figure and saves it in the global geometricFigure variable
@@ -194,7 +194,7 @@ public class BuildLogic
 	 * @param descriptionURL
 	 * @param pictureURL
 	 */
-	private void createFigure(String descriptionURL, String pictureURL)
+	private boolean createFigure(String descriptionURL, String pictureURL)
 	{
 		sortAll();
 		removeDoubles();
@@ -206,15 +206,21 @@ public class BuildLogic
 		//removeWrongPlanes();
 
 		fillRDL();
-		//System.out.println();
-		//System.out.println(aRelationsDefinitionList.toString());
+
 		aFigure = new GeometricFigure(aRelationsDefinitionList, loadDescription(descriptionURL), pictureURL);
-		
+		if (aFigure != null) return true;
+		else return false;
 	}
 
 	public void clearAll()
 	{
+		aFigure.getEdgeRelations().clear();
 		aFigure = null;
+		aOBJ.getFaceList().clear();
+		aOBJ.getNormalList().clear();
+		aOBJ.getPointList().clear();
+		aOBJ.getTextureList().clear();
+		aOBJ.getVertexList().clear();
 		aOBJ = null;
 		pointExtList.clear();
 		edgeList.clear();
@@ -469,7 +475,7 @@ public class BuildLogic
 	 */
 	private void removeDoubleNormals()
 	{		
-		System.out.println("Old Size: " + aOBJ.getNormalList().size());
+		//System.out.println("Old Size: " + aOBJ.getNormalList().size());
 		if (aOBJ.getNormalList().size() <= 1) return;
 		Vector4id<Double> oldVector4id = null;	//lastVertex (Vertex[i-1])
 		Vector4id<Double> actVector4id = null;	//activeVertex (Vertex[i])
@@ -507,7 +513,7 @@ public class BuildLogic
 				iterator.remove();
 			}
 		}
-		System.out.println("New Size: " + aOBJ.getNormalList().size());
+		//System.out.println("New Size: " + aOBJ.getNormalList().size());
 	}
 
 	/**

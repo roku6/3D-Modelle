@@ -870,6 +870,7 @@ public class InputGUI extends javax.swing.JFrame {
 	 */
 	private void matchTxtPng(File[] fl) {
 
+		namesList.clear();
 		for (File file : fl) {
 			String nameWithObj = java.util.Objects.toString(file);
 			nameWithObj = nameWithObj.replace("\\", "\\\\");
@@ -891,7 +892,7 @@ public class InputGUI extends javax.swing.JFrame {
 			names[2] = nameWithPng;
 			namesList.add(names);
 		}
-
+		
 		modelle.buildObjects(namesList);
 	}
 

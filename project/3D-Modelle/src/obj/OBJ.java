@@ -35,9 +35,9 @@ public class OBJ
 	private ArrayList<PointExt<Double>> pointList;	//Array of all points
 	private ArrayList<Face> faceList;			//Array of all faces
 	
-	private ArrayList<Vertex<Double>> vertexList = new ArrayList<>();	//Format x/y/z
-	private ArrayList<Texture<Double>> textureList = new ArrayList<>();	//Format x/y
-	private ArrayList<Normal<Double>> normalList = new ArrayList<>();	//Format x/y/z	
+	private ArrayList<Vertex<Double>> vertexList;	//Format x/y/z
+	private ArrayList<Texture<Double>> textureList;	//Format x/y
+	private ArrayList<Normal<Double>> normalList;	//Format x/y/z	
 	
 	public void setFileName(String fileName)					{this.fileName = fileName;}
 	public void setFaceIndicesNr(int faceIndicesNr)				{this.faceIndicesNr = faceIndicesNr;}
@@ -81,6 +81,15 @@ public class OBJ
 	{
 		pointList = new ArrayList<>();
 		faceList = new ArrayList<>();
+		vertexList = new ArrayList<>();
+		textureList = new ArrayList<>();	
+		normalList = new ArrayList<>();	
+		Vertex.setNumber(0);
+		Texture.setNumber(0);
+		Normal.setNumber(0);
+		Face.setNumber(0);
+		PointExt.setNumber(0);
+		
 	};
 	/**
 	 * Constructor
@@ -144,7 +153,7 @@ public class OBJ
 	/** Method for loading an Obj-File
 	 * @param Filename as a String
 	 **/
-	public void load(String fileName)
+	public boolean load(String fileName)
 	{
 		setFileName(fileName);
 		String splitted[] = null;
@@ -196,14 +205,18 @@ public class OBJ
 					for(int i = 0; i<faceIndicesNrLocal; i++)
 					{
 						String splitted2[] = splitted[i+1].split("/");
-						splittedV = splitted2[0];
-						splittedT = splitted2[1];
-						splittedN = splitted2[2];
-						PointExt<Double> aPoint = createPoint(	Integer.valueOf(splittedV),
+						if (splitted2.length == 3)
+						{
+							splittedV = splitted2[0];
+							splittedT = splitted2[1];
+							splittedN = splitted2[2];
+							PointExt<Double> aPoint = createPoint(	Integer.valueOf(splittedV),
 																Integer.valueOf(splittedT),
 																Integer.valueOf(splittedN));
-						pointList.add(aPoint);
-						aPointExtList.add(aPoint);
+							pointList.add(aPoint);
+							aPointExtList.add(aPoint);
+						}
+						else throw new IOException();
 					}
 					Face aFace = new Face(aPointExtList);
 					faceList.add(aFace);
@@ -215,8 +228,11 @@ public class OBJ
 		}
 		catch (IOException e)
 		{
-			System.out.println("Exception!! " + e);
+			System.out.println();
+			System.out.println("Fehlerhafte OBJ Datei! " + e);
+			return false;
 		}
+		return true;
 	}
 	
 	/**

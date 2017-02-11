@@ -22,6 +22,7 @@ public class PointExt<T extends Number> extends Point<T> implements Comparable<P
 	public ArrayList<PointExt<Double>> getCornerPointList() {return cornerPointList;}
 	public double getAngle()								{return angle;}
 	
+	public static void setNumber(int number)								{PointExt.number = number;}
 	public void setAngle(double angle)										{this.angle = angle;}		
 	private void setId(int id) 												{this.id = id;}
 	public void setNeighbourList(ArrayList<PointExt<Double>> neighbourList)	{this.neighbourList = neighbourList;}
@@ -87,6 +88,18 @@ public class PointExt<T extends Number> extends Point<T> implements Comparable<P
 	@Override
 	public int compareTo(PointExt<T> aPointExt)
 	{
+		/*
+		if (aPointExt == null)
+		{
+			System.out.println("PROBLEM!");
+		}
+		
+		if (this.getAVertex() == null && aPointExt.getAVertex() == null)
+		{
+			System.out.println("");
+			return 0;
+		}
+		*/
 		int comparisonX = this.getAVertex().getId() > aPointExt.getAVertex().getId() ? 1 : 
 							this.getAVertex().getId() < aPointExt.getAVertex().getId() ? -1 : 0; 
 		if (comparisonX != 0) return comparisonX;

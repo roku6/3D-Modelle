@@ -30,6 +30,7 @@ public class Face
 	public int getId() 										{return id;}
 	public ArrayList<PointExt<Double>> getPointExtList() 	{return pointExtList;}
 	
+	public static void setNumber(int number)						{Face.number = number;}
 	public void setId(int id) 										{this.id = id;}
 	public void setPointList(ArrayList<PointExt<Double>> pointList) {this.pointExtList = pointList;}
 

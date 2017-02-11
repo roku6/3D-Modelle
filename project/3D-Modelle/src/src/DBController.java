@@ -179,7 +179,7 @@ public class DBController {
 			String cypher = "MATCH (n) WHERE n.OBJECT_ID = ";
 			cypher=cypher.concat(id + " DETACH DELETE n");
 			executeQuery(cypher);
-			usedIds.remove(Integer.parseInt(id));
+			usedIds.remove(usedIds.indexOf(Integer.parseInt(id)));
 		}
 		else System.out.println(id + " nicht in der Datenbank vorhanden");
 	}

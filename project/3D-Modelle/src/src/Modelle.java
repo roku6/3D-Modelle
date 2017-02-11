@@ -136,26 +136,33 @@ public static Modelle getInstance()
 			String descriptionURL = url[1];
 			String pictureURL = url[2];
 			System.out.print("Build GeometricFigure from Files " + objURL + "...");
-			aBuildLogic.buildAFigure(objURL,descriptionURL,pictureURL);
-			System.out.println("finished.");
-			
-			if (!dbCtrl.getUsedIds().isEmpty()){
-				aBuildLogic.getGeometricFigure().setObjectID(Collections.max(dbCtrl.getUsedIds()) + 1);
-			}else{aBuildLogic.getGeometricFigure().setObjectID(1);}
-			
-			try
+			if (aBuildLogic.buildAFigure(objURL,descriptionURL,pictureURL))
 			{
-				System.out.print("Writing OBJ to Database...");
-				dbCtrl.writeObjToDB(aBuildLogic.getGeometricFigure());
 				System.out.println("finished.");
-				dbCtrl.printOBJAmount();
-			}	 
-			catch (Exception e) 
-			{
-				e.printStackTrace();
-				System.out.println("WriteObjToDB() failed");
-				dbCtrl.shutdownDB();
+			
+				if (!dbCtrl.getUsedIds().isEmpty())		
+					aBuildLogic.getGeometricFigure().setObjectID(Collections.max(dbCtrl.getUsedIds()) + 1);
+				else 									
+					aBuildLogic.getGeometricFigure().setObjectID(1);
+			
+				try
+				{
+					System.out.print("Writing OBJ to Database...");
+					dbCtrl.writeObjToDB(aBuildLogic.getGeometricFigure());
+					System.out.println("finished.");
+					dbCtrl.printOBJAmount();
+					System.out.print("Clear BuildLogic...");
+					aBuildLogic.clearAll();
+					System.out.println("finished.");
+				}	 
+				catch (Exception e) 
+				{
+					e.printStackTrace();
+					System.out.println("WriteObjToDB() failed");
+					dbCtrl.shutdownDB();
+				}
 			}
+			else System.out.println("Error building geometric Figure!");
 		}								
 	}
 	

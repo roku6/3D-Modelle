@@ -65,7 +65,7 @@ public class Vector4id<T extends Number> extends Vector4<T>
 		}
 		else
 		{
-			System.out.println("Ohje!");
+			System.out.println("Wrong Datatype");
 		}
 		return false;
 	}
