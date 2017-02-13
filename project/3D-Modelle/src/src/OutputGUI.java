@@ -21,11 +21,13 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JLayeredPane;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.Color;
+
 
 /**
  *
@@ -52,10 +54,14 @@ public class OutputGUI extends javax.swing.JFrame {
 	private List<Foundobject> foundList;
 	private Image defimg;
 	private Graphics g;
-	private javax.swing.JButton[] butArr;
+	private List<javax.swing.JButton> butArr;
 	private JPanel mPanel;
 	private javax.swing.table.DefaultTableModel tm;
 	private javax.swing.JLabel numberFoundLabel;
+	private int hcenter;
+	private int vcenter;
+	private Runtime r;
+	
 
 	// construstrors
 
@@ -72,6 +78,7 @@ public class OutputGUI extends javax.swing.JFrame {
 	 * @param height
 	 */
 	public OutputGUI(List<Foundobject> foundList, double lenInt, double angInt, int width, int height) {
+		r = Runtime.getRuntime();
 		if (foundList.size() == 0) {
 			javax.swing.JOptionPane.showMessageDialog(this, "Es wurden keine Objekte gefunden.",
 					"keine Objekte gefunden", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -95,6 +102,7 @@ public class OutputGUI extends javax.swing.JFrame {
 					height/* + insets.top + insets.bottom */);
 
 			initComponents();
+			
 			tm.setRowCount(foundList.size());
 			tm.setColumnCount(3);
 			for (int i = 0; i < foundList.size(); i++) {
@@ -117,11 +125,50 @@ public class OutputGUI extends javax.swing.JFrame {
 	 * a default image to display when no image is found
 	 */
 	private void initComponents() {
+		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+		
+		JButton b3 = new JButton("CLOSE");
+
+		b3.setBounds(50, 375, 250, 50);
+
+		b3.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				javax.swing.ImageIcon icon = new javax.swing.ImageIcon(defimg);
+
+				for(JButton b : butArr) {
+					//defimg = null;
+					b.setIcon(null);
+					b.setIcon(icon);	
+					b.removeAll();
+					
+					
+					java.awt.event.ActionListener l = b.getActionListeners()[0];
+					b.removeActionListener(l);
+					b.invalidate();
+					b=null;
+					
+				}
+				butArr.clear();
+				butArr =null;
+				getgui().setVisible(false);
+				mPanel.removeAll();
+				pane.removeAll();
+				getgui().setVisible(true);
+				
+				//garbage();
+
+				//getgui().dispose();
+				
+
+			}
+		});
+		pane.add(b3);
+		
 
 		insets = new Insets(20, 20, 45, 25);
 
 		imgsize = (int) (getHeight() / 6);
-		butArr = new javax.swing.JButton[foundList.size()];
+		butArr = new ArrayList<javax.swing.JButton>(foundList.size());
 
 		// default image
 		defimg = new BufferedImage(imgsize, imgsize, java.awt.image.BufferedImage.TYPE_INT_ARGB);
@@ -137,6 +184,7 @@ public class OutputGUI extends javax.swing.JFrame {
 
 		g.drawLine(imgsize / 4, imgsize / 4, imgsize / 4, imgsize * 3 / 4);
 		g.drawLine(imgsize * 3 / 4, imgsize / 4, imgsize * 3 / 4, imgsize * 3 / 4);
+	
 
 		mPanel = new JPanel() {
 			/**
@@ -194,6 +242,7 @@ public class OutputGUI extends javax.swing.JFrame {
 
 			}
 		};
+		
 
 		tm = new javax.swing.table.DefaultTableModel(new Object[][] {}, new String[] { "ID", "LenSim", "AngleSim" }
 		) {
@@ -252,12 +301,14 @@ public class OutputGUI extends javax.swing.JFrame {
 			@Override
 			public void valueChanged(javax.swing.event.ListSelectionEvent event) {
 				if (jTable.getSelectedRow() > -1) {
-					for (int i = 0; i < foundList.size() && butArr[i] != null; i++) {
-						butArr[i].setBorderPainted(false);
-						butArr[i].getParent().setComponentZOrder(butArr[i], 1);
+					for (int i = 0; i < foundList.size() && butArr.get(i) != null; i++) {
+						
+						butArr.get(i).setBorderPainted(false);
+						butArr.get(i).getParent().setComponentZOrder(butArr.get(i), 1);
 						if (foundList.get(i).getId() == jTable.getValueAt(jTable.getSelectedRow(), 0)) {
-							butArr[i].getParent().setComponentZOrder(butArr[i], 0);
-							butArr[i].setBorderPainted(true);
+							butArr.get(i).getParent().setComponentZOrder(butArr.get(i), 0);
+							butArr.get(i).setBorderPainted(true);
+							
 							jTable.requestFocusInWindow();
 						}
 					}
@@ -267,8 +318,10 @@ public class OutputGUI extends javax.swing.JFrame {
 
 		jTable.addFocusListener(new java.awt.event.FocusAdapter() {
 			public void focusLost(java.awt.event.FocusEvent evt) {
-				for (int i = 0; i < foundList.size() && butArr[i] != null; i++)
-					butArr[i].setBorderPainted(false);
+				if(butArr!=null)
+					for (int i = 0; i < butArr.size() ; i++) 
+						if(butArr.get(i)!=null)
+							butArr.get(i).setBorderPainted(false);
 				// mPanel.getParent().setComponentZOrder(mPanel, 0);
 			}
 		});
@@ -277,12 +330,12 @@ public class OutputGUI extends javax.swing.JFrame {
 			public void mouseClicked(java.awt.event.MouseEvent evt) {
 				if (evt.getClickCount() == 2) {
 					if (jTable.getSelectedRow() > -1) {
-						for (int i = 0; i < foundList.size() && butArr[i] != null; i++) {
+						for (int i = 0; i < foundList.size() && butArr.get(i) != null; i++) {
 							if (foundList.get(i).getId() == jTable.getValueAt(jTable.getSelectedRow(), 0)) {
 								ArrayList<JButton> overlappingButtons = new ArrayList<JButton>();
-								ArrayList<javax.swing.ImageIcon> popupIcons = new ArrayList<javax.swing.ImageIcon>();
-								overlappingButtons.add(butArr[i]);
-								popupIcons.add((ImageIcon) butArr[i].getClientProperty("popup"));
+								ArrayList<String> popupIcons = new ArrayList<String>();
+								overlappingButtons.add(butArr.get(i));
+								popupIcons.add((String) butArr.get(i).getClientProperty("popupPath"));
 								jButtonActionPerformed(overlappingButtons, popupIcons);
 							}
 						}
@@ -301,11 +354,158 @@ public class OutputGUI extends javax.swing.JFrame {
 				getHeight() - insets.top - insets.bottom);
 		mPright = mPleft + (int) (getWidth() * 0.72);
 		mPbottom = mPtop + (int) (getHeight() * 0.85);
+		
+		 hcenter = mPleft + mPanel.getWidth() / 2;
+		 vcenter = mPtop + mPanel.getHeight() / 2;
+
 
 		mPanel.setBackground(new Color(0, 0, 0, 0));
 
 		mPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 
+	}
+	
+	
+	
+	
+	private void drawOneButton(int i) {
+		
+		javax.swing.JButton jButton = new javax.swing.JButton() {
+			// draws the ID of the object into the picture
+			@Override
+			public void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				g.drawString(java.util.Objects.toString(this.getName(), ""), getWidth() / 2, getHeight() / 2);
+				
+			}
+		};
+		
+		butArr.add(jButton);
+		pane.add(jButton, "jLabel" + i);
+		// pane.setLayer(jButton, 0);
+
+		int hoffset = (int) (foundList.get(i).getLenSim() / lenInt * (mPanel.getWidth() - imgsize) / 2);
+		int voffset = (int) (foundList.get(i).getAngSim() / angInt * (mPanel.getHeight() - imgsize) / 2);
+		// System.out.println(foundList.get(i).getId()+" "+voffset);
+
+		// possible locations of the button in each quarter counterclockwise
+		Rectangle bounds1 = new Rectangle(hcenter - imgsize / 2 + hoffset, vcenter - imgsize / 2 + voffset, imgsize+5,
+				imgsize+5);
+		Rectangle bounds2 = new Rectangle(hcenter - imgsize / 2 - hoffset, vcenter - imgsize / 2 + voffset, imgsize,
+				imgsize);
+		Rectangle bounds3 = new Rectangle(hcenter - imgsize / 2 - hoffset, vcenter - imgsize / 2 - voffset, imgsize,
+				imgsize);
+		Rectangle bounds4 = new Rectangle(hcenter - imgsize / 2 + hoffset, vcenter - imgsize / 2 - voffset, imgsize,
+				imgsize);
+
+		Map<Rectangle, Integer> treeMap = new HashMap<Rectangle, Integer>();
+		treeMap.put(bounds1, numberOverlaps(bounds1));
+		treeMap.put(bounds2, numberOverlaps(bounds2));
+		treeMap.put(bounds3, numberOverlaps(bounds3));
+		treeMap.put(bounds4, numberOverlaps(bounds4));
+
+		List<java.util.Map.Entry<Rectangle, Integer>> list = new LinkedList<>(treeMap.entrySet());
+		Collections.sort(list, new Comparator<Object>() {
+			public int compare(Object o1, Object o2) {
+				return ((Comparable<Integer>) ((Map.Entry<Rectangle, Integer>) (o1)).getValue())
+						.compareTo(((Map.Entry<Rectangle, Integer>) (o2)).getValue());
+			}
+		});
+
+		Rectangle wantedBounds = list.get(0).getKey();
+		jButton.setBounds(wantedBounds);
+		
+
+		jButton.setOpaque(false);
+		jButton.setContentAreaFilled(false);
+		jButton.setBorder(new javax.swing.border.LineBorder(Color.red,2));
+		
+	
+		jButton.setBorderPainted(false);
+		jButton.setFocusPainted(false);
+
+		jButton.setName(java.util.Objects.toString((foundList.get(i).getId()), ""));
+		
+
+
+		java.awt.Image img;
+		
+		javax.swing.ImageIcon popupIcon = new javax.swing.ImageIcon(foundList.get(i).getPic());
+		img = popupIcon.getImage();
+		jButton.putClientProperty("popupPath", foundList.get(i).getPic());
+
+		if(img.getWidth(null)<1) {
+			img=defimg;
+			jButton.putClientProperty("popupPath","defimg" );
+		}
+		
+	
+		
+
+		// keep proportions, calculate min scaling factor
+		Dimension sourceDim = new Dimension(img.getWidth(null), img.getHeight(null));
+
+		Dimension destinationDim = new Dimension(imgsize, imgsize);
+		double scaleX = 0;
+		double scaleY = 0;
+		scaleX = destinationDim.getWidth() / sourceDim.getWidth();
+		scaleY = destinationDim.getHeight() / sourceDim.getHeight();
+		double scale = Math.min(scaleX, scaleY);
+
+		java.awt.Image resizedImg = img.getScaledInstance((int) (sourceDim.getWidth() * scale),
+				(int) (sourceDim.getHeight() * scale), Image.SCALE_FAST);
+		
+
+		javax.swing.ImageIcon icon = new javax.swing.ImageIcon(resizedImg);
+		//icon = defImg;
+		jButton.setIcon(icon);
+		
+		img.flush();
+		img=null;
+		resizedImg.flush();
+		resizedImg = null;
+		
+		
+		
+		jButton.putClientProperty("description", foundList.get(i).getDescr());
+		jButton.putClientProperty("x", wantedBounds.getMinX() / getWidth());
+		jButton.putClientProperty("y", wantedBounds.getMinY() / getHeight());
+
+		jButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+
+				Rectangle bounds = jButton.getBounds();
+
+				ArrayList<JButton> overlappingButtons = new ArrayList<JButton>();
+				ArrayList<String> popupPaths = new ArrayList<String>();
+				overlappingButtons.add(jButton);
+				popupPaths.add((String)jButton.getClientProperty("popupPath"));
+				for (int i = 0; i < butArr.size() && butArr.get(i) != null; i++)
+					if (overlap(bounds, butArr.get(i).getBounds()) && butArr.get(i) != jButton) {
+						overlappingButtons.add(butArr.get(i));
+						popupPaths.add((String)butArr.get(i).getClientProperty("popupPath"));
+					}
+
+				jButtonActionPerformed(overlappingButtons, popupPaths);
+
+			}
+		});
+
+		jButton.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseEntered(java.awt.event.MouseEvent evt) {
+				jButton.getParent().setComponentZOrder(jButton, 0);
+
+			}
+
+			public void mouseExited(java.awt.event.MouseEvent evt) {
+				jButton.getParent().setComponentZOrder(mPanel, 0);
+
+			}
+
+		});
+
+		
+		
 	}
 
 	private void drawAll() {
@@ -316,172 +516,54 @@ public class OutputGUI extends javax.swing.JFrame {
 		int vcenter = mPtop + mPanel.getHeight() / 2;
 
 		for (int i = 0; i < foundList.size(); i++) {
-			javax.swing.JButton jButton = new javax.swing.JButton() {
-
-				private static final long serialVersionUID = 1L;
-
-				// draws the ID of the object into the picture
-				@Override
-				public void paintComponent(Graphics g) {
-					super.paintComponent(g);
-					g.drawString(java.util.Objects.toString(this.getName(), ""), getWidth() / 2, getHeight() / 2);
-				}
-
-			};
-			butArr[i] = jButton;
-			pane.add(jButton, "jLabel" + i);
-			// pane.setLayer(jButton, 0);
-
-			int hoffset = (int) (foundList.get(i).getLenSim() / lenInt * (mPanel.getWidth() - imgsize) / 2);
-			int voffset = (int) (foundList.get(i).getAngSim() / angInt * (mPanel.getHeight() - imgsize) / 2);
-			// System.out.println(foundList.get(i).getId()+" "+voffset);
-
-			// possible locations of the button in each quarter counterclockwise
-			Rectangle bounds1 = new Rectangle(hcenter - imgsize / 2 + hoffset, vcenter - imgsize / 2 + voffset, imgsize,
-					imgsize);
-			Rectangle bounds2 = new Rectangle(hcenter - imgsize / 2 - hoffset, vcenter - imgsize / 2 + voffset, imgsize,
-					imgsize);
-			Rectangle bounds3 = new Rectangle(hcenter - imgsize / 2 - hoffset, vcenter - imgsize / 2 - voffset, imgsize,
-					imgsize);
-			Rectangle bounds4 = new Rectangle(hcenter - imgsize / 2 + hoffset, vcenter - imgsize / 2 - voffset, imgsize,
-					imgsize);
-
-			Map<Rectangle, Integer> treeMap = new HashMap<Rectangle, Integer>();
-			treeMap.put(bounds1, numberOverlaps(bounds1));
-			treeMap.put(bounds2, numberOverlaps(bounds2));
-			treeMap.put(bounds3, numberOverlaps(bounds3));
-			treeMap.put(bounds4, numberOverlaps(bounds4));
-
-			List<java.util.Map.Entry<Rectangle, Integer>> list = new LinkedList<>(treeMap.entrySet());
-			Collections.sort(list, new Comparator<Object>() {
-				public int compare(Object o1, Object o2) {
-					return ((Comparable<Integer>) ((Map.Entry<Rectangle, Integer>) (o1)).getValue())
-							.compareTo(((Map.Entry<Rectangle, Integer>) (o2)).getValue());
-				}
-			});
-
-			Rectangle wantedBounds = list.get(0).getKey();
-			jButton.setBounds(wantedBounds);
-
-			jButton.setOpaque(false);
-			jButton.setContentAreaFilled(false);
-			jButton.setBorder(new javax.swing.border.LineBorder(Color.red));
-			jButton.setBorderPainted(false);
-			jButton.setFocusPainted(false);
-
-			jButton.setName(java.util.Objects.toString((foundList.get(i).getId()), ""));
-			java.awt.Image img;
-
-			try {
-				java.net.URL imgpath = new java.net.URL("file:///" + foundList.get(i).getPic());
-				img = ImageIO.read(imgpath);
-
-				javax.swing.ImageIcon popupIcon = new javax.swing.ImageIcon(img);
-
-			} catch (MalformedURLException ex) {
-				// imgLabel.setText("file:///C:/Studpro/"+jTable.getSelectedRow()+".png");
-				img = defimg;
-
-			} catch (IOException ex) {
-
-				// imgLabel.setText("file:///C:/Studpro/"+jTable.getSelectedRow()+".png");
-				img = defimg;
-
-			} catch (NullPointerException ex) {
-				img = defimg;
-
-			}
-
-			javax.swing.ImageIcon popupIcon = new javax.swing.ImageIcon(img);
-
-			// keep proportions, calculate min scaling factor
-			Dimension sourceDim = new Dimension(img.getWidth(null), img.getHeight(null));
-
-			Dimension destinationDim = new Dimension(imgsize, imgsize);
-			double scaleX = 0;
-			double scaleY = 0;
-			scaleX = destinationDim.getWidth() / sourceDim.getWidth();
-			scaleY = destinationDim.getHeight() / sourceDim.getHeight();
-			double scale = Math.min(scaleX, scaleY);
-
-			java.awt.Image resizedImg = img.getScaledInstance((int) (sourceDim.getWidth() * scale),
-					(int) (sourceDim.getHeight() * scale), Image.SCALE_FAST);
-
-			javax.swing.ImageIcon icon = new javax.swing.ImageIcon(resizedImg);
-			jButton.setIcon(icon);
-			jButton.putClientProperty("popup", popupIcon);
-			jButton.putClientProperty("description", foundList.get(i).getDescr());
-			jButton.putClientProperty("x", wantedBounds.getMinX() / getWidth());
-			jButton.putClientProperty("y", wantedBounds.getMinY() / getHeight());
-
-			jButton.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent evt) {
-					// javax.swing.JOptionPane.showMessageDialog(pane, new
-					// JLabel(popupIcon),"",
-					// javax.swing.JOptionPane.PLAIN_MESSAGE);
-					// jButtonActionPerformed(jButton,popupIcon);
-					Rectangle bounds = jButton.getBounds();
-					/*
-					 * for(int i=0;i<butArr.length;i++) { Rectangle a =
-					 * butArr[i].getBounds();
-					 * 
-					 * Rectangle inter = bounds.intersection(a);
-					 * 
-					 * 
-					 * if(inter.height>0 && inter.width>0 &&
-					 * inter.height>imgsize/2 && inter.width>imgsize/2 &&
-					 * jButton!=butArr[i])
-					 * jButtonActionPerformed(butArr[i],iconArr[i]);
-					 * 
-					 * 
-					 * 
-					 * }
-					 */
-					ArrayList<JButton> overlappingButtons = new ArrayList<JButton>();
-					ArrayList<javax.swing.ImageIcon> popupIcons = new ArrayList<javax.swing.ImageIcon>();
-					overlappingButtons.add(jButton);
-					popupIcons.add(popupIcon);
-					for (int i = 0; i < butArr.length && butArr[i] != null; i++)
-						if (overlap(bounds, butArr[i].getBounds()) && butArr[i] != jButton) {
-							overlappingButtons.add(butArr[i]);
-							popupIcons.add((javax.swing.ImageIcon) butArr[i].getClientProperty("popup"));
-						}
-
-					jButtonActionPerformed(overlappingButtons, popupIcons);
-
-				}
-			});
-
-			jButton.addMouseListener(new java.awt.event.MouseAdapter() {
-				public void mouseEntered(java.awt.event.MouseEvent evt) {
-					jButton.getParent().setComponentZOrder(jButton, 0);
-
-				}
-
-				public void mouseExited(java.awt.event.MouseEvent evt) {
-					jButton.getParent().setComponentZOrder(mPanel, 0);
-
-				}
-
-			});
+			drawOneButton(i);
 
 		}
 
 	}
 
-	private void jButtonActionPerformed(ArrayList<JButton> buttons, ArrayList<javax.swing.ImageIcon> icons) {
+	private void jButtonActionPerformed(ArrayList<JButton> buttons, ArrayList<String> icons) {
 		if (buttons.size() == 1) {
 			String descr = java.util.Objects.toString(buttons.get(0).getClientProperty("description"),
 					"keine Beschreibung");
-			JLabel label = new JLabel(icons.get(0));
+			JLabel label = new JLabel();
+			
+			if( icons.get(0)=="defimg") {
+				label.setIcon(buttons.get(0).getIcon());
+				System.out.println("1");
+			}
+			else {
+				//scale for small monitors
+				javax.swing.ImageIcon labelIcon = new javax.swing.ImageIcon(icons.get(0));
+				if(labelIcon.getIconWidth()>width-150 || labelIcon.getIconHeight()>height-150) {
+					Image img = labelIcon.getImage();
+					Dimension sourceDim = new Dimension(img.getWidth(null), img.getHeight(null));
+					Dimension destinationDim = new Dimension(width-150, height-150);
+					double scaleX = 0;
+					double scaleY = 0;
+					scaleX = destinationDim.getWidth() / sourceDim.getWidth();
+					scaleY = destinationDim.getHeight() / sourceDim.getHeight();
+					double scale = Math.min(scaleX, scaleY);
+					java.awt.Image resImg = img.getScaledInstance((int) (sourceDim.getWidth() * scale),
+						(int) (sourceDim.getHeight() * scale), Image.SCALE_FAST);
+					labelIcon.setImage(resImg);
+					img.flush();
+					img=null;
+					resImg.flush();
+					resImg=null;
+				}
+				label.setIcon(labelIcon);
+				System.out.println("2");
+			}
 			label.setHorizontalTextPosition(JLabel.CENTER);
 			label.setVerticalTextPosition(JLabel.BOTTOM);
 			label.setText("ID " + buttons.get(0).getName() + ", " + descr);
-			// javax.swing.JOptionPane.showMessageDialog(pane,label ,name,
-			// javax.swing.JOptionPane.PLAIN_MESSAGE);
 			javax.swing.JOptionPane.showMessageDialog(pane, label, buttons.get(0).getName(),
 					javax.swing.JOptionPane.PLAIN_MESSAGE);
-		} else {
+		} 
+		
+		else {
+			System.out.println(buttons.size() );
 			JPanel l = new JPanel();
 
 			for (int i = 0; i < buttons.size(); i++) {
@@ -500,15 +582,51 @@ public class OutputGUI extends javax.swing.JFrame {
 						g.drawString(java.util.Objects.toString(name, ""), getWidth() / 2, getHeight() / 2);
 					}
 				};
+				
+				
 
-				javax.swing.ImageIcon ic = (javax.swing.ImageIcon) buttons.get(i).getClientProperty("popup");
+				
 
+				javax.swing.ImageIcon ic;
+				if(buttons.get(i).getClientProperty("popupPath")=="defimg") {
+					ic=(ImageIcon) buttons.get(i).getIcon();
+					
+				}
+				
+				else {
+					ic = new javax.swing.ImageIcon((String)buttons.get(i).getClientProperty("popupPath"));
+					//scale for small monitors
+				
+					if(ic.getIconWidth()>width-150 ||ic.getIconHeight()>height-150) {
+						Image img = ic.getImage();
+						Dimension sourceDim = new Dimension(img.getWidth(null), img.getHeight(null));
+						Dimension destinationDim = new Dimension(width-150, height-150);
+						double scaleX = 0;
+						double scaleY = 0;
+						scaleX = destinationDim.getWidth() / sourceDim.getWidth();
+						scaleY = destinationDim.getHeight() / sourceDim.getHeight();
+						double scale = Math.min(scaleX, scaleY);
+						java.awt.Image resImg = img.getScaledInstance((int) (sourceDim.getWidth() * scale),
+							(int) (sourceDim.getHeight() * scale), Image.SCALE_FAST);
+						ic.setImage(resImg);
+						img.flush();
+						img=null;
+						resImg.flush();
+						resImg=null;
+					}
+					
+			
+				}
+				
+			
+				
 				label.addMouseListener(new java.awt.event.MouseAdapter() {
 					public void mouseClicked(java.awt.event.MouseEvent evt) {
 						JLabel label = new JLabel(ic);
 						label.setHorizontalTextPosition(JLabel.CENTER);
 						label.setVerticalTextPosition(JLabel.BOTTOM);
 						label.setText("ID: " + name + ", " + descr);
+						
 
 						javax.swing.JOptionPane.showMessageDialog(pane, label, name,
 								javax.swing.JOptionPane.PLAIN_MESSAGE);
@@ -522,6 +640,32 @@ public class OutputGUI extends javax.swing.JFrame {
 					(int) (imgsize * Math.round(Math.sqrt(buttons.size()))));
 			l.setPreferredSize(d);
 
+			if (d.getWidth() * d.getHeight() > width * height * 4 / 9) {
+				int w =width/2;				
+				double picsHor = w/imgsize;
+				System.out.println("w "+w +"imgsize "+imgsize+"picsHor"+ picsHor);
+				d.setSize(w-100,imgsize*Math.ceil(buttons.size()/picsHor)+50);
+				System.out.println("was: "+(int) (imgsize * Math.ceil(Math.sqrt(buttons.size()) + 1))+" * "+ (int) (imgsize * Math.round(Math.sqrt(buttons.size()))));
+				System.out.println("now: "+w+" * "+d.getHeight());
+				System.out.println(picsHor);
+				l.setPreferredSize(d);
+				System.out.println(l.getPreferredSize());
+				l.setSize(d);
+				l.setBorder(BorderFactory.createLineBorder(Color.red,3));
+				
+
+				javax.swing.JScrollPane scr = new javax.swing.JScrollPane(l);
+				Dimension d2 = new Dimension(width/2, height / 2);
+				scr.setPreferredSize(d2);
+				javax.swing.JOptionPane.showMessageDialog(pane, scr, "", javax.swing.JOptionPane.PLAIN_MESSAGE);
+				System.out.println("scrsize:" + scr.getSize());
+
+			}
+			
+			
+			else
+				javax.swing.JOptionPane.showMessageDialog(pane, l, "", javax.swing.JOptionPane.PLAIN_MESSAGE);
+
 			// javax.swing.JOptionPane diapane = new javax.swing.JOptionPane();
 			// diapane.setSize((int)(imgsize*Math.ceil(Math.sqrt(buttons.size()))),(int)(imgsize*Math.ceil(Math.sqrt(buttons.size()))));
 			// diapane.showMessageDialog(pane, l,"",
@@ -530,7 +674,7 @@ public class OutputGUI extends javax.swing.JFrame {
 			// javax.swing.JOptionPane.PLAIN_MESSAGE);
 			// dialog.show();
 
-			javax.swing.JOptionPane.showMessageDialog(pane, l, "", javax.swing.JOptionPane.PLAIN_MESSAGE);
+			
 
 		}
 
@@ -549,12 +693,44 @@ public class OutputGUI extends javax.swing.JFrame {
 	// returns the number of overlapping buttons for a rectangle
 	private int numberOverlaps(Rectangle a) {
 		int count = 0;
-		for (int j = 0; j < butArr.length && butArr[j] != null; j++) {
-			Rectangle b = butArr[j].getBounds();
+		for (int j = 0; j < butArr.size() && butArr.get(j) != null; j++) {
+			Rectangle b = butArr.get(j).getBounds();
 			if (overlap(a, b))
 				count++;
 		}
 		return count;
+	}
+	
+
+	private OutputGUI getgui() {
+		return this;
+	
+	}
+	
+	@Override
+	public void dispose() {
+		if(butArr!=null) {	
+		for(JButton b : butArr) {
+			//defimg = null;
+			b.setIcon(null);	
+			b.removeAll();
+			java.awt.event.ActionListener l = b.getActionListeners()[0];
+			b.removeActionListener(l);
+			b.invalidate();
+			b=null;			
+		}
+		butArr.clear();
+		butArr =null;
+		mPanel.removeAll();
+		pane.removeAll();
+		}
+		System.gc();		
+		r.gc();
+		System.runFinalization();
+		r.runFinalization();
+		System.gc();
+		r.gc();
+		super.dispose();
 	}
 
 	/**

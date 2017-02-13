@@ -392,7 +392,8 @@ public class InputGUI extends javax.swing.JFrame {
 
 		// remove later, test!
 		/*
-		  int numberObjects = (int)(Math.random()*10+4);
+		  int numberObjects = (int)(Math.random()*10+30);
+		  numberObjects =100;
 		  System.out.println(numberObjects);
 		  
 		  double lenInt =
@@ -409,7 +410,11 @@ public class InputGUI extends javax.swing.JFrame {
 		  OutputGUI outg3 = new
 		  OutputGUI(foundList,lenInt,angInt,Integer.valueOf(widthTF.getText()),
 		  Integer.valueOf(heightTF.getText())); outg3.setVisible(true);
-		  */
+		  
+		  outg3 = null;
+		  
+		  return;*/
+		  
 		 
 	}
 
@@ -419,6 +424,7 @@ public class InputGUI extends javax.swing.JFrame {
 	 * later.
 	 */
 	private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {
+		
 		editSearchobject();
 	}
 
@@ -814,8 +820,13 @@ public class InputGUI extends javax.swing.JFrame {
 	 * exists. Displays an error message otherwise.
 	 */
 	private void searchSearchobject() {
-		if (searchList.size() > 0)
+		if (searchList.size() > 0) {
+			if(isInteger(widthTF.getText()))
+					width = Integer.valueOf(widthTF.getText());
+			if(isInteger(heightTF.getText()))
+				height = Integer.valueOf(heightTF.getText());
 			modelle.search(searchList, angleInterval, lenInterval, width, height);
+		}
 		else
 			javax.swing.JOptionPane.showMessageDialog(this, "Zum Suchen muss mindestens eine Kante angegeben werden.");
 	}
