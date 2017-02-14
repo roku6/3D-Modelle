@@ -81,7 +81,7 @@ public class SearchLogic {
 	public String generateQuery (){
 		String cypher="MATCH ";
 		String whereClausesTemp = " WHERE ";
-		String returnsTemp =" RETURN DISTINCT n1.URL, n1.DESCRIPTION, n1.OBJECT_ID, ";
+		String returnsTemp =" RETURN DISTINCT n"+ searchObjects.get(0).getId1().toString()+".URL,  n"+ searchObjects.get(0).getId1().toString()+".DESCRIPTION,  n"+ searchObjects.get(0).getId1().toString()+".OBJECT_ID, ";
 		for (Searchobject sObject : searchObjects){
 			//Defining pattern to look for
 			String temp = "(n"+ sObject.getId1().toString()+":EDGE)-[r"+sObject.getId1().toString()+": CONNECTED]-(n"+sObject.getId2().toString()+"), ";
@@ -105,7 +105,7 @@ public class SearchLogic {
 		whereClausesTemp = temp;
 		temp= returnsTemp.substring(0, returnsTemp.length()-2);
 		returnsTemp=temp;
-		returnsTemp+= " ORDER BY n1.OBJECT_ID";
+		returnsTemp+= " ORDER BY  n"+ searchObjects.get(0).getId1().toString()+".OBJECT_ID";
 		
 		//Concatenate all substrings
 		cypher+=(whereClausesTemp+=returnsTemp);
