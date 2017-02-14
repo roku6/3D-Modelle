@@ -10,6 +10,9 @@ import java.awt.Toolkit;
 import java.awt.Dimension;
 import java.util.Objects;
 
+import javax.swing.AbstractButton;
+import javax.swing.event.ChangeEvent;
+
 /**
  * The Class GUI.
  * 
@@ -36,6 +39,7 @@ public class InputGUI extends javax.swing.JFrame {
 	private javax.swing.JButton readDirButton;
 	private javax.swing.JButton readFileButton;
 	private javax.swing.JButton removeButton;
+	private javax.swing.JButton removeAllButton;
 	private javax.swing.JButton removeObjFromDB;
 	private javax.swing.JButton searchButton;
 	private javax.swing.JLabel toEdgeLabel;
@@ -52,6 +56,7 @@ public class InputGUI extends javax.swing.JFrame {
 	private javax.swing.JLabel heightLabel;
 	private javax.swing.JTextField widthTF;
 	private javax.swing.JTextField heightTF;
+	private javax.swing.JLabel objInDBLabel;
 	List<String[]> namesList;
 	private int edgeEditIndex;
 	int width;
@@ -97,6 +102,7 @@ public class InputGUI extends javax.swing.JFrame {
 		edgeTF = new javax.swing.JTextField();
 		toEdgeTF = new javax.swing.JTextField();
 		removeButton = new javax.swing.JButton();
+		removeAllButton = new javax.swing.JButton();
 		readFileButton = new javax.swing.JButton();
 		readDirButton = new javax.swing.JButton();
 		lenIntervalLabel = new javax.swing.JLabel();
@@ -124,7 +130,7 @@ public class InputGUI extends javax.swing.JFrame {
 
 		edgeLabel.setText("Kante:");
 
-		lenLabel.setText("Laenge:");
+		lenLabel.setText("Länge:");
 
 		lenTF.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -154,7 +160,7 @@ public class InputGUI extends javax.swing.JFrame {
 			}
 		});
 
-		addButton.setText("hinzufuegen");
+		addButton.setText("hinzufügen");
 		addButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				addButtonActionPerformed(evt);
@@ -186,10 +192,17 @@ public class InputGUI extends javax.swing.JFrame {
 			}
 		});
 
-		removeButton.setText("Kante loeschen");
+		removeButton.setText("Kante löschen");
 		removeButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				removeButtonActionPerformed(evt);
+			}
+		});
+		
+		removeAllButton.setText("Alle löschen");
+		removeAllButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				removeAllButtonActionPerformed(evt);
 			}
 		});
 
@@ -207,14 +220,14 @@ public class InputGUI extends javax.swing.JFrame {
 			}
 		});
 
-		removeObjFromDB.setText("Objekt loeschen");
+		removeObjFromDB.setText("Objekt löschen");
 		removeObjFromDB.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				removeObjFromDBActionPerformed(evt);
 			}
 		});
 
-		lenIntervalLabel.setText("Laengenintervall:");
+		lenIntervalLabel.setText("Längenintervall:");
 
 		lenIntervalTF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 		lenIntervalTF.setText("0");
@@ -243,12 +256,13 @@ public class InputGUI extends javax.swing.JFrame {
 				angleIntervalTFActionPerformed(evt);
 			}
 		});
+		
 
 		outputLabel.setText("Ausgabefenster:");
 		outputLabel.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 		widthLabel.setText("Breite");
 		widthLabel.setVerticalAlignment(javax.swing.JTextField.BOTTOM);
-		heightLabel.setText("Hoehe");
+		heightLabel.setText("Höhe");
 		heightLabel.setVerticalAlignment(javax.swing.JTextField.BOTTOM);
 
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -258,6 +272,25 @@ public class InputGUI extends javax.swing.JFrame {
 		widthTF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 		heightTF.setText(java.util.Objects.toString(height));
 		heightTF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+		
+		objInDBLabel = new javax.swing.JLabel();
+		objInDBLabel.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+		objInDBLabel.setVerticalAlignment(javax.swing.JTextField.CENTER);
+		int obj=0;
+		try {
+			obj= modelle.getDBController().getUsedIds().size();
+			if (obj == 1) {
+				objInDBLabel.setText("1 Objekt in der Datenbank.");
+			} else {
+				objInDBLabel.setText(obj + " Objekte in der Datenbank.");
+			}
+		}
+		catch(NullPointerException ex) {
+			objInDBLabel.setText("keine Datenbankverbindung!");
+		
+		}
+		
+		
 
 		// Layout
 
@@ -331,9 +364,12 @@ public class InputGUI extends javax.swing.JFrame {
 
 		pane.add(removeButton);
 		removeButton.setBounds(400, 125, size.width, size.height);
+		
+		pane.add(removeAllButton);
+		removeAllButton.setBounds(400, 165, size.width, size.height);
 
 		pane.add(readDirButton);
-		size = removeObjFromDB.getPreferredSize();
+		
 		size = readDirButton.getPreferredSize();
 		readDirButton.setBounds(610, 125, size.width, size.height);
 
@@ -343,6 +379,11 @@ public class InputGUI extends javax.swing.JFrame {
 		pane.add(removeObjFromDB);
 		size = removeObjFromDB.getPreferredSize();
 		removeObjFromDB.setBounds(610, 165, size.width, size.height);
+		
+		pane.add(objInDBLabel);
+		size = objInDBLabel.getPreferredSize();
+		objInDBLabel.setBounds(610,50,size.width, size.height);
+		
 
 		pane.add(searchButton);
 		size = searchButton.getPreferredSize();
@@ -379,7 +420,7 @@ public class InputGUI extends javax.swing.JFrame {
 	 * later.
 	 */
 	private void angleTFActionPerformed(java.awt.event.ActionEvent evt) {
-		addSearchobject(searchList.size());
+		manageInput();
 	}
 
 	/**
@@ -423,9 +464,8 @@ public class InputGUI extends javax.swing.JFrame {
 	 * corresponding logic method(s), so GUI elements can be replaced or removed
 	 * later.
 	 */
-	private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {
-		
-		editSearchobject();
+	private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {		
+		prepareForEdit();
 	}
 
 	/**
@@ -443,10 +483,7 @@ public class InputGUI extends javax.swing.JFrame {
 	 * later.
 	 */
 	private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {
-		if (editClicked)
-			replaceSearchobject(edgeEditIndex);
-		else
-			addSearchobject(searchList.size());
+		manageInput();
 	}
 
 	/**
@@ -457,6 +494,10 @@ public class InputGUI extends javax.swing.JFrame {
 	private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {
 		removeSearchobject();
 	}
+	
+	private void removeAllButtonActionPerformed(java.awt.event.ActionEvent evt) {
+		removeAllSearchobjects();
+	}
 
 	/**
 	 * Edge TF action performed. The ActionPerformed methods only calls the
@@ -464,7 +505,7 @@ public class InputGUI extends javax.swing.JFrame {
 	 * later.
 	 */
 	private void edgeTFActionPerformed(java.awt.event.ActionEvent evt) {
-		addSearchobject(searchList.size());
+		manageInput();
 	}
 
 	/**
@@ -482,7 +523,7 @@ public class InputGUI extends javax.swing.JFrame {
 	 * later.
 	 */
 	private void lenTFActionPerformed(java.awt.event.ActionEvent evt) {
-		addSearchobject(searchList.size());
+		manageInput();
 	}
 
 	/**
@@ -491,7 +532,7 @@ public class InputGUI extends javax.swing.JFrame {
 	 * later.
 	 */
 	private void toEdgeTFActionPerformed(java.awt.event.ActionEvent evt) {
-		addSearchobject(searchList.size());
+		manageInput();
 	}
 
 	/**
@@ -575,7 +616,7 @@ public class InputGUI extends javax.swing.JFrame {
 
 		for (Searchobject obj : searchList) {
 			if (!editClicked && obj.getId1().equals(id1) && !Objects.equals(obj.getLength(), length)) {
-				javax.swing.JOptionPane.showMessageDialog(this, "Diese Kante hat schon eine andere Laenge!");
+				javax.swing.JOptionPane.showMessageDialog(this, "Diese Kante hat schon eine andere Länge!");
 				return false;
 			}
 
@@ -689,92 +730,133 @@ public class InputGUI extends javax.swing.JFrame {
 	 * @param index
 	 *            the index at which the object is added
 	 */
-	private void addSearchobject(int index) {
-		Integer id1;
-		if (!isInteger(edgeTF.getText()) || Integer.valueOf(edgeTF.getText()) < 0) {
+	
+	private boolean validInput() {
+		
+
+		if (!isInteger(edgeTF.getText()) || Integer.valueOf(edgeTF.getText()) <= 0) {
 			javax.swing.JOptionPane.showMessageDialog(this,
-					"Erste Kanten-ID muss eine nicht-negative ganze Zahl sein.");
+					"Erste Kanten-ID muss eine positive ganze Zahl sein.");
 			edgeTF.setText("");
-			return;
-		} else
-			id1 = Integer.valueOf(edgeTF.getText());
+			return false;
+		} 
 
-		Double length;
-		if (lenTF.getText().isEmpty() || lenTF.getText().equals("null"))
-			length = null;
+	
+		if (lenTF.getText().isEmpty() || lenTF.getText().equals("null")) {}
+			
+			
 		else if (!isDouble(lenTF.getText()) || Double.valueOf(lenTF.getText()) < 0) {
-			javax.swing.JOptionPane.showMessageDialog(this, "Kantenlaenge muss eine nicht-negative Zahl sein.");
+			javax.swing.JOptionPane.showMessageDialog(this, "Kantenlänge muss eine nicht-negative Zahl sein.");
 			lenTF.setText("");
-			return;
-		} else
-			length = Double.valueOf(lenTF.getText());
+			return false;
+		} 
 
-		Double angle;
-		if (angleTF.getText().isEmpty())
-			angle = null;
+	
+		if (angleTF.getText().isEmpty()) {}
+		
 		else if (!isDouble(angleTF.getText()) || Double.valueOf(angleTF.getText()) < 0) {
 			javax.swing.JOptionPane.showMessageDialog(this, "Winkel muss eine nicht-negative Zahl sein.");
 			angleTF.setText("");
-			return;
-		} else
-			angle = Double.valueOf(angleTF.getText());
-
-		Integer id2;
-		if (toEdgeTF.getText().isEmpty())
-			id2 = null;
-		else if (!isInteger(toEdgeTF.getText()) || Integer.valueOf(toEdgeTF.getText()) < 0) {
-			javax.swing.JOptionPane.showMessageDialog(this,
-					"Zweite Kanten-ID muss eine nicht-negative ganze Zahl sein.");
-			toEdgeTF.setText("");
-			return;
-		} else
-			id2 = Integer.valueOf(toEdgeTF.getText());
-
-		if (valuesMatch(id1, length, angle, id2, searchList)) {
-			// will possibly bug
-			Searchobject searchObj = new Searchobject(id1, length, angle,id2);
-
-			if (searchList.size() <= index)
-				searchList.add(index, searchObj);
-			else
-				searchList.set(index, searchObj);
-
-			String newLine = "Kante " + id1 + ":      " + "Laenge: " + length + ",      Winkel: " + angle
-					+ "   zur Kante " + id2;
-
-			if (listModel.size() <= index)
-				listModel.add(index, newLine);
-			else
-				listModel.setElementAt(newLine, index);
-
-			edgeTF.setText("");
-			lenTF.setText("");
-			angleTF.setText("");
-			toEdgeTF.setText("");
-
-			if (editClicked)
-				replaceLengths(id1, length);
-			editClicked = false;
+			return false;
 		}
 
-		if (editClicked == false)
-			addButton.setText("hinzufuegen");
+		
+		if (toEdgeTF.getText().isEmpty()) {}
+	
+		else if (!isInteger(toEdgeTF.getText()) || Integer.valueOf(toEdgeTF.getText()) <= 0) {
+			javax.swing.JOptionPane.showMessageDialog(this,
+					"Zweite Kanten-ID muss eine positive ganze Zahl sein.");
+			toEdgeTF.setText("");
+			return false;
+		} 
+		return true;
+		
+
+		}
+		
+	private void manageInput() {
+		if(!validInput())
+			return;
+		Integer id1 = Integer.valueOf(edgeTF.getText());
+		
+		Double length;
+		if (lenTF.getText().isEmpty() || lenTF.getText().equals("null"))
+			length = null;
+		else
+			length = Double.valueOf(lenTF.getText());
+		
+		Double angle;
+		if (angleTF.getText().isEmpty()|| angleTF.getText().equals("null"))
+			angle = null;
+		else
+			angle = Double.valueOf(angleTF.getText());
+		
+		Integer id2;
+		if (toEdgeTF.getText().isEmpty()|| toEdgeTF.getText().equals("null"))
+			id2 = null;
+		else		
+			id2 =Integer.valueOf(toEdgeTF.getText());
+		
+		if(!valuesMatch(id1,length,angle,id2,searchList))
+			return;
+		Searchobject searchObj = createSearchobject(id1,length,angle,id2);
+		
+		if(editClicked==true) 
+			replaceSearchobject(edgeEditIndex,searchObj);
+		else
+			addSearchobject(searchObj);
+		
+	}
+	
+	private Searchobject createSearchobject(Integer id1, Double length, Double angle, Integer id2) {
+		Searchobject searchObj = new Searchobject(id1, length, angle, id2);
+		return searchObj;
+		
+	}
+
+
+	private void addSearchobject(Searchobject searchObj) {
+
+			searchList.add(searchObj);
+		
+
+
+		edgeTF.setText("");
+		lenTF.setText("");
+		angleTF.setText("");
+		toEdgeTF.setText("");
+
+
+		displaySearchlist();
+	}
+	
+	private void displaySearchlist() {
+		listModel.clear();
+		for (Searchobject obj : searchList) {
+			String newLine = "Kante " + obj.getId1() + ":      " + "Länge: " + obj.getLength() + ",      Winkel: " + obj.getAngle()
+					+ "   zur Kante " + obj.getId2();
+			listModel.addElement(newLine);
+			
+		}
+		
 	}
 
 	/**
-	 * Does not edit the Searchobject itself, but prepares it to be edited by
+	 * Does not edit the Searchobject itself, but presets the textfieleds to be edited by
 	 * the addObject method. If no line is selected in the inputList, does
 	 * nothing. Else sets the edgeEditIndex and the editClicked flag for the
 	 * addObject method and sets the data from the selected line to the text
 	 * fields.
 	 * 
 	 */
-	private void editSearchobject() {
+	private void prepareForEdit() {
 		edgeEditIndex = inputList.getSelectedIndex();
 		if (edgeEditIndex == -1)
 			return;
 
 		editClicked = true;
+		removeButton.setEnabled(false);
+		removeAllButton.setEnabled(false);
 		addButton.setText("Speichern");
 		edgeTF.setText(java.util.Objects.toString(searchList.get(edgeEditIndex).getId1(), ""));
 		lenTF.setText(java.util.Objects.toString(searchList.get(edgeEditIndex).getLength(), ""));
@@ -782,8 +864,20 @@ public class InputGUI extends javax.swing.JFrame {
 		toEdgeTF.setText(java.util.Objects.toString(searchList.get(edgeEditIndex).getId2(), ""));
 	}
 
-	private void replaceSearchobject(int index) {
-		addSearchobject(index);
+	private void replaceSearchobject(int index, Searchobject searchObj) {
+
+		searchList.set(index, searchObj);
+		replaceLengths(searchObj.getId1(), searchObj.getLength());
+		editClicked = false;
+		removeButton.setEnabled(true);
+		removeAllButton.setEnabled(true);
+		edgeTF.setText("");
+		lenTF.setText("");
+		angleTF.setText("");
+		toEdgeTF.setText("");
+		addButton.setText("hinzufügen");
+		
+		displaySearchlist();
 	}
 
 	/**
@@ -795,13 +889,9 @@ public class InputGUI extends javax.swing.JFrame {
 	 */
 	private void replaceLengths(Integer id, Double length) {
 		for (Searchobject obj : searchList)
-			if (obj.getId1().equals(id) && !Objects.equals(obj.getLength(), length)) {
+			if (obj.getId1().equals(id) && !Objects.equals(obj.getLength(), length)) 
 				obj.setLength(length);
-				String newLine = "Kante " + id + ":      " + "Laenge: " + length + ",      Winkel: " + obj.getAngle()
-						+ "   zur Kante " + obj.getId2();
-
-				listModel.setElementAt(newLine, searchList.indexOf(obj));
-			}
+		displaySearchlist();
 	}
 
 	/**
@@ -809,11 +899,27 @@ public class InputGUI extends javax.swing.JFrame {
 	 * searchList.
 	 */
 	private void removeSearchobject() {
-		if (inputList.getSelectedIndex() != -1) {
+
+			
+		if (inputList.getSelectedIndex() != -1) 
 			searchList.remove(inputList.getSelectedIndex());
-			listModel.removeElementAt(inputList.getSelectedIndex());
-		}
+		displaySearchlist();
 	}
+	
+	/**
+	 * Clears he visible inputList and the internal searchList.
+	 */
+	private void removeAllSearchobjects() {
+		int reply = javax.swing.JOptionPane.showConfirmDialog(this, "Alle Kanten aus der Liste löschen?","",
+				javax.swing.JOptionPane.YES_NO_OPTION);
+		if (reply == javax.swing.JOptionPane.YES_OPTION)
+	    {
+			searchList.clear();
+			displaySearchlist();
+	    }
+
+	}
+	
 
 	/**
 	 * Calls the search function of the main class if at least one searchobject
@@ -847,7 +953,10 @@ public class InputGUI extends javax.swing.JFrame {
 			System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
 			File[] fl = chooser.getSelectedFiles();
 			matchTxtPng(fl);
-		}
+			
+		
+			}
+		
 	}
 
 	/**
@@ -905,6 +1014,10 @@ public class InputGUI extends javax.swing.JFrame {
 		}
 		
 		modelle.buildObjects(namesList);
+		renewObjCount();
+		
+	
+		
 	}
 
 	/**
@@ -914,6 +1027,26 @@ public class InputGUI extends javax.swing.JFrame {
 	private void removeObjFromDB() {
 		String id = javax.swing.JOptionPane.showInputDialog("Objekt-ID eingeben:");
 		modelle.deleteObjFromDB(id);
+		renewObjCount();
+	}
+	
+	
+	private void renewObjCount() {
+		int obj=0;
+		try {
+			obj= modelle.getDBController().getUsedIds().size();
+			if (obj == 1) {
+				objInDBLabel.setSize(objInDBLabel.getPreferredSize());
+				objInDBLabel.setText("1 Objekt in der Datenbank.");
+			} else {
+				objInDBLabel.setSize(objInDBLabel.getPreferredSize());
+				objInDBLabel.setText(obj + " Objekte in der Datenbank.");
+			}
+		}
+		catch(NullPointerException ex) {
+			objInDBLabel.setSize(objInDBLabel.getPreferredSize());
+			objInDBLabel.setText("keine Datenbankverbindung!");
+		}
 	}
 
 	/**

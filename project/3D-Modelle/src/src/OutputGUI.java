@@ -127,42 +127,8 @@ public class OutputGUI extends javax.swing.JFrame {
 	private void initComponents() {
 		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		
-		JButton b3 = new JButton("CLOSE");
-
-		b3.setBounds(50, 375, 250, 50);
-
-		b3.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				javax.swing.ImageIcon icon = new javax.swing.ImageIcon(defimg);
-
-				for(JButton b : butArr) {
-					//defimg = null;
-					b.setIcon(null);
-					b.setIcon(icon);	
-					b.removeAll();
-					
-					
-					java.awt.event.ActionListener l = b.getActionListeners()[0];
-					b.removeActionListener(l);
-					b.invalidate();
-					b=null;
-					
-				}
-				butArr.clear();
-				butArr =null;
-				getgui().setVisible(false);
-				mPanel.removeAll();
-				pane.removeAll();
-				getgui().setVisible(true);
-				
-				//garbage();
-
-				//getgui().dispose();
-				
-
-			}
-		});
-		pane.add(b3);
+		
+	
 		
 
 		insets = new Insets(20, 20, 45, 25);
@@ -212,26 +178,28 @@ public class OutputGUI extends javax.swing.JFrame {
 					int y = h;
 					int x = w + i * (getWidth() - imgsize) / 20;
 					g.drawLine(x, y, x, y + 5);
-					BigDecimal mark = new BigDecimal(String.valueOf((double) i * lenInt / 10))
-							.setScale(2, BigDecimal.ROUND_HALF_UP).stripTrailingZeros();
+					String mark = new BigDecimal(String.valueOf((double) i * lenInt / 10))
+							.setScale(2, BigDecimal.ROUND_HALF_UP).stripTrailingZeros().toPlainString();
+
 					g.setColor(Color.blue);
 
-					g.drawString(mark.toString(), x, y - 2);
+					g.drawString(mark, x, y - 2);
 
 					x = w - i * (getWidth() - imgsize) / 20;
 					g.drawLine(x, y, x, y + 5);
 					g.drawString(mark.toString(), x, y - 2);
 				}
+			
 
 				// create hatch marks for y axis.
 				for (int i = 0; i < 11; i++) {
 					int x = w;
 					int y = h + i * (getHeight() - imgsize) / 20;
 					g.drawLine(x - 5, y, x, y);
-					BigDecimal mark = new BigDecimal(String.valueOf((double) i * angInt / 10))
-							.setScale(2, BigDecimal.ROUND_HALF_UP).stripTrailingZeros();
+					String mark = new BigDecimal(String.valueOf((double) i * angInt / 10))
+							.setScale(2, BigDecimal.ROUND_HALF_UP).stripTrailingZeros().toPlainString();
 					if (i != 0)
-						g.drawString(mark.toString(), x + 2, y);
+						g.drawString(mark, x + 2, y);
 
 					y = h - i * (getHeight() - imgsize) / 20;
 					g.drawLine(x - 5, y, x, y);
@@ -711,7 +679,7 @@ public class OutputGUI extends javax.swing.JFrame {
 	public void dispose() {
 		if(butArr!=null) {	
 		for(JButton b : butArr) {
-			//defimg = null;
+			
 			b.setIcon(null);	
 			b.removeAll();
 			java.awt.event.ActionListener l = b.getActionListeners()[0];
@@ -723,6 +691,7 @@ public class OutputGUI extends javax.swing.JFrame {
 		butArr =null;
 		mPanel.removeAll();
 		pane.removeAll();
+		defimg  =null;
 		}
 		System.gc();		
 		r.gc();
