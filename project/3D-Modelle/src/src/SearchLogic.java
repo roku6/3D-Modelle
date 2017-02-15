@@ -74,7 +74,7 @@ public class SearchLogic {
 	 *To realize the ability of searching with a given tolerance, the query consists of a match for a (relatively)long list of node-rel-node patterns
 	 *and a (relatively)long where clause. 
 	 *The return of the query is the entire node and rel.Angle. Columns look like this:
-	 * n1.Url | n1.Description | n1.ObjectId |  n1.Length | r1.Angle | n2.Length | r2.Angle | n3.Length | r3.Angle | ... | ... 
+	 * n1.Url | n1.Description | n1.ObjectId |  n1.Length | r1to2.Angle | n2.Length | r2to3.Angle | n3.Length | r3to4.Angle | ... | ... 
 	 *
 	 *@return The CQL string to query for the properties given in the searchObjects ArrayList
 	 */
@@ -83,19 +83,23 @@ public class SearchLogic {
 		String whereClausesTemp = " WHERE ";
 		String returnsTemp =" RETURN DISTINCT n"+ searchObjects.get(0).getId1().toString()+".URL,  n"+ searchObjects.get(0).getId1().toString()+".DESCRIPTION,  n"+ searchObjects.get(0).getId1().toString()+".OBJECT_ID, ";
 		for (Searchobject sObject : searchObjects){
+			String temp="";
 			//Defining pattern to look for
-			String temp = "(n"+ sObject.getId1().toString()+":EDGE)-[r"+sObject.getId1().toString()+": CONNECTED]-(n"+sObject.getId2().toString()+"), ";
+			temp = "(n"+ sObject.getId1().toString()+":EDGE)-[r"+sObject.getId1().toString()+"to"+sObject.getId2().toString()+": CONNECTED]-(n"+sObject.getId2().toString()+"), ";
 			cypher+=temp;
+			
 			//Defining values to look for
 			//Length
 			temp=  (sObject.getLength()-toleranceLength)+"<="+"n"+ sObject.getId1().toString()+".LENGTH"+"<="+(sObject.getLength()+toleranceLength) + " AND "+
 			//Angles
-			(sObject.getAngle()-toleranceAngle)+"<="+"r"+ sObject.getId1().toString()+".ANGLE"+"<="+(sObject.getAngle()+toleranceAngle) + " AND ";
+			(sObject.getAngle()-toleranceAngle)+"<="+"r"+sObject.getId1().toString()+"to"+sObject.getId2().toString()+".ANGLE"+"<="+(sObject.getAngle()+toleranceAngle) + " AND ";
 			whereClausesTemp+=temp;
-			//Defining returns
-			temp=
-			"n"+ sObject.getId1().toString()+".LENGTH"+", "+
-			"r"+sObject.getId1().toString()+".ANGLE"+", "; 
+			//Defining returns, making sure not to duplicate any return
+			temp="";
+			if(!(returnsTemp.contains("n"+ sObject.getId1().toString()+".LENGTH"))){
+				temp = "n"+ sObject.getId1().toString()+".LENGTH"+", ";
+				}
+			temp += "r"+sObject.getId1().toString()+"to"+sObject.getId2().toString()+".ANGLE"+", "; 
 			returnsTemp+=temp;
 		}
 		// the generated substrings must be shortened to not include the last, redundant comma/space/AND
@@ -125,14 +129,6 @@ public class SearchLogic {
 	 * 
 	 */
 	public ArrayList<Foundobject> calcSimilarity(Result result){
-		//for each Row "patternFromDD" in Result do
-		// compare patternFromDB to each Searchobject "object" in this.Searchobjects
-		// find a way to measure similarity (subtraction?) and 
-		// return an average for each pattern found^
-		ArrayList<Double> expectedAnglesArray= new ArrayList<>();
-		ArrayList<Double> expectedLengthsArray = new ArrayList<>();
-		ArrayList<Double> foundAnglesArray = new ArrayList<>();
-		ArrayList<Double> foundLengthsArray = new ArrayList<>();
 		ArrayList<Foundobject> foundObjectsArray= new ArrayList<Foundobject>();
 		String foundUrl="";
 		String foundDescription="";
@@ -140,17 +136,10 @@ public class SearchLogic {
 		Double devLength=0.;
 		Double devAngle=0.;
 		
-		//Store expected values
-		for (Searchobject sObj : searchObjects){
-			expectedAnglesArray.add(sObj.getAngle());
-			expectedLengthsArray.add(sObj.getLength());
-		}
 		
 		//Calc found sum for each row of the result table and gather information like object id, description etc
 		while (result.hasNext()){
 			foundId=0;
-			foundAnglesArray.clear();
-			foundLengthsArray.clear();
 			devLength=0.;
 			devAngle=0.;
 
@@ -162,8 +151,9 @@ public class SearchLogic {
 			
 			//Calc derivation from expectedSums and normalize it
 			for(int i =0; i<searchObjects.size(); i++){
-				devLength += Math.abs(expectedLengthsArray.get(i)- (Double)rowFromResult.get("n"+(i+1)+".LENGTH"));
-				devAngle += Math.abs(expectedAnglesArray.get(i)-(Double)rowFromResult.get("r"+(i+1)+".ANGLE"));
+				devLength += Math.abs(searchObjects.get(i).getLength()- (Double)rowFromResult.get("n"+searchObjects.get(i).getId1()+".LENGTH"));
+				devAngle += Math.abs(searchObjects.get(i).getAngle()-
+						(Double)rowFromResult.get("r"+searchObjects.get(i).getId1().toString()+"to"+searchObjects.get(i).getId2().toString()+".ANGLE"));
 			}
      	   devLength/=searchObjects.size();
 	       devAngle/=searchObjects.size();
