@@ -53,6 +53,7 @@ public class OutputGUI extends javax.swing.JFrame {
 	private int mPbottom;
 	private List<Foundobject> foundList;
 	private Image defimg;
+	private Image plusimg;
 	private Graphics g;
 	private List<javax.swing.JButton> butArr;
 	private JPanel mPanel;
@@ -133,7 +134,7 @@ public class OutputGUI extends javax.swing.JFrame {
 
 		insets = new Insets(20, 20, 45, 25);
 
-		imgsize = (int) (getHeight() / 6);
+		imgsize = (int) (Math.min(getHeight()/6,getWidth()/10));
 		butArr = new ArrayList<javax.swing.JButton>(foundList.size());
 
 		// default image
@@ -150,6 +151,17 @@ public class OutputGUI extends javax.swing.JFrame {
 
 		g.drawLine(imgsize / 4, imgsize / 4, imgsize / 4, imgsize * 3 / 4);
 		g.drawLine(imgsize * 3 / 4, imgsize / 4, imgsize * 3 / 4, imgsize * 3 / 4);
+		
+		plusimg = new BufferedImage(16, 16, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+		g = plusimg.getGraphics();
+		g.setColor(Color.green);
+		g.setFont(new Font("default", Font.BOLD, 20));
+		g.drawLine(8, 0, 8, 16);
+		g.drawLine(0, 8, 16, 8);
+		
+		
+		
+		
 	
 
 		mPanel = new JPanel() {
@@ -212,7 +224,7 @@ public class OutputGUI extends javax.swing.JFrame {
 		};
 		
 
-		tm = new javax.swing.table.DefaultTableModel(new Object[][] {}, new String[] { "ID", "LenSim", "AngleSim" }
+		tm = new javax.swing.table.DefaultTableModel(new Object[][] {}, new String[] { "ID", "LenDif", "AngleDif" }
 		) {
 			private static final long serialVersionUID = 1L;
 
@@ -436,8 +448,13 @@ public class OutputGUI extends javax.swing.JFrame {
 		
 		
 		jButton.putClientProperty("description", foundList.get(i).getDescr());
-		jButton.putClientProperty("x", wantedBounds.getMinX() / getWidth());
-		jButton.putClientProperty("y", wantedBounds.getMinY() / getHeight());
+		
+		
+		
+		
+			
+		
+
 
 		jButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -487,6 +504,27 @@ public class OutputGUI extends javax.swing.JFrame {
 			drawOneButton(i);
 
 		}
+		for(JButton jButton : butArr) {
+		Rectangle bounds = jButton.getBounds();
+
+
+		int overlaps = 0;	
+		for (int j = 0; j < butArr.size() && butArr.get(j) != null; j++)
+			if (overlap(bounds, butArr.get(j).getBounds()) && butArr.get(j) != jButton) 
+				overlaps +=1;
+		if(overlaps>0) {
+			javax.swing.JLabel plusLabel = new javax.swing.JLabel();
+			plusLabel.setIcon( new javax.swing.ImageIcon(plusimg));		
+			plusLabel.setPreferredSize(new Dimension(16,16));
+			
+			jButton.setLayout(null);
+			jButton.add(plusLabel);
+			plusLabel.setBounds(imgsize*3/4,imgsize*1/4-16, 16, 16);
+			
+			
+				
+			}
+		}
 
 	}
 
@@ -498,7 +536,6 @@ public class OutputGUI extends javax.swing.JFrame {
 			
 			if( icons.get(0)=="defimg") {
 				label.setIcon(buttons.get(0).getIcon());
-				System.out.println("1");
 			}
 			else {
 				//scale for small monitors
@@ -521,11 +558,17 @@ public class OutputGUI extends javax.swing.JFrame {
 					resImg=null;
 				}
 				label.setIcon(labelIcon);
-				System.out.println("2");
 			}
 			label.setHorizontalTextPosition(JLabel.CENTER);
 			label.setVerticalTextPosition(JLabel.BOTTOM);
-			label.setText("ID " + buttons.get(0).getName() + ", " + descr);
+			
+
+			label.setText("<html>" + "ID " + buttons.get(0).getName() + ", " + descr+"</html>");
+			Dimension d = new Dimension(label.getIcon().getIconWidth(),(int)label.getPreferredSize().getHeight()+50);
+			label.setPreferredSize(d);
+
+
+			
 			javax.swing.JOptionPane.showMessageDialog(pane, label, buttons.get(0).getName(),
 					javax.swing.JOptionPane.PLAIN_MESSAGE);
 		} 
@@ -593,7 +636,9 @@ public class OutputGUI extends javax.swing.JFrame {
 						JLabel label = new JLabel(ic);
 						label.setHorizontalTextPosition(JLabel.CENTER);
 						label.setVerticalTextPosition(JLabel.BOTTOM);
-						label.setText("ID: " + name + ", " + descr);
+						label.setText("<html>" +"ID: " + name + ", " + descr+"</html>");
+						Dimension d = new Dimension(label.getIcon().getIconWidth(),(int)label.getPreferredSize().getHeight()+50);
+						label.setPreferredSize(d);
 						
 
 						javax.swing.JOptionPane.showMessageDialog(pane, label, name,
@@ -634,13 +679,6 @@ public class OutputGUI extends javax.swing.JFrame {
 			else
 				javax.swing.JOptionPane.showMessageDialog(pane, l, "", javax.swing.JOptionPane.PLAIN_MESSAGE);
 
-			// javax.swing.JOptionPane diapane = new javax.swing.JOptionPane();
-			// diapane.setSize((int)(imgsize*Math.ceil(Math.sqrt(buttons.size()))),(int)(imgsize*Math.ceil(Math.sqrt(buttons.size()))));
-			// diapane.showMessageDialog(pane, l,"",
-			// javax.swing.JOptionPane.PLAIN_MESSAGE);
-			// javax.swing.JDialog dialog = diapane.createDialog(pane, l,"",
-			// javax.swing.JOptionPane.PLAIN_MESSAGE);
-			// dialog.show();
 
 			
 
