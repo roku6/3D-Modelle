@@ -79,14 +79,14 @@ public class SearchLogic {
 	 *@return The CQL string to query for the properties given in the searchObjects ArrayList
 	 */
 	public String generateQuery (){
-		String cypher="MATCH ";
+		String pattern="MATCH ";
 		String whereClausesTemp = " WHERE ";
 		String returnsTemp =" RETURN DISTINCT n"+ searchObjects.get(0).getId1().toString()+".URL,  n"+ searchObjects.get(0).getId1().toString()+".DESCRIPTION,  n"+ searchObjects.get(0).getId1().toString()+".OBJECT_ID, ";
 		for (Searchobject sObject : searchObjects){
 			String temp="";
 			//Defining pattern to look for
 			temp = "(n"+ sObject.getId1().toString()+":EDGE)-[r"+sObject.getId1().toString()+"to"+sObject.getId2().toString()+": CONNECTED]-(n"+sObject.getId2().toString()+"), ";
-			cypher+=temp;
+			pattern+=temp;
 			
 			//Defining values to look for. If value is null: any found value is accepted
 			//Length
@@ -108,8 +108,8 @@ public class SearchLogic {
 			returnsTemp+=temp;
 		}
 		// the generated substrings must be shortened to not include the last, redundant comma/space/AND
-		String temp =cypher.substring(0, cypher.length()-2);
-		cypher = temp;
+		String temp =pattern.substring(0, pattern.length()-2);
+		pattern = temp;
 		temp= whereClausesTemp.substring(0, whereClausesTemp.length()-4);
 		whereClausesTemp = temp;
 		temp= returnsTemp.substring(0, returnsTemp.length()-2);
@@ -117,7 +117,7 @@ public class SearchLogic {
 		returnsTemp+= " ORDER BY  n"+ searchObjects.get(0).getId1().toString()+".OBJECT_ID";
 		
 		//Concatenate all substrings
-		cypher+=(whereClausesTemp+=returnsTemp);
+		String cypher = pattern+whereClausesTemp+returnsTemp;
 		System.out.println(cypher);
 		return cypher;
 	}
@@ -150,9 +150,9 @@ public class SearchLogic {
 
 			Map<String,Object> rowFromResult = result.next();
 			
-			foundId= (int) rowFromResult.get("n1.OBJECT_ID");
-			foundDescription = rowFromResult.get("n1.DESCRIPTION").toString();
-			foundUrl= rowFromResult.get("n1.URL").toString();
+			foundId= (int) rowFromResult.get("n"+ searchObjects.get(0).getId1().toString()+".OBJECT_ID");
+			foundDescription = rowFromResult.get("n"+ searchObjects.get(0).getId1().toString()+".DESCRIPTION").toString();
+			foundUrl= rowFromResult.get("n"+ searchObjects.get(0).getId1().toString()+".URL").toString();
 			
 			//Calc derivation from expectedSums and normalize it
 			for(int i =0; i<searchObjects.size(); i++){
