@@ -88,11 +88,16 @@ public class SearchLogic {
 			temp = "(n"+ sObject.getId1().toString()+":EDGE)-[r"+sObject.getId1().toString()+"to"+sObject.getId2().toString()+": CONNECTED]-(n"+sObject.getId2().toString()+"), ";
 			cypher+=temp;
 			
-			//Defining values to look for
+			//Defining values to look for. If value is null: any found value is accepted
 			//Length
-			temp=  (sObject.getLength()-toleranceLength)+"<="+"n"+ sObject.getId1().toString()+".LENGTH"+"<="+(sObject.getLength()+toleranceLength) + " AND "+
+			temp="";
+			if(!(sObject.getLength()== null)){	
+				temp+=  (sObject.getLength()-toleranceLength)+"<="+"n"+ sObject.getId1().toString()+".LENGTH"+"<="+(sObject.getLength()+toleranceLength) + " AND ";
+			}
 			//Angles
-			(sObject.getAngle()-toleranceAngle)+"<="+"r"+sObject.getId1().toString()+"to"+sObject.getId2().toString()+".ANGLE"+"<="+(sObject.getAngle()+toleranceAngle) + " AND ";
+			if(!(sObject.getAngle()==null)){
+			temp+=(sObject.getAngle()-toleranceAngle)+"<="+"r"+sObject.getId1().toString()+"to"+sObject.getId2().toString()+".ANGLE"+"<="+(sObject.getAngle()+toleranceAngle) + " AND ";
+			}
 			whereClausesTemp+=temp;
 			//Defining returns, making sure not to duplicate any return
 			temp="";
@@ -151,9 +156,17 @@ public class SearchLogic {
 			
 			//Calc derivation from expectedSums and normalize it
 			for(int i =0; i<searchObjects.size(); i++){
-				devLength += Math.abs(searchObjects.get(i).getLength()- (Double)rowFromResult.get("n"+searchObjects.get(i).getId1()+".LENGTH"));
-				devAngle += Math.abs(searchObjects.get(i).getAngle()-
-						(Double)rowFromResult.get("r"+searchObjects.get(i).getId1().toString()+"to"+searchObjects.get(i).getId2().toString()+".ANGLE"));
+				
+				//Only include a length/angles deviation if the corresponding Searchobjects value is not null
+				if (!(searchObjects.get(i).getLength()==null)) {
+					devLength += Math.abs(searchObjects.get(i).getLength()
+							- (Double) rowFromResult.get("n" + searchObjects.get(i).getId1() + ".LENGTH"));
+				}
+				if (!(searchObjects.get(i).getAngle()==null)) {
+					devAngle += Math.abs(searchObjects.get(i).getAngle()
+							- (Double) rowFromResult.get("r" + searchObjects.get(i).getId1().toString() + "to"
+									+ searchObjects.get(i).getId2().toString() + ".ANGLE"));
+				}
 			}
      	   devLength/=searchObjects.size();
 	       devAngle/=searchObjects.size();
