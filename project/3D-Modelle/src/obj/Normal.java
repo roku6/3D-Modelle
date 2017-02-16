@@ -20,13 +20,24 @@ public class Normal<T extends Number> extends Vector4id<T>
 	public static int getNumber() 	{return number;}
 	public static void setNumber(int number) 	{Normal.number = number;}
 	
-	Normal(Vector4<T> aVector4)
+	/**
+	 * Constructor
+	 * @param aVector4
+	 */
+	public Normal(Vector4<T> aVector4)
 	{
 		super(aVector4);
 		Normal.number++;
 		this.id = number;
 	}
-	
+	/**
+	 * Constructor
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param w
+	 */
 	public Normal(T x, T y, T z, T w)
 	{
 		super(x,y,z,w);
@@ -34,6 +45,11 @@ public class Normal<T extends Number> extends Vector4id<T>
 		this.id = number;
 	}
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param value
+	 */
 	public Normal(T value)
 	{
 		super(value);

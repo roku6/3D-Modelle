@@ -4,7 +4,7 @@ package obj;
 import java.util.ArrayList;
 
 /**
- * @author Login
+ * @author Robert Külpmann
  *
  * @param <T>
  */
@@ -13,13 +13,11 @@ public class PointExt<T extends Number> extends Point<T> implements Comparable<P
 	private static int number = 0;
 	private int id = 0;
 	private ArrayList<PointExt<Double>> neighbourList = new ArrayList<>(); 
-	private ArrayList<PointExt<Double>> cornerPointList = new ArrayList<>();
 	private double angle = 0;
 	private double epsilon = 0.0001;
 	
 	public int getId() 										{return id;}
 	public ArrayList<PointExt<Double>> getNeighbourList() 	{return neighbourList;}
-	public ArrayList<PointExt<Double>> getCornerPointList() {return cornerPointList;}
 	public double getAngle()								{return angle;}
 	
 	public static void setNumber(int number)								{PointExt.number = number;}
@@ -65,14 +63,6 @@ public class PointExt<T extends Number> extends Point<T> implements Comparable<P
 	public void addNeighbour(PointExt<Double> aPoint)
 	{
 		neighbourList.add(aPoint);
-	}
-	/**
-	 * 
-	 * @param aPoint
-	 */
-	public void addCornerPoint(PointExt<Double> aPoint)
-	{
-		cornerPointList.add(aPoint);
 	}
 	/**
 	 * 

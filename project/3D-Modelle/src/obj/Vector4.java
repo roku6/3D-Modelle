@@ -37,7 +37,14 @@ public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 	public void setW(T w) 					{this.w = w;}
 	public void setMagnitude(T magnitude)	{this.magnitude = magnitude;}
 	
+	/**
+	 * Empty Constructor
+	 */
 	public Vector4(){}
+	/**
+	 * Constructor
+	 * @param vector
+	 */
 	public Vector4(Vector4<T> vector)
 	{
 		this.x = vector.getX();
@@ -46,6 +53,11 @@ public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 		this.w = vector.getW();
 		this.calcMagnitude();
 	}	
+	/**
+	 * Constructor
+	 * 
+	 * @param value
+	 */
 	public Vector4(T value)
 	{
 		this.setX(Operation.set(value));		
@@ -54,6 +66,14 @@ public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 		this.setW(Operation.set(value));	
 		this.calcMagnitude();
 	}
+	/**
+	 * Constructor
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param w
+	 */
 	public Vector4(T x, T y, T z, T w)
 	{
 		this.setX(x);
@@ -62,16 +82,13 @@ public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 		this.setW(w);
 		this.calcMagnitude();
 	}
-	
-	public void set(T x, T y, T z, T w)
-	{
-		this.setX(x);
-		this.setY(y);
-		this.setZ(z);
-		this.setW(w);
-		this.calcMagnitude();		
-	}
-	
+		
+	/**
+	 * Constructs a Vector2 (Vector4 with 2 zero arguments)
+	 * 
+	 * @param x
+	 * @param y
+	 */
 	public void Vector2(T x, T y)
 	{
 		setX(x);
@@ -99,6 +116,12 @@ public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 		setMagnitude(Operation.squareRoot(Operation.add2(Operation.square(x), Operation.square(y))));
 	}
 
+	/**
+	 * Constructs a Vector3(Vector4 without w value) 
+	 * 
+	 * @param x
+	 * @param y
+	 */
 	public void Vector3(T x, T y)
 	{
 		setX(x);
@@ -123,6 +146,28 @@ public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 		setMagnitude(Operation.squareRoot(Operation.add2(Operation.square(x), Operation.square(y))));
 	}
 
+	/**
+	 * Methode sets x, y, z, w and the magnitude
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param w
+	 */
+	public void set(T x, T y, T z, T w)
+	{
+		this.setX(x);
+		this.setY(y);
+		this.setZ(z);
+		this.setW(w);
+		this.calcMagnitude();		
+	}
+	
+	/**
+	 * 
+	 * @param sub
+	 * @return
+	 */
 	public Vector4<T> sub3(Vector4<T> sub)
 	{
 		this.x = Operation.sub2(this.getX(), sub.getX());
@@ -132,6 +177,11 @@ public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 		return this;
 	}
 
+	/**
+	 * 
+	 * @param sub
+	 * @return
+	 */
 	public Vector4<T> sub(Vector4<T> sub)
 	{
 		this.x = Operation.sub2(this.getX(), sub.getX());
@@ -141,6 +191,11 @@ public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 		return this;
 	}
 
+	/**
+	 * 
+	 * @param add
+	 * @return
+	 */
 	public Vector4<T> add(Vector4<T> add)
 	{
 		if (this.getX() == null || this.getY() == null || this.getZ() == null || this.getW() == null)
@@ -155,6 +210,11 @@ public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 		return this;
 	}
 	
+	/**
+	 * 
+	 * @param cross
+	 * @return
+	 */
 	public Vector4<T> cross(Vector4<T> cross)
 	{
 		T x, y, z;
@@ -170,6 +230,10 @@ public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 		return this;
 	}	
 
+	/**
+	 * 
+	 * @return
+	 */
 	public Vector4<T> normalize()
 	{
 		this.x = Operation.divide2(this.getX(), this.magnitude); 
@@ -179,6 +243,9 @@ public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 		return this;
 	}
 	
+	/**
+	 * 
+	 */
 	private void calcMagnitude()
 	{
 		this.setMagnitude(Operation.powerOf(	

@@ -207,11 +207,11 @@ public abstract class Operation
 	}
 	
 	/**
-	 * 
+	 * Calculate the squareRoot of value using the returnType of length
 	 * 
 	 * @param value
 	 * @param length
-	 * @return
+	 * @return length square root of value, type of length
 	 */
 	public static <T extends Number, L extends Number> L squareRoot(T value, L length)
 	{
@@ -236,6 +236,12 @@ public abstract class Operation
 		return length;
 	}
 
+	/**
+	 * Calculate squareRoot of a Value and returns it (same type)
+	 * 
+	 * @param value
+	 * @return value squareRoot of Input
+	 */
 	public static <T extends Number> T squareRoot(T value)
 	{
 		Double temp;
@@ -259,6 +265,11 @@ public abstract class Operation
 		return value;
 	}
 
+	/**
+	 * 
+	 * @param value
+	 * @return
+	 */
 	public static <T extends Number> T add(T value[])
 	{
 		T actual = value[0];
@@ -268,7 +279,14 @@ public abstract class Operation
 		}
 		return actual;
 	}
-
+	
+	/**
+	 * 
+	 * @param value1
+	 * @param value2
+	 * @param value3
+	 * @return
+	 */
 	public static <T extends Number> T add3(T value1, T value2, T value3)
 	{
 		value1 = Operation.add2(value1, value2);
@@ -276,6 +294,14 @@ public abstract class Operation
 		return value1;		
 	}
 	
+	/**
+	 * 
+	 * @param value1
+	 * @param value2
+	 * @param value3
+	 * @param value4
+	 * @return
+	 */
 	public static <T extends Number> T add4(T value1, T value2, T value3, T value4)
 	{
 		value1 = Operation.add3(value1, value2, value3);
@@ -283,11 +309,23 @@ public abstract class Operation
 		return value1;		
 	}
 	
+	/**
+	 * 
+	 * @param number
+	 * @return
+	 */
 	public static <T extends Number> T square(T number)
 	{
 		return Operation.multiply2(number, number);
 	}	
 	
+	/**
+	 * 
+	 * @param value1
+	 * @param value2
+	 * @param value3
+	 * @return
+	 */
 	public static <T extends Number> T multiply3(T value1, T value2, T value3)
 	{
 		Operation.multiply2(value1, value2);

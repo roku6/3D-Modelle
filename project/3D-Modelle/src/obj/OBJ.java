@@ -77,6 +77,9 @@ public class OBJ
 		return null;		
 	}	
 	
+	/**
+	 * Constructor
+	 */
 	public OBJ()
 	{
 		pointList = new ArrayList<>();
@@ -108,6 +111,7 @@ public class OBJ
 	}
 	
 	/**
+	 * Methode to create a Point from Vertex/Texture/Normal (by ID)
 	 * 
 	 * @param vertexId
 	 * @param textureId
@@ -133,6 +137,7 @@ public class OBJ
 	}
 	
 	/**
+	 * Converts negative Zeros to positive Zeros
 	 * 
 	 * @param splitted
 	 * @param size
@@ -150,7 +155,8 @@ public class OBJ
 		return splitted;
 	}
 	
-	/** Method for loading an Obj-File
+	/** 
+	 * Method for loading an Obj-File
 	 * @param Filename as a String
 	 **/
 	public boolean load(String fileName)
@@ -174,6 +180,12 @@ public class OBJ
 				//Reads Coordinates of a vertex (3D)
 				if (splitted[0].equals("v")) 
 				{
+					if(splitted.length != 3) 
+					{
+						br.close();
+						fr.close();
+						throw new IOException();
+					}
 					splitted = convertNegativeZeros(splitted, 3);
 					vertexList.add(new Vertex<>(	Double.valueOf(splitted[1]), 
 													Double.valueOf(splitted[2]), 
@@ -183,6 +195,12 @@ public class OBJ
 				//Reads Coordinates of a texture (2D)
 				else if (splitted[0].equals("vt")) 
 				{
+					if(splitted.length != 2) 
+					{
+						br.close();
+						fr.close();
+						throw new IOException();
+					}
 					splitted = convertNegativeZeros(splitted, 2);
 					textureList.add(new Texture<>(	Double.valueOf(splitted[1]),
 													Double.valueOf(splitted[2]),
@@ -191,6 +209,12 @@ public class OBJ
 				//Reads Coordinates of a normalvector (3D)
 				else if (splitted[0].equals("vn")) 
 				{
+					if(splitted.length != 3) 
+					{
+						br.close();
+						fr.close();
+						throw new IOException();
+					}
 					splitted = convertNegativeZeros(splitted, 3);
 					normalList.add(new Normal<>( 	Double.valueOf(splitted[1]),
 													Double.valueOf(splitted[2]),
@@ -205,18 +229,24 @@ public class OBJ
 					for(int i = 0; i<faceIndicesNrLocal; i++)
 					{
 						String splitted2[] = splitted[i+1].split("/");
+						//Checks if there are 3 values
 						if (splitted2.length == 3)
 						{
 							splittedV = splitted2[0];
 							splittedT = splitted2[1];
 							splittedN = splitted2[2];
 							PointExt<Double> aPoint = createPoint(	Integer.valueOf(splittedV),
-																Integer.valueOf(splittedT),
-																Integer.valueOf(splittedN));
+																	Integer.valueOf(splittedT),
+																	Integer.valueOf(splittedN));
 							pointList.add(aPoint);
 							aPointExtList.add(aPoint);
 						}
-						else throw new IOException();
+						else 
+						{
+							br.close();
+							fr.close();
+							throw new IOException();
+						}
 					}
 					Face aFace = new Face(aPointExtList);
 					faceList.add(aFace);

@@ -10,7 +10,7 @@
  *  @author Robert Külpmann
  *  @version 1.0
  *  
- *  TODO: Nichts! Fertig!
+ *  TODO: Nothing! Finished
  */
 
 package obj;
@@ -80,7 +80,12 @@ public abstract class Point<T extends Number>
 		}
 		return false;
 	}
-
+	
+	/**
+	 * 
+	 * @param obj
+	 * @return
+	 */
 	public boolean rEquals(Object obj)
 	{
 		Point<Double> aPoint = obj instanceof Point ? (Point<Double>)obj : null;

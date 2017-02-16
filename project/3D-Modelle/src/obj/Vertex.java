@@ -23,13 +23,24 @@ public class Vertex<T extends Number> extends Vector4id<T>
 	public static int getNumber() 	{return number;}	
 	public static void setNumber(int number) 	{Vertex.number = number;}
 
-	Vertex(Vector4<T> aVector4)
+	/**
+	 * 
+	 * @param aVector4
+	 */
+	public Vertex(Vector4<T> aVector4)
 	{
 		super(aVector4);
 		Vertex.number++;
 		this.id = number;
 	}
 	
+	/**
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param w
+	 */
 	public Vertex(T x, T y, T z, T w)
 	{
 		super(x,y,z,w);
@@ -37,6 +48,10 @@ public class Vertex<T extends Number> extends Vector4id<T>
 		this.id = number;
 	}
 	
+	/**
+	 * 
+	 * @param value
+	 */
 	public Vertex(T value)
 	{
 		super(value);

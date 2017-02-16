@@ -20,13 +20,26 @@ public class VertexNormal<T extends Number>
 	public void setNormalList(Map<Normal<T>, Double> normalMap) 	{this.normalMap = normalMap;}
 	
 	
+	/**
+	 * Empty Constructor
+	 */
 	public VertexNormal(){}
+	
+	/**
+	 * 
+	 * @param aVertex
+	 */
 	public VertexNormal(Vertex<T> aVertex)
 	{
 		setVertex(aVertex);
 		setNormalList(new HashMap<>());
 	}
 	
+	/**
+	 * 
+	 * @param aVertexList
+	 * @return
+	 */
 	public static ArrayList<VertexNormal<Double>> addVertexList(ArrayList<Vertex<Double>> aVertexList)
 	{
 		ArrayList<VertexNormal<Double>> vertexNormalList = new ArrayList<>();

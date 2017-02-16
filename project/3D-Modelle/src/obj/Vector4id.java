@@ -14,13 +14,25 @@ public class Vector4id<T extends Number> extends Vector4<T>
 	public int getId() 				{return id;}
 	public void setId(int id) 		{this.id = id;}
 	
-	Vector4id(Vector4<T> aVector4)
+	/**
+	 * Constructor
+	 * 
+	 * @param aVector4
+	 */
+	public Vector4id(Vector4<T> aVector4)
 	{
 		super(aVector4);
 		this.id = number;
 		Vector4id.number++;
 	}
 	
+	/**
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param w
+	 */
 	public Vector4id(T x, T y, T z, T w)
 	{
 		super(x,y,z,w);
@@ -28,6 +40,10 @@ public class Vector4id<T extends Number> extends Vector4<T>
 		Vector4id.number++;
 	}
 	
+	/**
+	 * 
+	 * @param value
+	 */
 	public Vector4id(T value)
 	{
 		super(value);
@@ -42,6 +58,7 @@ public class Vector4id<T extends Number> extends Vector4<T>
 		return getY().hashCode(); 
 	}
 	
+	@Override
 	public boolean equals(Object obj)
 	{
 		if (obj instanceof Vector4id)

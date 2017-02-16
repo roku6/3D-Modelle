@@ -44,16 +44,7 @@ public static Modelle getInstance()
 		dbCtrl = DBController.getInstance(dbpath);	
 		System.out.println("finished.");
 		//dbCtrl.clearAll();
-
-		//Initialize aFigure for Testing
-		/*
-		String[] urls	= {"../../resources/cube_hole_100x100x100.obj", 
-		              	   "../../resources/cube_100x100x100.txt", 
-		              	   "../../resources/cube_100x100x100.png"};
-		namesList.add(urls);
-		*/
 		
-//	}
 		dbCtrl.printOBJAmount();
 		
 //		//-------------------------------Starting GUI
@@ -103,6 +94,14 @@ public static Modelle getInstance()
 	}
 	
 	
+	/**
+	 * 
+	 * @param searchList
+	 * @param angInt
+	 * @param lenInt
+	 * @param width
+	 * @param height
+	 */
 	public void search( List<Searchobject> searchList, double angInt, double lenInt, int width, int height) {
 		this.width = width;
 		this.height = height;
@@ -118,15 +117,27 @@ public static Modelle getInstance()
 	}
 	
 	//to be used by searchlogic after finished search
+	/**
+	 * 
+	 * @param foundList
+	 */
 	public void displayOutput(List<Foundobject> foundList) {
 		OutputGUI outg = new OutputGUI(foundList, lenInt,angInt, width, height);
 	}
 	
+	/**
+	 * 
+	 * @param id
+	 */
 	public void deleteObjFromDB(String id) {
 		dbCtrl.removeByOBJ_ID(id);
 		dbCtrl.printOBJAmount();
 		}
 	
+	/**
+	 * 
+	 * @param namesList
+	 */
 	public void buildObjects(List<String[]> namesList) 
 	{				
 		int id = 0;
@@ -166,6 +177,10 @@ public static Modelle getInstance()
 		}								
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public DBController getDBController(){
 		return dbCtrl;
 	}

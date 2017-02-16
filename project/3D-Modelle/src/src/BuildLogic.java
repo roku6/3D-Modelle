@@ -9,7 +9,6 @@
  *  Created edges 
  *  Filled RelationDefinition
  * TODO: look for possible Errors
- * BUGS: a bug occured with generated Cube
  * 
  * @author Robert Külpmann
  * 
@@ -122,7 +121,9 @@ public class BuildLogic
 	}
 	
 	/**
-	 * 
+	 * This function creates a List of VertexNormals
+	 * It adds a Vertex with the corresponding normal if it doesn't exists
+	 * and adds a Normal, if the Vertex exists
 	 */
 	private void createCornerVertexList()
 	{
@@ -151,7 +152,7 @@ public class BuildLogic
 	}
 	
 	/**
-	 * 
+	 * This function removes 2D Objects which are inside a 3D Object (e.g. tube shaped holes, plates)
 	 */
 	private void remove2DPlanes()
 	{
@@ -212,6 +213,11 @@ public class BuildLogic
 		else return false;
 	}
 
+	
+	/**
+	 * Public function which resets and clears every list/object
+	 * should be used after the BuildLogic read a obj file, or before it should read a new file
+	 */
 	public void clearAll()
 	{
 		aFigure.getEdgeRelations().clear();
@@ -241,6 +247,7 @@ public class BuildLogic
 	}
 	
 	/**
+	 * Recursive function which returns a CornerPoint as Neighbour or null if there is none available
 	 * 
 	 * @param lastPoint
 	 * @param actPoint
@@ -267,7 +274,7 @@ public class BuildLogic
 		return null;
 	}
 	/**
-	 * 
+	 * This Function sets all Neighbours of all Corners to a CornerPoint or null 
 	 */
 	private void updateCornerList()
 	{
@@ -300,7 +307,9 @@ public class BuildLogic
 	}
 	
 	/**
-	 * 
+	 * This function removes all cornerPoints which create the same two lines
+	 * -> lines from corner to corner, but not an edge
+	 * changes cornerPointExtList 
 	 */
 	private void removeDoubleLines()
 	{
@@ -335,24 +344,28 @@ public class BuildLogic
 	}
 	
 	/**
-	 * 
+	 * Fills the CornerList
+	 * Algorithm: 
+	 * - First searches for a Point which is in the FaceList and PointList
+	 * - Compares if the neighbour exists and adds it to the list, if not
+	 * - If it exists just the angle is added
 	 */
 	private void fillCornerList()
 	{
 		boolean firstCorner = false;
 		Edge<Double> aEdge = null, bEdge = null;
-		for(PointExt<Double> aPoint3 : aOBJ.getPointList())		//sucht einen Punkt aus der Punktliste
+		for(PointExt<Double> aPoint3 : aOBJ.getPointList())		//search for a Point in the Pointlist
 		{
-			for (Face aFace2 : aOBJ.getFaceList())				//sucht ein Face
+			for (Face aFace2 : aOBJ.getFaceList())				//search for a Face
 			{
 				for(int i =0; i<3; i++)					
 				{
-					if (aPoint3.equals(aFace2.getPointExtList().get(i))) //überprüfe, ob einer der Punkte der Punkt ist 
+					if (aPoint3.equals(aFace2.getPointExtList().get(i))) //check if one of the points is the same 
 					{
 						firstCorner = false;
 						for (int j=0; j<3; j++) 
 						{							
-							if (j!=i) 
+							if (j!=i) 							// if it isn't the same point
 							{
 								aPoint3.addNeighbour(aFace2.getPointExtList().get(j));
 								
@@ -544,18 +557,9 @@ public class BuildLogic
 		}
 	}
 	
-	/*
-	 *  Algorithm:
-	 *  Wähle ein Face1 von allen Faces
-	 *   Wähle ein Face2 von allen Faces
-	 *    Wenn sie nicht dasselbe Face sind(id Vergleich)
-	 *     überprüfe, ob die PunkteIds gleich sind
-	 *     ist ein Punkt gleich, addiere 1
-	 *     ergibt sich die Zahl der Punkte entferne das 2. Face aus der Liste
-	 *      
-	 */
+
 	/**
-	 * 
+	 *  This function removes all doubleFaces, existing in FaceList
 	 */
 	private void removeDoubleFaces()
 	{
@@ -598,7 +602,12 @@ public class BuildLogic
 	}	
 		
 	/**
-	 * Creates DirectionVector
+	 * 
+	 * Creates DirectionVector, using aStartPoint and an EndPoint
+	 * 
+	 * @param aStartPoint
+	 * @param aEndPoint
+	 * @return dVector a directionVector
 	 */
 	private Vector4id<Double> createDirectionVector(Point<Double> aStartPoint, Point<Double> aEndPoint)
 	{
@@ -636,6 +645,9 @@ public class BuildLogic
 	}	
 		
 	/**
+	 * This algorithm fills the RelationsDefinitionList
+	 * -> will be used by database
+	 * 
 	 * Algorithm:
 	 * For each cornerPoint in cornerList
 	 *  create Edge1(cornerPoint, cornerEndPoint1)

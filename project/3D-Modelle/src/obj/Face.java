@@ -10,7 +10,7 @@
  *  @author Robert Külpmann
  *  @version 1.0
  *  
- *  TODO: Nichts! Fertig!
+ *  TODO: Finished!
  */
 
 package obj;
