@@ -13,7 +13,7 @@ import obj.Vertex;
  * 
  * @author Robert Külpmann
  *
- * @param <T>
+ * @param <T> general parameter, which should be a Number Type
  */
 public class Edge<T extends Number> 
 {
@@ -55,8 +55,8 @@ public class Edge<T extends Number>
 	/**
 	 * Constructor using 2 Vertecies
 	 * 
-	 * @param vertex0
-	 * @param vertex1
+	 * @param vertex0 First corner of this edge Object
+	 * @param vertex1 Second corner of this edge Object
 	 */
 	public Edge(Vertex<T> vertex0, Vertex<T> vertex1)
 	{
@@ -83,7 +83,7 @@ public class Edge<T extends Number>
 	/**
 	 * Compares the Vertecies of the Edges
 	 * 
-	 * @param aEdge
+	 * @param aEdge a second Edge object, with which the this Edge will be compared 
 	 * @return true if equals, false if not
 	 */
 	public boolean equals(Edge<T> aEdge)

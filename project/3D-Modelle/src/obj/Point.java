@@ -2,15 +2,11 @@
  * Point.java
  * (c) Copyright 2016 Robert Külpmann
  *  Pointclass zum Speichern von 
- *  Dependencies:
- *  	Vector4 - Klasse
- * 
  *  - pos, tex, norm
  *  
  *  @author Robert Külpmann
  *  @version 1.0
  *  
- *  TODO: Nothing! Finished
  */
 
 package obj;
@@ -41,9 +37,10 @@ public abstract class Point<T extends Number>
 	
 	/**
 	 * Constructor without Normal
-	 * @param Vertex<T> vertex
-	 * @param Texture<T> texture
-	 **/
+	 * 
+	 * @param vertex
+	 * @param tex
+	 */
 	public Point(Vertex<T> vertex, Texture<T> tex)
 	{
 		this.aVertex = vertex;
@@ -52,15 +49,15 @@ public abstract class Point<T extends Number>
 	}
 	/**
 	 * Constructor without Normal
-	 * @param Vertex<T> vertex
-	 * @param Texture<T> texture
-	 * @param Normal<T> normal
+	 * @param vertex
+	 * @param texture
+	 * @param normal
 	 **/
 
-	public Point(Vertex<T> vertex, Texture<T> tex, Normal<T> normal)
+	public Point(Vertex<T> vertex, Texture<T> texture, Normal<T> normal)
 	{
 		this.aVertex = vertex;
-		this.aTexture = tex;
+		this.aTexture = texture;
 		this.aNormal = normal;
 	}
 	

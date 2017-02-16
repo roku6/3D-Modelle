@@ -86,6 +86,8 @@ public class OBJ
 		faceList = new ArrayList<>();
 		vertexList = new ArrayList<>();
 		textureList = new ArrayList<>();	
+		Texture.setNumber(-1);
+		textureList.add(new Texture<Double>(0.0,0.0,0.0,0.0));
 		normalList = new ArrayList<>();	
 		Vertex.setNumber(0);
 		Texture.setNumber(0);
@@ -96,10 +98,10 @@ public class OBJ
 	};
 	/**
 	 * Constructor
-	 * @param int pointsNr
-	 * @param int facesNr
-	 * @param ArrayList<Point<Double>> pointList
-	 * @param ArrayList<Face> faceList
+	 * @param pointsNr
+	 * @param facesNr
+	 * @param pointList
+	 * @param faceList
 	 **/
 	public OBJ(int pointsNr, int facesNr, ArrayList<PointExt<Double>> pointList, ArrayList<Face> faceList)
 	{
@@ -157,7 +159,7 @@ public class OBJ
 	
 	/** 
 	 * Method for loading an Obj-File
-	 * @param Filename as a String
+	 * @param fileName as a String
 	 **/
 	public boolean load(String fileName)
 	{
@@ -235,6 +237,7 @@ public class OBJ
 							splittedV = splitted2[0];
 							splittedT = splitted2[1];
 							splittedN = splitted2[2];
+							if (splittedT.equals("")) splittedT = "0";
 							PointExt<Double> aPoint = createPoint(	Integer.valueOf(splittedV),
 																	Integer.valueOf(splittedT),
 																	Integer.valueOf(splittedN));
@@ -311,7 +314,8 @@ public class OBJ
 	
 	/**
 	 * Method to add faces to an OBJ File
-	   @param filename as a String, an 1D Array of indices, Size of the format
+	 * 
+	 * @param fileName as a String, an 1D Array of indices, Size of the format
 	 **/
 	public void writeFacesToObj(String fileName, int[] indices, int size)
 	{

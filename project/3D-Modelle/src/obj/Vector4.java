@@ -1,3 +1,5 @@
+package obj;
+
 /** 
  * Vector.java
  * (c) Copyright 04-2016 Robert Külpmann
@@ -13,9 +15,6 @@
  *  @version 1.0
  *  
  */
-
-package obj;
-
 public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 {
 	private T x;
@@ -86,8 +85,10 @@ public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 	/**
 	 * Constructs a Vector2 (Vector4 with 2 zero arguments)
 	 * 
-	 * @param x
-	 * @param y
+	 * @param x x coordinate of the Vector2
+	 * @param y y coordinate of the Vector2
+	 * 
+	 * {@link #setMagnitude(Number)}
 	 */
 	public void Vector2(T x, T y)
 	{
@@ -119,14 +120,17 @@ public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 	/**
 	 * Constructs a Vector3(Vector4 without w value) 
 	 * 
-	 * @param x
-	 * @param y
+	 * @param x x coordinate of the Vector3
+	 * @param y y coordinate of the Vector3
+	 * @param z z coordinate of the Vector3
+	 * 
+	 * {@link #setMagnitude(Number)}
 	 */
-	public void Vector3(T x, T y)
+	public void Vector3(T x, T y, T z)
 	{
 		setX(x);
 		setY(y);
-		setZ(y);
+		setZ(z);
 		if (x.getClass() == Integer.class)  
 		{
 			setW((T) Integer.valueOf(0));
@@ -143,16 +147,18 @@ public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 		{
 			setW((T) Double.valueOf(0.0));
 		}
-		setMagnitude(Operation.squareRoot(Operation.add2(Operation.square(x), Operation.square(y))));
+		setMagnitude(Operation.squareRoot(Operation.add3(Operation.square(x), Operation.square(y), Operation.square(z))));
 	}
 
 	/**
 	 * Methode sets x, y, z, w and the magnitude
 	 * 
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
+	 * @param x x coordinate of the Vector4
+	 * @param y y coordinate of the Vector4
+	 * @param z z coordinate of the Vector4
+	 * @param w w coordinate of the Vector4
+	 * 
+	 * {@link #setMagnitude(Number)}
 	 */
 	public void set(T x, T y, T z, T w)
 	{
@@ -164,9 +170,10 @@ public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 	}
 	
 	/**
+	 * Subtracts a Vector3 from another one (w isn't changed)
 	 * 
-	 * @param sub
-	 * @return
+	 * @param sub a Vector4 Vector (used as Vector3)
+	 * @return this the actual (changed) Vector
 	 */
 	public Vector4<T> sub3(Vector4<T> sub)
 	{
@@ -180,7 +187,7 @@ public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 	/**
 	 * 
 	 * @param sub
-	 * @return
+	 * @return this 
 	 */
 	public Vector4<T> sub(Vector4<T> sub)
 	{
@@ -192,8 +199,9 @@ public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 	}
 
 	/**
+	 * Adds a Vector4 to this Vector4
 	 * 
-	 * @param add
+	 * @param add  
 	 * @return
 	 */
 	public Vector4<T> add(Vector4<T> add)
@@ -244,7 +252,7 @@ public class Vector4 <T extends Number> implements Comparable<Vector4<T>>
 	}
 	
 	/**
-	 * 
+	 * Calculates the Magnitude of this Vector4
 	 */
 	private void calcMagnitude()
 	{

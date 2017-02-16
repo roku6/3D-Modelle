@@ -5,6 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * VertexNormal.java
+ * (c) 2017 Robert Külpmann
+ * 
+ * A Class which holds all the Normals of one Vertex
+ * 
  * @author Robert Külpmann
  *
  * @param <T>

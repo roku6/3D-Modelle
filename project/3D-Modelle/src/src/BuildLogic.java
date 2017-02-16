@@ -179,9 +179,10 @@ public class BuildLogic
 	/**
 	 * Public Function which will load an Object and create the GeometricFigure from it
 	 * 
-	 * @param objURL
-	 * @param descriptionURL
-	 * @param pictureURL
+	 * @param objURL String with OBJ file destination
+	 * @param descriptionURL String with Description file destination 
+	 * @param pictureURL String with Picture file destination
+	 * @return boolean true if everything was executed correctly else it's false
 	 */
 	public boolean buildAFigure(String objURL, String descriptionURL, String pictureURL)
 	{
@@ -194,6 +195,7 @@ public class BuildLogic
 	 * 
 	 * @param descriptionURL
 	 * @param pictureURL
+	 * @return
 	 */
 	private boolean createFigure(String descriptionURL, String pictureURL)
 	{
@@ -251,7 +253,9 @@ public class BuildLogic
 	 * 
 	 * @param lastPoint
 	 * @param actPoint
-	 * @return
+	 * @return getCornerPoint(actPoint, Neighbour) or aNeighbour
+	 * 
+	 * {@link #getCornerPoint(PointExt, PointExt)}
 	 */
 	private PointExt<Double> getCornerPoint(PointExt<Double> lastPoint, PointExt<Double> actPoint)
 	{
@@ -275,6 +279,8 @@ public class BuildLogic
 	}
 	/**
 	 * This Function sets all Neighbours of all Corners to a CornerPoint or null 
+	 * 
+	 * @link #getCornerPoint(PointExt, PointExt)
 	 */
 	private void updateCornerList()
 	{
@@ -309,7 +315,9 @@ public class BuildLogic
 	/**
 	 * This function removes all cornerPoints which create the same two lines
 	 * -> lines from corner to corner, but not an edge
-	 * changes cornerPointExtList 
+	 * changes cornerPointExtList
+	 * 
+	 *  @link obj.PointExt#getNeighbourList()
 	 */
 	private void removeDoubleLines()
 	{
@@ -349,6 +357,8 @@ public class BuildLogic
 	 * - First searches for a Point which is in the FaceList and PointList
 	 * - Compares if the neighbour exists and adds it to the list, if not
 	 * - If it exists just the angle is added
+	 * 
+	 * @link obj.PointExt.setAngle
 	 */
 	private void fillCornerList()
 	{
@@ -400,6 +410,8 @@ public class BuildLogic
 	
 	/**
 	* This Function removes all doubleVertecies existing in the VertexList
+	* 
+	* @link obj.OBJ.getFaceList().get(i).getPointExtList().get(j).getAVertex().getId()
 	*/
 	private void removeDoubleVertecies()
 	{		

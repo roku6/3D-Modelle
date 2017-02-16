@@ -1,9 +1,14 @@
 package obj;
 
 /**
- * @author Login
+ * Vector4id.java
+ * 
+ * Extends:
+ *  	Vector4id - Class (obj)   
+ * 
+ * @author Robert Külpmann
  *
- * @param <T>
+ * @param <T> Numeric Data Type
  */
 public class Vector4id<T extends Number> extends Vector4<T> 
 {

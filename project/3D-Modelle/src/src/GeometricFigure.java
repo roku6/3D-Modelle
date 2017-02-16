@@ -21,10 +21,10 @@ public class GeometricFigure
 	//Constructors
 	
 	/**
-	 * @param edgeRelations
-	 * @param objectID
-	 * @param description
-	 * @param pictureURL
+	 * @param edgeRelations ArrayList of all Relations between two edges
+	 * @param objectID ID of the current OBJ Object
+	 * @param description Description of the current OBJ Object
+	 * @param pictureURL String with the Path of the picture file of the current OBJ Object
 	 */
 	public GeometricFigure(ArrayList<RelationsDefinition> edgeRelations, Integer objectID, String description,
 			String pictureURL) {

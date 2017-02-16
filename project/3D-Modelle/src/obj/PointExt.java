@@ -78,18 +78,6 @@ public class PointExt<T extends Number> extends Point<T> implements Comparable<P
 	@Override
 	public int compareTo(PointExt<T> aPointExt)
 	{
-		/*
-		if (aPointExt == null)
-		{
-			System.out.println("PROBLEM!");
-		}
-		
-		if (this.getAVertex() == null && aPointExt.getAVertex() == null)
-		{
-			System.out.println("");
-			return 0;
-		}
-		*/
 		int comparisonX = this.getAVertex().getId() > aPointExt.getAVertex().getId() ? 1 : 
 							this.getAVertex().getId() < aPointExt.getAVertex().getId() ? -1 : 0; 
 		if (comparisonX != 0) return comparisonX;
@@ -102,7 +90,6 @@ public class PointExt<T extends Number> extends Point<T> implements Comparable<P
 				return this.getANormal().getId() > aPointExt.getANormal().getId() ? 1 : 
 						this.getANormal().getId() < aPointExt.getANormal().getId() ? -1 : 0; 
 		}
-
 	}
 	
 	@Override

@@ -69,14 +69,14 @@ public class RelationsDefinition
 	}
 	/**
 	 * Setter for edge1 
-	 * @param edge1
+	 * @param edge1 Edge to which the first Edge should be set
 	 */
 	public void setEdge1(Edge<Double> edge1) {
 		this.edge1 = edge1;
 	}
 	/**
 	 * Setter for edge2
-	 * @param edge2
+	 * @param edge2 Edge to which the second Edge should be set
 	 */
 	public void setEdge2(Edge<Double> edge2) {
 		this.edge2 = edge2;

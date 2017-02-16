@@ -1,3 +1,5 @@
+package obj;
+
 /** 
  * Vertex.java
  * (c) Copyright 04-2016 Robert Külpmann
@@ -10,9 +12,6 @@
  *  
  *  TODO: Redundanzen entfernen (siehe Vector4id, Vector4, Vertex, Texture, Normal)
  */
-
-package obj;
-
 public class Vertex<T extends Number> extends Vector4id<T> 
 {
 	/* 

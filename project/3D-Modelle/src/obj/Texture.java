@@ -19,7 +19,6 @@ public class Texture<T extends Number> extends Vector4id<T>
 	
 	public static int getNumber() 	{return number;}	
 	public static void setNumber(int number) 	{Texture.number = number;}
-
 	
 	Texture(Vector4<T> aVector4)
 	{
