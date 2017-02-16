@@ -180,7 +180,7 @@ public class OBJ
 				//Reads Coordinates of a vertex (3D)
 				if (splitted[0].equals("v")) 
 				{
-					if(splitted.length != 3) 
+					if(splitted.length != 4) 
 					{
 						br.close();
 						fr.close();
@@ -195,7 +195,7 @@ public class OBJ
 				//Reads Coordinates of a texture (2D)
 				else if (splitted[0].equals("vt")) 
 				{
-					if(splitted.length != 2) 
+					if(splitted.length != 3) 
 					{
 						br.close();
 						fr.close();
@@ -209,7 +209,7 @@ public class OBJ
 				//Reads Coordinates of a normalvector (3D)
 				else if (splitted[0].equals("vn")) 
 				{
-					if(splitted.length != 3) 
+					if(splitted.length != 4) 
 					{
 						br.close();
 						fr.close();
