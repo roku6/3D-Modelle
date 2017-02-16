@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
-import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 import java.awt.Graphics;
 import java.awt.Dimension;
@@ -17,17 +16,13 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JLayeredPane;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.Color;
-
 
 /**
  *
@@ -62,12 +57,12 @@ public class OutputGUI extends javax.swing.JFrame {
 	private int hcenter;
 	private int vcenter;
 	private Runtime r;
-	
 
 	// construstrors
 
 	/**
-	 * Constructor Displays a message if no objects were found and an output GUI
+	 * Constructor.
+	 * Displays a message if no objects were found and an output GUI
 	 * window else. The table model for the table on the left is set here
 	 * because it needs to know the foundList size before the initialization of
 	 * the table.
@@ -99,11 +94,10 @@ public class OutputGUI extends javax.swing.JFrame {
 
 			setContentPane(pane);
 
-			setSize(width /* + insets.left + insets.right */,
-					height/* + insets.top + insets.bottom */);
+			setSize(width, height);
 
 			initComponents();
-			
+
 			tm.setRowCount(foundList.size());
 			tm.setColumnCount(3);
 			for (int i = 0; i < foundList.size(); i++) {
@@ -121,23 +115,19 @@ public class OutputGUI extends javax.swing.JFrame {
 
 	/**
 	 * Initializes the components apart from the pictures. Creates the table on
-	 * the left and the background coordinate system Sets the image size and the
-	 * font size in the coordinate system proportionally to window size Creates
-	 * a default image to display when no image is found
+	 * the left and the background coordinate system. Sets the image size and the
+	 * font size in the coordinate system proportionally to window size. Creates
+	 * a default image to display when no image is found and an image of the green plus shown when pictures overlap.
 	 */
 	private void initComponents() {
 		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-		
-		
-	
-		
 
 		insets = new Insets(20, 20, 45, 25);
 
-		imgsize = (int) (Math.min(getHeight()/6,getWidth()/10));
+		imgsize = (int) (Math.min(getHeight() / 6, getWidth() / 10));
 		butArr = new ArrayList<javax.swing.JButton>(foundList.size());
 
-		// default image
+		// default image "kein Bild"
 		defimg = new BufferedImage(imgsize, imgsize, java.awt.image.BufferedImage.TYPE_INT_ARGB);
 		g = defimg.getGraphics();
 		g.setColor(Color.white);
@@ -151,19 +141,16 @@ public class OutputGUI extends javax.swing.JFrame {
 
 		g.drawLine(imgsize / 4, imgsize / 4, imgsize / 4, imgsize * 3 / 4);
 		g.drawLine(imgsize * 3 / 4, imgsize / 4, imgsize * 3 / 4, imgsize * 3 / 4);
-		
+
+		//green plus shown when pictures overlap
 		plusimg = new BufferedImage(16, 16, java.awt.image.BufferedImage.TYPE_INT_ARGB);
 		g = plusimg.getGraphics();
 		g.setColor(Color.green);
 		g.setFont(new Font("default", Font.BOLD, 20));
 		g.drawLine(8, 0, 8, 16);
 		g.drawLine(0, 8, 16, 8);
-		
-		
-		
-		
-	
 
+		//background panel with the coordinate system
 		mPanel = new JPanel() {
 			/**
 			 * 
@@ -201,7 +188,6 @@ public class OutputGUI extends javax.swing.JFrame {
 					g.drawLine(x, y, x, y + 5);
 					g.drawString(mark.toString(), x, y - 2);
 				}
-			
 
 				// create hatch marks for y axis.
 				for (int i = 0; i < 11; i++) {
@@ -223,9 +209,8 @@ public class OutputGUI extends javax.swing.JFrame {
 			}
 		};
 		
-
-		tm = new javax.swing.table.DefaultTableModel(new Object[][] {}, new String[] { "ID", "LenDif", "AngleDif" }
-		) {
+		//datamodel of the table on the left
+		tm = new javax.swing.table.DefaultTableModel(new Object[][] {}, new String[] { "ID", "LenDif", "AngleDif" }) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -245,7 +230,8 @@ public class OutputGUI extends javax.swing.JFrame {
 				return super.getColumnClass(column);
 			}
 		};
-
+		
+		//scrollpane for the table
 		jScrollPane2 = new javax.swing.JScrollPane();
 		jTable = new javax.swing.JTable();
 
@@ -278,34 +264,35 @@ public class OutputGUI extends javax.swing.JFrame {
 		jTable.getTableHeader().setReorderingAllowed(false);
 		jScrollPane2.setViewportView(jTable);
 		jTable.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+			//draws a red border around a picture when it is selected in the table 
 			@Override
 			public void valueChanged(javax.swing.event.ListSelectionEvent event) {
 				if (jTable.getSelectedRow() > -1) {
 					for (int i = 0; i < foundList.size() && butArr.get(i) != null; i++) {
-						
+
 						butArr.get(i).setBorderPainted(false);
 						butArr.get(i).getParent().setComponentZOrder(butArr.get(i), 1);
 						if (foundList.get(i).getId() == jTable.getValueAt(jTable.getSelectedRow(), 0)) {
 							butArr.get(i).getParent().setComponentZOrder(butArr.get(i), 0);
 							butArr.get(i).setBorderPainted(true);
-							
+
 							jTable.requestFocusInWindow();
 						}
 					}
 				}
 			}
 		});
-
+		//removes the borders after focus on the table is lost
 		jTable.addFocusListener(new java.awt.event.FocusAdapter() {
 			public void focusLost(java.awt.event.FocusEvent evt) {
-				if(butArr!=null)
-					for (int i = 0; i < butArr.size() ; i++) 
-						if(butArr.get(i)!=null)
+				if (butArr != null)
+					for (int i = 0; i < butArr.size(); i++)
+						if (butArr.get(i) != null)
 							butArr.get(i).setBorderPainted(false);
-				// mPanel.getParent().setComponentZOrder(mPanel, 0);
 			}
 		});
 
+		//opens the bigger image of an object in a new dialog when the row is clicked twice
 		jTable.addMouseListener(new java.awt.event.MouseAdapter() {
 			public void mouseClicked(java.awt.event.MouseEvent evt) {
 				if (evt.getClickCount() == 2) {
@@ -334,10 +321,9 @@ public class OutputGUI extends javax.swing.JFrame {
 				getHeight() - insets.top - insets.bottom);
 		mPright = mPleft + (int) (getWidth() * 0.72);
 		mPbottom = mPtop + (int) (getHeight() * 0.85);
-		
-		 hcenter = mPleft + mPanel.getWidth() / 2;
-		 vcenter = mPtop + mPanel.getHeight() / 2;
 
+		hcenter = mPleft + mPanel.getWidth() / 2;
+		vcenter = mPtop + mPanel.getHeight() / 2;
 
 		mPanel.setBackground(new Color(0, 0, 0, 0));
 
@@ -347,30 +333,41 @@ public class OutputGUI extends javax.swing.JFrame {
 	
 	
 	
-	
+
+	/**
+	 * Creates a new JButoon for every found object.
+	 * Chooses it's position in the coordinate system by first calculating the absolute offsets from the center.
+	 * Then creates four rectangles with these offsets in every corner of the coordinate system.
+	 * For every rectangle determines how many existing button it overlaps.
+	 * Chooses the rectangle with the smallest overlap number as the position of the button.
+	 * Sets the image on the button as either the image from the found object or the default image.
+	 * Resizes the big image to fit button and keeps only a string of it's location on the hard drive for later use.
+	 * 
+	 * @param i
+	 */
 	private void drawOneButton(int i) {
-		
+
 		javax.swing.JButton jButton = new javax.swing.JButton() {
 			// draws the ID of the object into the picture
 			@Override
 			public void paintComponent(Graphics g) {
 				super.paintComponent(g);
 				g.drawString(java.util.Objects.toString(this.getName(), ""), getWidth() / 2, getHeight() / 2);
-				
+
 			}
 		};
-		
+
 		butArr.add(jButton);
-		pane.add(jButton, "jLabel" + i);
-		// pane.setLayer(jButton, 0);
+		pane.add(jButton, "jButton" + i);
+
 
 		int hoffset = (int) (foundList.get(i).getLenSim() / lenInt * (mPanel.getWidth() - imgsize) / 2);
 		int voffset = (int) (foundList.get(i).getAngSim() / angInt * (mPanel.getHeight() - imgsize) / 2);
-		// System.out.println(foundList.get(i).getId()+" "+voffset);
+
 
 		// possible locations of the button in each quarter counterclockwise
-		Rectangle bounds1 = new Rectangle(hcenter - imgsize / 2 + hoffset, vcenter - imgsize / 2 + voffset, imgsize+5,
-				imgsize+5);
+		Rectangle bounds1 = new Rectangle(hcenter - imgsize / 2 + hoffset, vcenter - imgsize / 2 + voffset, imgsize + 5,
+				imgsize + 5);
 		Rectangle bounds2 = new Rectangle(hcenter - imgsize / 2 - hoffset, vcenter - imgsize / 2 + voffset, imgsize,
 				imgsize);
 		Rectangle bounds3 = new Rectangle(hcenter - imgsize / 2 - hoffset, vcenter - imgsize / 2 - voffset, imgsize,
@@ -378,6 +375,7 @@ public class OutputGUI extends javax.swing.JFrame {
 		Rectangle bounds4 = new Rectangle(hcenter - imgsize / 2 + hoffset, vcenter - imgsize / 2 - voffset, imgsize,
 				imgsize);
 
+		//sort by number of overlaps using a map
 		Map<Rectangle, Integer> treeMap = new HashMap<Rectangle, Integer>();
 		treeMap.put(bounds1, numberOverlaps(bounds1));
 		treeMap.put(bounds2, numberOverlaps(bounds2));
@@ -394,34 +392,29 @@ public class OutputGUI extends javax.swing.JFrame {
 
 		Rectangle wantedBounds = list.get(0).getKey();
 		jButton.setBounds(wantedBounds);
-		
 
 		jButton.setOpaque(false);
 		jButton.setContentAreaFilled(false);
-		jButton.setBorder(new javax.swing.border.LineBorder(Color.red,2));
-		
-	
+		//this border is shown when a row in the table is clicked
+		jButton.setBorder(new javax.swing.border.LineBorder(Color.red, 2));
+
 		jButton.setBorderPainted(false);
 		jButton.setFocusPainted(false);
 
 		jButton.setName(java.util.Objects.toString((foundList.get(i).getId()), ""));
-		
-
 
 		java.awt.Image img;
-		
+
 		javax.swing.ImageIcon popupIcon = new javax.swing.ImageIcon(foundList.get(i).getPic());
 		img = popupIcon.getImage();
 		jButton.putClientProperty("popupPath", foundList.get(i).getPic());
 
-		if(img.getWidth(null)<1) {
-			img=defimg;
-			jButton.putClientProperty("popupPath","defimg" );
+		if (img.getWidth(null) < 1) {
+			img = defimg;
+			jButton.putClientProperty("popupPath", "defimg");
 		}
 		
-	
-		
-
+		//resize image to imgsize
 		// keep proportions, calculate min scaling factor
 		Dimension sourceDim = new Dimension(img.getWidth(null), img.getHeight(null));
 
@@ -434,28 +427,18 @@ public class OutputGUI extends javax.swing.JFrame {
 
 		java.awt.Image resizedImg = img.getScaledInstance((int) (sourceDim.getWidth() * scale),
 				(int) (sourceDim.getHeight() * scale), Image.SCALE_FAST);
-		
 
 		javax.swing.ImageIcon icon = new javax.swing.ImageIcon(resizedImg);
-		//icon = defImg;
 		jButton.setIcon(icon);
-		
+
 		img.flush();
-		img=null;
+		img = null;
 		resizedImg.flush();
 		resizedImg = null;
-		
-		
-		
+
 		jButton.putClientProperty("description", foundList.get(i).getDescr());
 		
-		
-		
-		
-			
-		
-
-
+		//when clicked, determines, which buttons overlap with this one and calls the method to display them
 		jButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 
@@ -464,11 +447,11 @@ public class OutputGUI extends javax.swing.JFrame {
 				ArrayList<JButton> overlappingButtons = new ArrayList<JButton>();
 				ArrayList<String> popupPaths = new ArrayList<String>();
 				overlappingButtons.add(jButton);
-				popupPaths.add((String)jButton.getClientProperty("popupPath"));
+				popupPaths.add((String) jButton.getClientProperty("popupPath"));
 				for (int i = 0; i < butArr.size() && butArr.get(i) != null; i++)
 					if (overlap(bounds, butArr.get(i).getBounds()) && butArr.get(i) != jButton) {
 						overlappingButtons.add(butArr.get(i));
-						popupPaths.add((String)butArr.get(i).getClientProperty("popupPath"));
+						popupPaths.add((String) butArr.get(i).getClientProperty("popupPath"));
 					}
 
 				jButtonActionPerformed(overlappingButtons, popupPaths);
@@ -476,6 +459,7 @@ public class OutputGUI extends javax.swing.JFrame {
 			}
 		});
 
+		//displays the button in front of the coordinate system when mouse enters
 		jButton.addMouseListener(new java.awt.event.MouseAdapter() {
 			public void mouseEntered(java.awt.event.MouseEvent evt) {
 				jButton.getParent().setComponentZOrder(jButton, 0);
@@ -489,40 +473,33 @@ public class OutputGUI extends javax.swing.JFrame {
 
 		});
 
-		
-		
 	}
+	
 
 	private void drawAll() {
 
-		// calculate borders and center of coordinate system
 
-		int hcenter = mPleft + mPanel.getWidth() / 2;
-		int vcenter = mPtop + mPanel.getHeight() / 2;
 
 		for (int i = 0; i < foundList.size(); i++) {
 			drawOneButton(i);
 
 		}
-		for(JButton jButton : butArr) {
-		Rectangle bounds = jButton.getBounds();
+		for (JButton jButton : butArr) {
+			Rectangle bounds = jButton.getBounds();
 
+			int overlaps = 0;
+			for (int j = 0; j < butArr.size() && butArr.get(j) != null; j++)
+				if (overlap(bounds, butArr.get(j).getBounds()) && butArr.get(j) != jButton)
+					overlaps += 1;
+			if (overlaps > 0) {
+				javax.swing.JLabel plusLabel = new javax.swing.JLabel();
+				plusLabel.setIcon(new javax.swing.ImageIcon(plusimg));
+				plusLabel.setPreferredSize(new Dimension(16, 16));
 
-		int overlaps = 0;	
-		for (int j = 0; j < butArr.size() && butArr.get(j) != null; j++)
-			if (overlap(bounds, butArr.get(j).getBounds()) && butArr.get(j) != jButton) 
-				overlaps +=1;
-		if(overlaps>0) {
-			javax.swing.JLabel plusLabel = new javax.swing.JLabel();
-			plusLabel.setIcon( new javax.swing.ImageIcon(plusimg));		
-			plusLabel.setPreferredSize(new Dimension(16,16));
-			
-			jButton.setLayout(null);
-			jButton.add(plusLabel);
-			plusLabel.setBounds(imgsize*3/4,imgsize*1/4-16, 16, 16);
-			
-			
-				
+				jButton.setLayout(null);
+				jButton.add(plusLabel);
+				plusLabel.setBounds(imgsize * 3 / 4, imgsize * 1 / 4 - 16, 16, 16);
+
 			}
 		}
 
@@ -533,48 +510,45 @@ public class OutputGUI extends javax.swing.JFrame {
 			String descr = java.util.Objects.toString(buttons.get(0).getClientProperty("description"),
 					"keine Beschreibung");
 			JLabel label = new JLabel();
-			
-			if( icons.get(0)=="defimg") {
+
+			if (icons.get(0) == "defimg") {
 				label.setIcon(buttons.get(0).getIcon());
-			}
-			else {
-				//scale for small monitors
+			} else {
+				// scale for small monitors
 				javax.swing.ImageIcon labelIcon = new javax.swing.ImageIcon(icons.get(0));
-				if(labelIcon.getIconWidth()>width-150 || labelIcon.getIconHeight()>height-150) {
+				if (labelIcon.getIconWidth() > width - 150 || labelIcon.getIconHeight() > height - 150) {
 					Image img = labelIcon.getImage();
 					Dimension sourceDim = new Dimension(img.getWidth(null), img.getHeight(null));
-					Dimension destinationDim = new Dimension(width-150, height-150);
+					Dimension destinationDim = new Dimension(width - 150, height - 150);
 					double scaleX = 0;
 					double scaleY = 0;
 					scaleX = destinationDim.getWidth() / sourceDim.getWidth();
 					scaleY = destinationDim.getHeight() / sourceDim.getHeight();
 					double scale = Math.min(scaleX, scaleY);
 					java.awt.Image resImg = img.getScaledInstance((int) (sourceDim.getWidth() * scale),
-						(int) (sourceDim.getHeight() * scale), Image.SCALE_FAST);
+							(int) (sourceDim.getHeight() * scale), Image.SCALE_FAST);
 					labelIcon.setImage(resImg);
 					img.flush();
-					img=null;
+					img = null;
 					resImg.flush();
-					resImg=null;
+					resImg = null;
 				}
 				label.setIcon(labelIcon);
 			}
 			label.setHorizontalTextPosition(JLabel.CENTER);
 			label.setVerticalTextPosition(JLabel.BOTTOM);
-			
 
-			label.setText("<html>" + "ID " + buttons.get(0).getName() + ", " + descr+"</html>");
-			Dimension d = new Dimension(label.getIcon().getIconWidth(),(int)label.getPreferredSize().getHeight()+50);
+			label.setText("<html>" + "ID " + buttons.get(0).getName() + ", " + descr + "</html>");
+			Dimension d = new Dimension(label.getIcon().getIconWidth(),
+					(int) label.getPreferredSize().getHeight() + 50);
 			label.setPreferredSize(d);
 
-
-			
 			javax.swing.JOptionPane.showMessageDialog(pane, label, buttons.get(0).getName(),
 					javax.swing.JOptionPane.PLAIN_MESSAGE);
-		} 
-		
+		}
+
 		else {
-			System.out.println(buttons.size() );
+			System.out.println(buttons.size());
 			JPanel l = new JPanel();
 
 			for (int i = 0; i < buttons.size(); i++) {
@@ -593,53 +567,46 @@ public class OutputGUI extends javax.swing.JFrame {
 						g.drawString(java.util.Objects.toString(name, ""), getWidth() / 2, getHeight() / 2);
 					}
 				};
-				
-				
-
-				
 
 				javax.swing.ImageIcon ic;
-				if(buttons.get(i).getClientProperty("popupPath")=="defimg") {
-					ic=(ImageIcon) buttons.get(i).getIcon();
-					
+				if (buttons.get(i).getClientProperty("popupPath") == "defimg") {
+					ic = (ImageIcon) buttons.get(i).getIcon();
+
 				}
-				
+
 				else {
-					ic = new javax.swing.ImageIcon((String)buttons.get(i).getClientProperty("popupPath"));
-					//scale for small monitors
-				
-					if(ic.getIconWidth()>width-150 ||ic.getIconHeight()>height-150) {
+					ic = new javax.swing.ImageIcon((String) buttons.get(i).getClientProperty("popupPath"));
+					// scale for small monitors
+
+					if (ic.getIconWidth() > width - 150 || ic.getIconHeight() > height - 150) {
 						Image img = ic.getImage();
 						Dimension sourceDim = new Dimension(img.getWidth(null), img.getHeight(null));
-						Dimension destinationDim = new Dimension(width-150, height-150);
+						Dimension destinationDim = new Dimension(width - 150, height - 150);
 						double scaleX = 0;
 						double scaleY = 0;
 						scaleX = destinationDim.getWidth() / sourceDim.getWidth();
 						scaleY = destinationDim.getHeight() / sourceDim.getHeight();
 						double scale = Math.min(scaleX, scaleY);
 						java.awt.Image resImg = img.getScaledInstance((int) (sourceDim.getWidth() * scale),
-							(int) (sourceDim.getHeight() * scale), Image.SCALE_FAST);
+								(int) (sourceDim.getHeight() * scale), Image.SCALE_FAST);
 						ic.setImage(resImg);
 						img.flush();
-						img=null;
+						img = null;
 						resImg.flush();
-						resImg=null;
+						resImg = null;
 					}
-					
-			
+
 				}
-				
-			
-				
+
 				label.addMouseListener(new java.awt.event.MouseAdapter() {
 					public void mouseClicked(java.awt.event.MouseEvent evt) {
 						JLabel label = new JLabel(ic);
 						label.setHorizontalTextPosition(JLabel.CENTER);
 						label.setVerticalTextPosition(JLabel.BOTTOM);
-						label.setText("<html>" +"ID: " + name + ", " + descr+"</html>");
-						Dimension d = new Dimension(label.getIcon().getIconWidth(),(int)label.getPreferredSize().getHeight()+50);
+						label.setText("<html>" + "ID: " + name + ", " + descr + "</html>");
+						Dimension d = new Dimension(label.getIcon().getIconWidth(),
+								(int) label.getPreferredSize().getHeight() + 50);
 						label.setPreferredSize(d);
-						
 
 						javax.swing.JOptionPane.showMessageDialog(pane, label, name,
 								javax.swing.JOptionPane.PLAIN_MESSAGE);
@@ -654,33 +621,29 @@ public class OutputGUI extends javax.swing.JFrame {
 			l.setPreferredSize(d);
 
 			if (d.getWidth() * d.getHeight() > width * height * 4 / 9) {
-				int w =width/2;				
-				double picsHor = w/imgsize;
-				System.out.println("w "+w +"imgsize "+imgsize+"picsHor"+ picsHor);
-				d.setSize(w-100,imgsize*Math.ceil(buttons.size()/picsHor)+50);
-				System.out.println("was: "+(int) (imgsize * Math.ceil(Math.sqrt(buttons.size()) + 1))+" * "+ (int) (imgsize * Math.round(Math.sqrt(buttons.size()))));
-				System.out.println("now: "+w+" * "+d.getHeight());
+				int w = width / 2;
+				double picsHor = w / imgsize;
+				System.out.println("w " + w + "imgsize " + imgsize + "picsHor" + picsHor);
+				d.setSize(w - 100, imgsize * Math.ceil(buttons.size() / picsHor) + 50);
+				System.out.println("was: " + (int) (imgsize * Math.ceil(Math.sqrt(buttons.size()) + 1)) + " * "
+						+ (int) (imgsize * Math.round(Math.sqrt(buttons.size()))));
+				System.out.println("now: " + w + " * " + d.getHeight());
 				System.out.println(picsHor);
 				l.setPreferredSize(d);
 				System.out.println(l.getPreferredSize());
 				l.setSize(d);
-				l.setBorder(BorderFactory.createLineBorder(Color.red,3));
-				
+	
 
 				javax.swing.JScrollPane scr = new javax.swing.JScrollPane(l);
-				Dimension d2 = new Dimension(width/2, height / 2);
+				Dimension d2 = new Dimension(width / 2, height / 2);
 				scr.setPreferredSize(d2);
 				javax.swing.JOptionPane.showMessageDialog(pane, scr, "", javax.swing.JOptionPane.PLAIN_MESSAGE);
 				System.out.println("scrsize:" + scr.getSize());
 
 			}
-			
-			
+
 			else
 				javax.swing.JOptionPane.showMessageDialog(pane, l, "", javax.swing.JOptionPane.PLAIN_MESSAGE);
-
-
-			
 
 		}
 
@@ -706,32 +669,31 @@ public class OutputGUI extends javax.swing.JFrame {
 		}
 		return count;
 	}
-	
 
 	private OutputGUI getgui() {
 		return this;
-	
+
 	}
-	
+
 	@Override
 	public void dispose() {
-		if(butArr!=null) {	
-		for(JButton b : butArr) {
-			
-			b.setIcon(null);	
-			b.removeAll();
-			java.awt.event.ActionListener l = b.getActionListeners()[0];
-			b.removeActionListener(l);
-			b.invalidate();
-			b=null;			
+		if (butArr != null) {
+			for (JButton b : butArr) {
+
+				b.setIcon(null);
+				b.removeAll();
+				java.awt.event.ActionListener l = b.getActionListeners()[0];
+				b.removeActionListener(l);
+				b.invalidate();
+				b = null;
+			}
+			butArr.clear();
+			butArr = null;
+			mPanel.removeAll();
+			pane.removeAll();
+			defimg = null;
 		}
-		butArr.clear();
-		butArr =null;
-		mPanel.removeAll();
-		pane.removeAll();
-		defimg  =null;
-		}
-		System.gc();		
+		System.gc();
 		r.gc();
 		System.runFinalization();
 		r.runFinalization();

@@ -2,6 +2,7 @@ package src;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.awt.Container;
@@ -198,7 +199,7 @@ public class InputGUI extends javax.swing.JFrame {
 				removeButtonActionPerformed(evt);
 			}
 		});
-		
+
 		removeAllButton.setText("Alle löschen");
 		removeAllButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -256,7 +257,6 @@ public class InputGUI extends javax.swing.JFrame {
 				angleIntervalTFActionPerformed(evt);
 			}
 		});
-		
 
 		outputLabel.setText("Ausgabefenster:");
 		outputLabel.setHorizontalAlignment(javax.swing.JTextField.CENTER);
@@ -272,24 +272,22 @@ public class InputGUI extends javax.swing.JFrame {
 		widthTF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 		heightTF.setText(java.util.Objects.toString(height));
 		heightTF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-		
+
 		objInDBLabel = new javax.swing.JLabel();
 		objInDBLabel.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 		objInDBLabel.setVerticalAlignment(javax.swing.JTextField.CENTER);
-		int obj=0;
+		int obj = 0;
 		try {
-			obj= modelle.getDBController().getUsedIds().size();
+			obj = modelle.getDBController().getUsedIds().size();
 			if (obj == 1) {
 				objInDBLabel.setText("1 Objekt in der Datenbank.");
 			} else {
 				objInDBLabel.setText(obj + " Objekte in der Datenbank.");
 			}
-		}
-		catch(NullPointerException ex) {
+		} catch (NullPointerException ex) {
 			objInDBLabel.setText("keine Datenbankverbindung!");
-		
+
 		}
-		
 
 		// Layout
 
@@ -363,12 +361,12 @@ public class InputGUI extends javax.swing.JFrame {
 
 		pane.add(removeButton);
 		removeButton.setBounds(400, 125, size.width, size.height);
-		
+
 		pane.add(removeAllButton);
 		removeAllButton.setBounds(400, 165, size.width, size.height);
 
 		pane.add(readDirButton);
-		
+
 		size = readDirButton.getPreferredSize();
 		readDirButton.setBounds(610, 125, size.width, size.height);
 
@@ -377,11 +375,10 @@ public class InputGUI extends javax.swing.JFrame {
 
 		pane.add(removeObjFromDB);
 		removeObjFromDB.setBounds(610, 165, size.width, size.height);
-		
+
 		pane.add(objInDBLabel);
 		size = objInDBLabel.getPreferredSize();
-		objInDBLabel.setBounds(610,50,size.width, size.height);
-		
+		objInDBLabel.setBounds(610, 50, size.width, size.height);
 
 		pane.add(searchButton);
 		size = searchButton.getPreferredSize();
@@ -410,13 +407,12 @@ public class InputGUI extends javax.swing.JFrame {
 		pack();
 	}
 
-	//action performed methods
+	// action performed methods
 
 	/**
 	 * Angle TF action performed. The ActionPerformed methods only calls the
 	 * corresponding logic method(s), so GUI elements can be replaced or removed
-	 * later.
-	 * Calls {@link #manageInput()} . 
+	 * later. Calls {@link #manageInput()} .
 	 */
 	private void angleTFActionPerformed(java.awt.event.ActionEvent evt) {
 		manageInput();
@@ -425,55 +421,57 @@ public class InputGUI extends javax.swing.JFrame {
 	/**
 	 * Search button action performed. The ActionPerformed methods only calls
 	 * the corresponding logic method(s), so GUI elements can be replaced or
-	 * removed later.
-	 * Calls {@link #searchSearchobject()} . 
+	 * removed later. Calls {@link #searchSearchobject()} .
 	 */
 	private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {
 		searchSearchobject();
 
 		// remove later, test!
 		/*
-		  int numberObjects = (int)(Math.random()*10+50);
-
-		  System.out.println(numberObjects);
+		  int numberObjects = 100;//(int)(Math.random()*10+30);
+	
+		  
+		 System.out.println(numberObjects);
 		  
 		  double lenInt =
 		  (int)(Math.random()*9+1)+(int)(Math.random()*90)*0.01; double angInt
 		  = (int)(Math.random()*9+1)+(int)(Math.random()*90)*0.01;
+
 		  List<Foundobject> foundList = new ArrayList<Foundobject>(); String[]
-		 pics={"C:\\knfn\\StudPro\\pngs\\cube_100x100x100.png"};//,"D:\\Informatik\\TortoiseOrdner\\3D-Modelle\\trunk\\resources\\cube_hole_100x100x100.png" ,""};
+		  pics={"C:\\kngn\\StudPro\\pngs\\cube_100x100x100.png"};//,
+		 // "D:\\Informatik\\TortoiseOrdner\\3D-Modelle\\trunk\\resources\\cube_hole_100x100x100.png"
+		 // ,""};
 		  
-		 for(int i=0;i<numberObjects;i++) { Foundobject f = new
-		  Foundobject((Integer)(int)(Math.random()*1000),(double)(int)(Math.
-		  random()*lenInt*100)/100,(double)(int)(Math.random()*angInt*100)/100,
+		  for(int i=0;i<numberObjects;i++) { Foundobject f = new
+		  Foundobject((Integer)(int)(Math.random()*1000),
+				  (double)(int)(Math.random()*lenInt*100)/100,
+				  (double)(int)(Math.random()*angInt*100)/100,
 		  pics[(int)(Math.random()*pics.length)],null); foundList.add(f); }
 		  
 		  OutputGUI outg3 = new
 		  OutputGUI(foundList,lenInt,angInt,Integer.valueOf(widthTF.getText()),
 		  Integer.valueOf(heightTF.getText())); outg3.setVisible(true);
-		  
+		 
 		  outg3 = null;
 		  
-		  return;*/
-		  
-		 
+		  return;
+		 */
+
 	}
 
 	/**
 	 * Edit button action performed. The ActionPerformed methods only calls the
 	 * corresponding logic method(s), so GUI elements can be replaced or removed
-	 * later.
-	 * Calls {@link #prepareForEdit()} . 
+	 * later. Calls {@link #prepareForEdit()} .
 	 */
-	private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {		
+	private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {
 		prepareForEdit();
 	}
 
 	/**
 	 * Read file button action performed. The ActionPerformed methods only calls
 	 * the corresponding logic method(s), so GUI elements can be replaced or
-	 * removed later.
-	 * Calls {@link #readFile()} . 
+	 * removed later. Calls {@link #readFile()} .
 	 */
 	private void readFileButtonActionPerformed(java.awt.event.ActionEvent evt) {
 		readFile();
@@ -482,8 +480,7 @@ public class InputGUI extends javax.swing.JFrame {
 	/**
 	 * Add button action performed. The ActionPerformed methods only calls the
 	 * corresponding logic method(s), so GUI elements can be replaced or removed
-	 * later.
-	 * Calls {@link #manageInput()} . 
+	 * later. Calls {@link #manageInput()} .
 	 */
 	private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {
 		manageInput();
@@ -492,18 +489,16 @@ public class InputGUI extends javax.swing.JFrame {
 	/**
 	 * Remove button action performed. The ActionPerformed methods only calls
 	 * the corresponding logic method(s), so GUI elements can be replaced or
-	 * removed later.
-	 * Calls {@link #removeSearchobject()} . 
+	 * removed later. Calls {@link #removeSearchobject()} .
 	 */
 	private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {
 		removeSearchobject();
 	}
-	
+
 	/**
-	 * Remove all button action performed. The ActionPerformed methods only calls
-	 * the corresponding logic method(s), so GUI elements can be replaced or
-	 * removed later.
-	 * Calls {@link #removeAllSearchobjects()} . 
+	 * Remove all button action performed. The ActionPerformed methods only
+	 * calls the corresponding logic method(s), so GUI elements can be replaced
+	 * or removed later. Calls {@link #removeAllSearchobjects()} .
 	 */
 	private void removeAllButtonActionPerformed(java.awt.event.ActionEvent evt) {
 		removeAllSearchobjects();
@@ -512,8 +507,7 @@ public class InputGUI extends javax.swing.JFrame {
 	/**
 	 * Edge TF action performed. The ActionPerformed methods only calls the
 	 * corresponding logic method(s), so GUI elements can be replaced or removed
-	 * later.
-	 * Calls {@link #manageInput()} . 
+	 * later. Calls {@link #manageInput()} .
 	 */
 	private void edgeTFActionPerformed(java.awt.event.ActionEvent evt) {
 		manageInput();
@@ -522,8 +516,7 @@ public class InputGUI extends javax.swing.JFrame {
 	/**
 	 * Edge TF focus lost. The ActionPerformed methods only calls the
 	 * corresponding logic method(s), so GUI elements can be replaced or removed
-	 * later.
-	 * Calls {@link #presetLenTF()} . 
+	 * later. Calls {@link #presetLenTF()} .
 	 */
 	private void edgeTFFocusLost(java.awt.event.FocusEvent evt) {
 		presetLenTF();
@@ -532,8 +525,7 @@ public class InputGUI extends javax.swing.JFrame {
 	/**
 	 * Len TF action performed. The ActionPerformed methods only calls the
 	 * corresponding logic method(s), so GUI elements can be replaced or removed
-	 * later.
-	 * Calls {@link #manageInput()} . 
+	 * later. Calls {@link #manageInput()} .
 	 */
 	private void lenTFActionPerformed(java.awt.event.ActionEvent evt) {
 		manageInput();
@@ -542,8 +534,7 @@ public class InputGUI extends javax.swing.JFrame {
 	/**
 	 * To edge TF action performed. The ActionPerformed methods only calls the
 	 * corresponding logic method(s), so GUI elements can be replaced or removed
-	 * later.
-	 * Calls {@link #manageInput()} . 
+	 * later. Calls {@link #manageInput()} .
 	 */
 	private void toEdgeTFActionPerformed(java.awt.event.ActionEvent evt) {
 		manageInput();
@@ -552,8 +543,7 @@ public class InputGUI extends javax.swing.JFrame {
 	/**
 	 * Len interval TF action performed. The ActionPerformed methods only calls
 	 * the corresponding logic method(s), so GUI elements can be replaced or
-	 * removed later.
-	 * Calls {@link #addInterval()} . 
+	 * removed later. Calls {@link #addInterval()} .
 	 */
 	private void lenIntervalTFActionPerformed(java.awt.event.ActionEvent evt) {
 		addInterval(lenIntervalTF);
@@ -562,8 +552,7 @@ public class InputGUI extends javax.swing.JFrame {
 	/**
 	 * Angle interval TF action performed. The ActionPerformed methods only
 	 * calls the corresponding logic method(s), so GUI elements can be replaced
-	 * or removed later.
-	 * Calls {@link #addInterval()} . 
+	 * or removed later. Calls {@link #addInterval()} .
 	 */
 	private void angleIntervalTFActionPerformed(java.awt.event.ActionEvent evt) {
 		addInterval(angleIntervalTF);
@@ -572,8 +561,7 @@ public class InputGUI extends javax.swing.JFrame {
 	/**
 	 * Len interval TF focus lost. The ActionPerformed methods only calls the
 	 * corresponding logic method(s), so GUI elements can be replaced or removed
-	 * later.
-	 * Calls {@link #addInterval()} . 
+	 * later. Calls {@link #addInterval()} .
 	 */
 	private void lenIntervalTFFocusLost(java.awt.event.FocusEvent evt) {
 		addInterval(lenIntervalTF);
@@ -582,8 +570,7 @@ public class InputGUI extends javax.swing.JFrame {
 	/**
 	 * Angle interval TF focus lost. The ActionPerformed methods only calls the
 	 * corresponding logic method(s), so GUI elements can be replaced or removed
-	 * later.
-	 * Calls {@link #addInterval()} . 
+	 * later. Calls {@link #addInterval()} .
 	 */
 	private void angleIntervalTFFocusLost(java.awt.event.FocusEvent evt) {
 		addInterval(angleIntervalTF);
@@ -592,8 +579,7 @@ public class InputGUI extends javax.swing.JFrame {
 	/**
 	 * Read dir button action performed. The ActionPerformed methods only calls
 	 * the corresponding logic method(s), so GUI elements can be replaced or
-	 * removed later.
-	 * Calls {@link #readDir()} . 
+	 * removed later. Calls {@link #readDir()} .
 	 */
 	private void readDirButtonActionPerformed(java.awt.event.ActionEvent evt) {
 		readDir();
@@ -602,8 +588,7 @@ public class InputGUI extends javax.swing.JFrame {
 	/**
 	 * Remove object from DB button action performed. The ActionPerformed
 	 * methods only calls the corresponding logic method(s), so GUI elements can
-	 * be replaced or removed later.
-	 * Calls {@link #removeObjFromDB()} .
+	 * be replaced or removed later. Calls {@link #removeObjFromDB()} .
 	 * 
 	 */
 	private void removeObjFromDBActionPerformed(java.awt.event.ActionEvent evt) {
@@ -744,95 +729,90 @@ public class InputGUI extends javax.swing.JFrame {
 	 * @param index
 	 *            the index at which the object is added
 	 */
-	
+
 	private boolean validInput() {
-		
 
 		if (!isInteger(edgeTF.getText()) || Integer.valueOf(edgeTF.getText()) <= 0) {
-			javax.swing.JOptionPane.showMessageDialog(this,
-					"Erste Kanten-ID muss eine positive ganze Zahl sein.");
+			javax.swing.JOptionPane.showMessageDialog(this, "Erste Kanten-ID muss eine positive ganze Zahl sein.");
 			edgeTF.setText("");
 			return false;
-		} 
+		}
 
-	
-		if (lenTF.getText().isEmpty() || lenTF.getText().equals("null")) {}
-			
-			
+		if (lenTF.getText().isEmpty() || lenTF.getText().equals("null")) {
+		}
+
 		else if (!isDouble(lenTF.getText()) || Double.valueOf(lenTF.getText()) < 0) {
 			javax.swing.JOptionPane.showMessageDialog(this, "Kantenlänge muss eine nicht-negative Zahl sein.");
 			lenTF.setText("");
 			return false;
-		} 
+		}
 
-	
-		if (angleTF.getText().isEmpty()) {}
-		
+		if (angleTF.getText().isEmpty()) {
+		}
+
 		else if (!isDouble(angleTF.getText()) || Double.valueOf(angleTF.getText()) < 0) {
 			javax.swing.JOptionPane.showMessageDialog(this, "Winkel muss eine nicht-negative Zahl sein.");
 			angleTF.setText("");
 			return false;
 		}
 
-		
-		if (toEdgeTF.getText().isEmpty()) {}
-	
+		if (toEdgeTF.getText().isEmpty()) {
+		}
+
 		else if (!isInteger(toEdgeTF.getText()) || Integer.valueOf(toEdgeTF.getText()) <= 0) {
-			javax.swing.JOptionPane.showMessageDialog(this,
-					"Zweite Kanten-ID muss eine positive ganze Zahl sein.");
+			javax.swing.JOptionPane.showMessageDialog(this, "Zweite Kanten-ID muss eine positive ganze Zahl sein.");
 			toEdgeTF.setText("");
 			return false;
-		} 
-		return true;
-		
-
 		}
-		
+		return true;
+
+	}
+
 	/**
-	 * Calls all the functions that are needed to manage the user input.
-	 * First, calls {@link #validInput()} .
-	 * If textfields were left empty, sets the corresponding values to null.
-	 * Then calls {@link #valuesMatch()} .
-	 * If it succeeded, calls {@link #createSearchobject()} .
-	 * Checks whether the user clicked the edit button and calls
-	 * {@link #addSearchobject()} or {@link #replaceSearchobject()}.
+	 * Calls all the functions that are needed to manage the user input. First,
+	 * calls {@link #validInput()} . If textfields were left empty, sets the
+	 * corresponding values to null. Then calls {@link #valuesMatch()} . If it
+	 * succeeded, calls {@link #createSearchobject()} . Checks whether the user
+	 * clicked the edit button and calls {@link #addSearchobject()} or
+	 * {@link #replaceSearchobject()}.
 	 */
 	private void manageInput() {
-		if(!validInput())
+		if (!validInput())
 			return;
 		Integer id1 = Integer.valueOf(edgeTF.getText());
-		
+
 		Double length;
 		if (lenTF.getText().isEmpty() || lenTF.getText().equals("null"))
 			length = null;
 		else
 			length = Double.valueOf(lenTF.getText());
-		
+
 		Double angle;
-		if (angleTF.getText().isEmpty()|| angleTF.getText().equals("null"))
+		if (angleTF.getText().isEmpty() || angleTF.getText().equals("null"))
 			angle = null;
 		else
 			angle = Double.valueOf(angleTF.getText());
-		
+
 		Integer id2;
-		if (toEdgeTF.getText().isEmpty()|| toEdgeTF.getText().equals("null"))
+		if (toEdgeTF.getText().isEmpty() || toEdgeTF.getText().equals("null"))
 			id2 = null;
-		else		
-			id2 =Integer.valueOf(toEdgeTF.getText());
-		
-		if(!valuesMatch(id1,length,angle,id2,searchList))
+		else
+			id2 = Integer.valueOf(toEdgeTF.getText());
+
+		if (!valuesMatch(id1, length, angle, id2, searchList))
 			return;
-		Searchobject searchObj = createSearchobject(id1,length,angle,id2);
-		
-		if(editClicked==true) 
-			replaceSearchobject(edgeEditIndex,searchObj);
+		Searchobject searchObj = createSearchobject(id1, length, angle, id2);
+
+		if (editClicked == true)
+			replaceSearchobject(edgeEditIndex, searchObj);
 		else
 			addSearchobject(searchObj);
-		
+
 	}
-	
+
 	/**
 	 * Creates a new searchobject from the input valies.
+	 * 
 	 * @param id1
 	 * @param length
 	 * @param angle
@@ -842,14 +822,13 @@ public class InputGUI extends javax.swing.JFrame {
 	private Searchobject createSearchobject(Integer id1, Double length, Double angle, Integer id2) {
 		Searchobject searchObj = new Searchobject(id1, length, angle, id2);
 		return searchObj;
-		
+
 	}
 
-
 	/**
-	 * Adds the given searchobject to the end of the searchlist.
-	 * Resets the textfields to empty.
-	 * Calls {@link #displaySearchlist()}
+	 * Adds the given searchobject to the end of the searchlist. Resets the
+	 * textfields to empty. Calls {@link #displaySearchlist()}
+	 * 
 	 * @param searchObj
 	 */
 	private void addSearchobject(Searchobject searchObj) {
@@ -863,29 +842,29 @@ public class InputGUI extends javax.swing.JFrame {
 
 		displaySearchlist();
 	}
-	
+
 	/**
-	 * Copies the values from the logical internal searchlist to the visible list representation of the GUI.
-	 * First, clears the GUI-listmodel, then adds a new line for every searchobject on the searchlist.
-	 * Should be called after every change to the searchlist.
+	 * Copies the values from the logical internal searchlist to the visible
+	 * list representation of the GUI. First, clears the GUI-listmodel, then
+	 * adds a new line for every searchobject on the searchlist. Should be
+	 * called after every change to the searchlist.
 	 */
 	private void displaySearchlist() {
 		listModel.clear();
 		for (Searchobject obj : searchList) {
-			String newLine = "Kante " + obj.getId1() + ":      " + "Länge: " + obj.getLength() + ",      Winkel: " + obj.getAngle()
-					+ "   zur Kante " + obj.getId2();
+			String newLine = "Kante " + obj.getId1() + ":      " + "Länge: " + obj.getLength() + ",      Winkel: "
+					+ obj.getAngle() + "   zur Kante " + obj.getId2();
 			listModel.addElement(newLine);
-			
+
 		}
-		
+
 	}
 
 	/**
-	 *If no line is selected in the inputList, does
-	 * nothing. Else sets the edgeEditIndex and the editClicked flag for the
-	 * replaceObject method and sets the data from the selected line to the text
-	 * fields.
-	 * Disables the remove and remove all buttons.
+	 * If no line is selected in the inputList, does nothing. Else sets the
+	 * edgeEditIndex and the editClicked flag for the replaceObject method and
+	 * sets the data from the selected line to the text fields. Disables the
+	 * remove and remove all buttons.
 	 * 
 	 */
 	private void prepareForEdit() {
@@ -904,10 +883,11 @@ public class InputGUI extends javax.swing.JFrame {
 	}
 
 	/**
-	 * Replaces the searchobject at the given index of the searchlist with the given searchobject.
-	 * Calls {@link #replaceLengths()}.
-	 * Sets the editClicked flag to false, enables the remove buttons, sets the textfields to empty
+	 * Replaces the searchobject at the given index of the searchlist with the
+	 * given searchobject. Calls {@link #replaceLengths()}. Sets the editClicked
+	 * flag to false, enables the remove buttons, sets the textfields to empty
 	 * and calls {@link #displaySearchlist()}
+	 * 
 	 * @param index
 	 * @param searchObj
 	 */
@@ -923,7 +903,7 @@ public class InputGUI extends javax.swing.JFrame {
 		angleTF.setText("");
 		toEdgeTF.setText("");
 		addButton.setText("hinzufügen");
-		
+
 		displaySearchlist();
 	}
 
@@ -936,36 +916,34 @@ public class InputGUI extends javax.swing.JFrame {
 	 */
 	private void replaceLengths(Integer id, Double length) {
 		for (Searchobject obj : searchList)
-			if (obj.getId1().equals(id) && !Objects.equals(obj.getLength(), length)) 
+			if (obj.getId1().equals(id) && !Objects.equals(obj.getLength(), length))
 				obj.setLength(length);
 		displaySearchlist();
 	}
 
 	/**
-	 * Removes the searchobject from the  the internal searchList.
-	 * Calls {@link #displaySearchlist()}
+	 * Removes the searchobject from the the internal searchList. Calls
+	 * {@link #displaySearchlist()}
 	 */
-	private void removeSearchobject() {	
-		if (inputList.getSelectedIndex() != -1) 
+	private void removeSearchobject() {
+		if (inputList.getSelectedIndex() != -1)
 			searchList.remove(inputList.getSelectedIndex());
 		displaySearchlist();
 	}
-	
+
 	/**
-	 * Asks for confirmation, then clears rhe searchlist.
-	 * Calls {@link #displaySearchlist()}
+	 * Asks for confirmation, then clears rhe searchlist. Calls
+	 * {@link #displaySearchlist()}
 	 */
 	private void removeAllSearchobjects() {
-		int reply = javax.swing.JOptionPane.showConfirmDialog(this, "Alle Kanten aus der Liste löschen?","",
+		int reply = javax.swing.JOptionPane.showConfirmDialog(this, "Alle Kanten aus der Liste löschen?", "",
 				javax.swing.JOptionPane.YES_NO_OPTION);
-		if (reply == javax.swing.JOptionPane.YES_OPTION)
-	    {
+		if (reply == javax.swing.JOptionPane.YES_OPTION) {
 			searchList.clear();
 			displaySearchlist();
-	    }
+		}
 
 	}
-	
 
 	/**
 	 * Calls the search function of the main class if at least one searchobject
@@ -973,20 +951,21 @@ public class InputGUI extends javax.swing.JFrame {
 	 */
 	private void searchSearchobject() {
 		if (searchList.size() > 0) {
-			if(isInteger(widthTF.getText()))
-					width = Integer.valueOf(widthTF.getText());
-			if(isInteger(heightTF.getText()))
+			ArrayList<Searchobject> searchListWithIds = replaceNullIds();
+			
+			
+			if (isInteger(widthTF.getText()))
+				width = Integer.valueOf(widthTF.getText());
+			if (isInteger(heightTF.getText()))
 				height = Integer.valueOf(heightTF.getText());
-			modelle.search(searchList, angleInterval, lenInterval, width, height);
-		}
-		else
+			modelle.search(searchListWithIds, angleInterval, lenInterval, width, height);
+		} else
 			javax.swing.JOptionPane.showMessageDialog(this, "Zum Suchen muss mindestens eine Kante angegeben werden.");
 	}
 
 	/**
-	 * Read file. Opens the file chooser for files.
-	 * Adds chosen file to the filelist.
-	 * Calls {@link #matchTxtPng()}
+	 * Read file. Opens the file chooser for files. Adds chosen file to the
+	 * filelist. Calls {@link #matchTxtPng()}
 	 */
 	private void readFile() {
 		chooser.setFileSelectionMode(javax.swing.JFileChooser.FILES_ONLY);
@@ -1000,17 +979,14 @@ public class InputGUI extends javax.swing.JFrame {
 			System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
 			File[] fl = chooser.getSelectedFiles();
 			matchTxtPng(fl);
-			
-		
-			}
-		
+
+		}
+
 	}
 
 	/**
-	 * Read directory 
-	 * Opens the file chooser for directories 
-	 * Adds chosen files to the filelist
-	 * Calls {@link #matchTxtPng()}
+	 * Read directory Opens the file chooser for directories Adds chosen files
+	 * to the filelist Calls {@link #matchTxtPng()}
 	 */
 	private void readDir() {
 		chooser.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
@@ -1032,8 +1008,7 @@ public class InputGUI extends javax.swing.JFrame {
 	 * Looks for matching .txt and .png files in the same directory to use as
 	 * description and picture. Saves empty string if it finds none. Calls the
 	 * buildObjects method in the main class with the list of all filenames as
-	 * parameter.
-	 * Calls {@link #renewObjCount()}
+	 * parameter. Calls {@link #renewObjCount()}
 	 *
 	 * @param fl
 	 *            the filelist
@@ -1062,33 +1037,30 @@ public class InputGUI extends javax.swing.JFrame {
 			names[2] = nameWithPng;
 			namesList.add(names);
 		}
-		
+
 		modelle.buildObjects(namesList);
 		renewObjCount();
-		
-	
-		
+
 	}
 
 	/**
 	 * Displays an input window for the ID of the object to be removed. Calls
-	 * the deleteObjFromDB method in the main class.
-	 * Calls {@link #renewObjCount()}
+	 * the deleteObjFromDB method in the main class. Calls
+	 * {@link #renewObjCount()}
 	 */
 	private void removeObjFromDB() {
 		String id = javax.swing.JOptionPane.showInputDialog("Objekt-ID eingeben:");
 		modelle.deleteObjFromDB(id);
 		renewObjCount();
 	}
-	
-	
+
 	/**
 	 * Renews the label showing how many objects are in the database.
 	 */
 	private void renewObjCount() {
-		int obj=0;
+		int obj = 0;
 		try {
-			obj= modelle.getDBController().getUsedIds().size();
+			obj = modelle.getDBController().getUsedIds().size();
 			if (obj == 1) {
 				objInDBLabel.setSize(objInDBLabel.getPreferredSize());
 				objInDBLabel.setText("1 Objekt in der Datenbank.");
@@ -1096,11 +1068,57 @@ public class InputGUI extends javax.swing.JFrame {
 				objInDBLabel.setSize(objInDBLabel.getPreferredSize());
 				objInDBLabel.setText(obj + " Objekte in der Datenbank.");
 			}
-		}
-		catch(NullPointerException ex) {
+		} catch (NullPointerException ex) {
 			objInDBLabel.setSize(objInDBLabel.getPreferredSize());
 			objInDBLabel.setText("keine Datenbankverbindung!");
 		}
+	}
+	
+	/**
+	 * Makes a deep copy of the searchlist as not to influence what the user expect to see.
+	 * Goes through all objects and collects all used ids.
+	 * The goes through the objects in the copy and replaces all null-ids with the next unused number.
+	 * Adds this number to the usedIds list.
+	 * 
+	 * @return a searchlist with the replaced ids
+	 * 
+	 */
+	private ArrayList<Searchobject> replaceNullIds() {
+		 ArrayList<Searchobject> searchListWithIds = new ArrayList<Searchobject>();
+		 for( Searchobject s : searchList) {
+			 Searchobject s2 = new Searchobject(s.getId1(), s.getLength(), s.getAngle(), s.getId2());
+			 searchListWithIds.add(s2);
+ 
+		 }
+			
+		
+		ArrayList<Integer> usedIds = new ArrayList<Integer>();
+		//fill list with all used ids in first loop
+		for( Searchobject s : searchList) {
+			if(!Objects.equals(s.getId2(),null)) 
+				usedIds.add(s.getId2());
+		if(!Objects.equals(s.getId1(),null)) 
+			usedIds.add(s.getId1());
+		}
+		
+		for( Searchobject s : searchListWithIds) 
+			if(Objects.equals(s.getId2(),null))  {
+				Integer i =0;
+				while(true) {
+					if(!usedIds.contains(i)) {
+						s.setId2(i);
+						usedIds.add(i);
+						break;
+					}
+					i++;
+				}
+			}
+		
+		return searchListWithIds;
+			
+
+		
+		
 	}
 
 	/**
