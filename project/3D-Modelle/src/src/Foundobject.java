@@ -7,6 +7,8 @@ package src;
 
 
 /**
+ *The Foundobject Class:
+ *This Class is meant to pass the found matching 3d-objects and their metadata to the GUI to display them.
  *
  * @author Ekaterina Kuzminykh
  */

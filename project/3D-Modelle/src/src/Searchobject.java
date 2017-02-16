@@ -7,6 +7,8 @@ package src;
 
 
 /**
+ * The Searchobject Class:
+ *This class provides a datastructure to store the users entries to the inputGui so that other classes may access them.
  *
  * @author Ekaterina Kuzminykh
  */

@@ -1,10 +1,9 @@
 package src;
 /**
- * @author Lennard Flegel, Robert Külpmann
- *
+ * The Class Relationsefinition:
  * Simple class providing a data structure to represent 2 adjacent edges and the angle between them for easy access 
  * whilst writing to DB
- *
+ * @author Lennard Flegel, Robert Külpmann
  */
 public class RelationsDefinition 
 {

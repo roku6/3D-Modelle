@@ -18,14 +18,11 @@ import org.neo4j.unsafe.batchinsert.BatchInserter;
 import org.neo4j.unsafe.batchinsert.BatchInserters;
 
 /**
- * @author Lennard Flegel
- *
+ * The DBController Class:
  * Singleton-class for DB-access. Singleton NOT threadsafe.
  * Make sure to invoke the shutdown method once your transactions are done.
  *  
- *  
- *   
- *
+ * @author Lennard Flegel 
  */
 public class DBController {
 	
@@ -307,7 +304,7 @@ public class DBController {
 	}
 
 	/**
-	 * 
+	 * Prints the amount of currently stored 3d-objects to system.out
 	 */
 	public void printOBJAmount(){
 		int objsInDb = usedIds.size();

@@ -5,13 +5,12 @@ import java.util.Map;
 import org.neo4j.graphdb.Result;
 
 /**
- * @author Lennard Flegel
- *
+ * The SearchLogic Class:
  * Singleton class to gather information about the object to search for, generate the CQL query needed and compute the derivation of the Objects found.
  * Singleton NOT threadsafe.
  * 
+ * @author Lennard Flegel
  */
-
 public class SearchLogic {
 
 	//Members
@@ -60,6 +59,7 @@ public class SearchLogic {
 
 	/**
 	 * Same for empty cons.
+	 * @return The only creatable instance of this
 	 */
 	public static SearchLogic getInstance () {
 	    if (SearchLogic.instance == null) {
@@ -217,7 +217,7 @@ public class SearchLogic {
 		return searchObjects;
 	}
 	/**
-	 * @param searchObjects the searchObjects to set
+	 * @param newSearchObjects the searchObjects to set
 	 */
 	public void setSearchObjects(ArrayList<Searchobject> newSearchObjects) {
 		searchObjects = newSearchObjects;

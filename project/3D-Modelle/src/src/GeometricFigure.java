@@ -3,10 +3,10 @@ package src;
 import java.util.ArrayList;
 
 /**
- * @author Lennard Flegel, Robert Külpmann
- *
+ * The GeometricFigure Class:
  * Simple class providing a data structure to represent a geom. object for easy access whilst writing to DB
  *
+ *@author Lennard Flegel, Robert Külpmann
  */
 public class GeometricFigure
 {

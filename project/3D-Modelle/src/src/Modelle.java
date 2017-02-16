@@ -1,5 +1,6 @@
 /**
- * Main Class for the 3D-Model project
+ * Main Class Modelle:
+ * Mainclass for the 3D-Model project
  * 
  * @author Lennard Flegel, Robert Külpmann, Ekaterina Kuzminykh
  */
