@@ -25,9 +25,11 @@ import javax.swing.JButton;
 import java.awt.Color;
 
 /**
+ *The Class OutputGUI. Displays the search results.
  *
  * @author Ekaterina Kuzminykh
  */
+
 @SuppressWarnings("serial")
 public class OutputGUI extends javax.swing.JFrame {
 
@@ -44,8 +46,6 @@ public class OutputGUI extends javax.swing.JFrame {
 	private int imgsize;
 	private int mPleft;
 	private int mPtop;
-	private int mPright;
-	private int mPbottom;
 	private List<Foundobject> foundList;
 	private Image defimg;
 	private Image plusimg;
@@ -319,8 +319,7 @@ public class OutputGUI extends javax.swing.JFrame {
 
 		mPanel.setBounds(mPleft, mPtop, (int) (getWidth() * 0.8) - 2 * insets.left - insets.right,
 				getHeight() - insets.top - insets.bottom);
-		mPright = mPleft + (int) (getWidth() * 0.72);
-		mPbottom = mPtop + (int) (getHeight() * 0.85);
+
 
 		hcenter = mPleft + mPanel.getWidth() / 2;
 		vcenter = mPtop + mPanel.getHeight() / 2;
@@ -342,6 +341,7 @@ public class OutputGUI extends javax.swing.JFrame {
 	 * Chooses the rectangle with the smallest overlap number as the position of the button.
 	 * Sets the image on the button as either the image from the found object or the default image.
 	 * Resizes the big image to fit button and keeps only a string of it's location on the hard drive for later use.
+	 * Adds the ActionListener for a reaction on mouse clicks.
 	 * 
 	 * @param i
 	 */
@@ -384,6 +384,7 @@ public class OutputGUI extends javax.swing.JFrame {
 
 		List<java.util.Map.Entry<Rectangle, Integer>> list = new LinkedList<>(treeMap.entrySet());
 		Collections.sort(list, new Comparator<Object>() {
+			@SuppressWarnings("unchecked")
 			public int compare(Object o1, Object o2) {
 				return ((Comparable<Integer>) ((Map.Entry<Rectangle, Integer>) (o1)).getValue())
 						.compareTo(((Map.Entry<Rectangle, Integer>) (o2)).getValue());
@@ -476,6 +477,10 @@ public class OutputGUI extends javax.swing.JFrame {
 	}
 	
 
+	/**
+	 * Calls {@link #drawOneButton(int)} for every foundobject with the index of this object.
+	 * After all buttons are drawn, checks for overlaps and adds the green plus signs.
+	 */
 	private void drawAll() {
 
 
@@ -505,6 +510,13 @@ public class OutputGUI extends javax.swing.JFrame {
 
 	}
 
+	/**
+	 * Differentiates between four cases: the button had a custom picture/a default picture and one button was clicked/overlapping buttons were clicked.
+	 * If one button was clicked, opens a window with the resized custom image/default image.
+	 * If overlapping buttons were clicked, first opens another window where they are displayed side by side. Makes these buttons clickable too.
+	 * @param buttons
+	 * @param icons
+	 */
 	private void jButtonActionPerformed(ArrayList<JButton> buttons, ArrayList<String> icons) {
 		if (buttons.size() == 1) {
 			String descr = java.util.Objects.toString(buttons.get(0).getClientProperty("description"),
@@ -548,7 +560,7 @@ public class OutputGUI extends javax.swing.JFrame {
 		}
 
 		else {
-			System.out.println(buttons.size());
+
 			JPanel l = new JPanel();
 
 			for (int i = 0; i < buttons.size(); i++) {
@@ -623,14 +635,11 @@ public class OutputGUI extends javax.swing.JFrame {
 			if (d.getWidth() * d.getHeight() > width * height * 4 / 9) {
 				int w = width / 2;
 				double picsHor = w / imgsize;
-				System.out.println("w " + w + "imgsize " + imgsize + "picsHor" + picsHor);
+
 				d.setSize(w - 100, imgsize * Math.ceil(buttons.size() / picsHor) + 50);
-				System.out.println("was: " + (int) (imgsize * Math.ceil(Math.sqrt(buttons.size()) + 1)) + " * "
-						+ (int) (imgsize * Math.round(Math.sqrt(buttons.size()))));
-				System.out.println("now: " + w + " * " + d.getHeight());
-				System.out.println(picsHor);
+
 				l.setPreferredSize(d);
-				System.out.println(l.getPreferredSize());
+
 				l.setSize(d);
 	
 
@@ -638,7 +647,7 @@ public class OutputGUI extends javax.swing.JFrame {
 				Dimension d2 = new Dimension(width / 2, height / 2);
 				scr.setPreferredSize(d2);
 				javax.swing.JOptionPane.showMessageDialog(pane, scr, "", javax.swing.JOptionPane.PLAIN_MESSAGE);
-				System.out.println("scrsize:" + scr.getSize());
+
 
 			}
 
@@ -649,7 +658,13 @@ public class OutputGUI extends javax.swing.JFrame {
 
 	}
 
-	// check if overlap is bigger than 1/2 of imgsize
+	// 
+	/**
+	 * Checks if the overlap of two rectangles is bigger than 1/2 of imgsize. The condition for overlap can be adjusted, if imgsize/2 seems like too much/too little.
+	 * @param a
+	 * @param b
+	 * @return true if overlap
+	 */
 	private boolean overlap(Rectangle a, Rectangle b) {
 		Rectangle inter = a.intersection(b);
 
@@ -659,7 +674,10 @@ public class OutputGUI extends javax.swing.JFrame {
 
 	}
 
-	// returns the number of overlapping buttons for a rectangle
+	/**
+	 * @param a the Rectangle
+	 * @return the number of overlapping buttons for a rectangle
+	 */
 	private int numberOverlaps(Rectangle a) {
 		int count = 0;
 		for (int j = 0; j < butArr.size() && butArr.get(j) != null; j++) {
@@ -670,10 +688,7 @@ public class OutputGUI extends javax.swing.JFrame {
 		return count;
 	}
 
-	private OutputGUI getgui() {
-		return this;
 
-	}
 
 	@Override
 	public void dispose() {
@@ -702,16 +717,6 @@ public class OutputGUI extends javax.swing.JFrame {
 		super.dispose();
 	}
 
-	/**
-	 * @param args
-	 *            the command line arguments
-	 */
-	public static void main(String args[]) {
-		java.awt.EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				// new outputGUI().setVisible(true);
-			}
-		});
-	}
+
 
 }

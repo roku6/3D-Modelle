@@ -2,7 +2,6 @@ package src;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.awt.Container;
@@ -11,16 +10,18 @@ import java.awt.Toolkit;
 import java.awt.Dimension;
 import java.util.Objects;
 
-import javax.swing.AbstractButton;
-import javax.swing.event.ChangeEvent;
 
 /**
- * The Class GUI.
+ * f Terminates the programm and shuts down the DB on closing the window.
  * 
  * @author Ekaterina Kuzminykh
  */
 public class InputGUI extends javax.swing.JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// members
 	private Modelle modelle;
 	private javax.swing.JButton addButton;
@@ -31,7 +32,7 @@ public class InputGUI extends javax.swing.JFrame {
 	private javax.swing.JLabel edgeLabel;
 	private javax.swing.JTextField edgeTF;
 	private javax.swing.JButton editButton;
-	private javax.swing.JList inputList;
+	private javax.swing.JList<Object> inputList;
 	private javax.swing.JScrollPane jScrollPane2;
 	private javax.swing.JLabel lenIntervalLabel;
 	private javax.swing.JTextField lenIntervalTF;
@@ -45,7 +46,7 @@ public class InputGUI extends javax.swing.JFrame {
 	private javax.swing.JButton searchButton;
 	private javax.swing.JLabel toEdgeLabel;
 	private javax.swing.JTextField toEdgeTF;
-	private javax.swing.DefaultListModel listModel;
+	private javax.swing.DefaultListModel<Object> listModel;
 	private List<Searchobject> searchList;
 	private javax.swing.JFileChooser chooser;
 	private javax.swing.filechooser.FileNameExtensionFilter objFilter;
@@ -96,7 +97,7 @@ public class InputGUI extends javax.swing.JFrame {
 		angleTF = new javax.swing.JTextField();
 		toEdgeLabel = new javax.swing.JLabel();
 		jScrollPane2 = new javax.swing.JScrollPane();
-		inputList = new javax.swing.JList();
+		inputList = new javax.swing.JList<Object>();
 		searchButton = new javax.swing.JButton();
 		addButton = new javax.swing.JButton();
 		editButton = new javax.swing.JButton();
@@ -117,7 +118,7 @@ public class InputGUI extends javax.swing.JFrame {
 		heightTF = new javax.swing.JTextField();
 		namesList = new ArrayList<String[]>();
 		removeObjFromDB = new javax.swing.JButton();
-		listModel = new javax.swing.DefaultListModel();
+		listModel = new javax.swing.DefaultListModel<Object>();
 		searchList = new ArrayList<Searchobject>();
 		chooser = new javax.swing.JFileChooser();
 		objFilter = new javax.swing.filechooser.FileNameExtensionFilter("OBJ-Dateien", "obj");
@@ -131,7 +132,7 @@ public class InputGUI extends javax.swing.JFrame {
 
 		edgeLabel.setText("Kante:");
 
-		lenLabel.setText("Länge:");
+		lenLabel.setText("Laenge:");
 
 		lenTF.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -161,7 +162,7 @@ public class InputGUI extends javax.swing.JFrame {
 			}
 		});
 
-		addButton.setText("Hinzufügen");
+		addButton.setText("Hinzufuegen");
 		addButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				addButtonActionPerformed(evt);
@@ -193,14 +194,14 @@ public class InputGUI extends javax.swing.JFrame {
 			}
 		});
 
-		removeButton.setText("Kante löschen");
+		removeButton.setText("Kante loeschen");
 		removeButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				removeButtonActionPerformed(evt);
 			}
 		});
 
-		removeAllButton.setText("Alle löschen");
+		removeAllButton.setText("Alle loeschen");
 		removeAllButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				removeAllButtonActionPerformed(evt);
@@ -221,14 +222,14 @@ public class InputGUI extends javax.swing.JFrame {
 			}
 		});
 
-		removeObjFromDB.setText("Objekt löschen");
+		removeObjFromDB.setText("Objekt loeschen");
 		removeObjFromDB.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				removeObjFromDBActionPerformed(evt);
 			}
 		});
 
-		lenIntervalLabel.setText("Längenintervall:");
+		lenIntervalLabel.setText("Laengenintervall:");
 
 		lenIntervalTF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 		lenIntervalTF.setText("0");
@@ -262,7 +263,7 @@ public class InputGUI extends javax.swing.JFrame {
 		outputLabel.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 		widthLabel.setText("Breite");
 		widthLabel.setVerticalAlignment(javax.swing.JTextField.BOTTOM);
-		heightLabel.setText("Höhe");
+		heightLabel.setText("Hoehe");
 		heightLabel.setVerticalAlignment(javax.swing.JTextField.BOTTOM);
 
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -373,6 +374,7 @@ public class InputGUI extends javax.swing.JFrame {
 		pane.add(readFileButton);
 		readFileButton.setBounds(610, 85, size.width, size.height);
 
+		size = removeObjFromDB.getPreferredSize();
 		pane.add(removeObjFromDB);
 		removeObjFromDB.setBounds(610, 165, size.width, size.height);
 
@@ -425,37 +427,6 @@ public class InputGUI extends javax.swing.JFrame {
 	 */
 	private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {
 		searchSearchobject();
-
-		// remove later, test!
-		/*
-		  int numberObjects = 100;//(int)(Math.random()*10+30);
-	
-		  
-		 System.out.println(numberObjects);
-		  
-		  double lenInt =
-		  (int)(Math.random()*9+1)+(int)(Math.random()*90)*0.01; double angInt
-		  = (int)(Math.random()*9+1)+(int)(Math.random()*90)*0.01;
-
-		  List<Foundobject> foundList = new ArrayList<Foundobject>(); String[]
-		  pics={"C:\\kngn\\StudPro\\pngs\\cube_100x100x100.png"};//,
-		 // "D:\\Informatik\\TortoiseOrdner\\3D-Modelle\\trunk\\resources\\cube_hole_100x100x100.png"
-		 // ,""};
-		  
-		  for(int i=0;i<numberObjects;i++) { Foundobject f = new
-		  Foundobject((Integer)(int)(Math.random()*1000),
-				  (double)(int)(Math.random()*lenInt*100)/100,
-				  (double)(int)(Math.random()*angInt*100)/100,
-		  pics[(int)(Math.random()*pics.length)],null); foundList.add(f); }
-		  
-		  OutputGUI outg3 = new
-		  OutputGUI(foundList,lenInt,angInt,Integer.valueOf(widthTF.getText()),
-		  Integer.valueOf(heightTF.getText())); outg3.setVisible(true);
-		 
-		  outg3 = null;
-		  
-		  return;
-		 */
 
 	}
 
@@ -543,7 +514,7 @@ public class InputGUI extends javax.swing.JFrame {
 	/**
 	 * Len interval TF action performed. The ActionPerformed methods only calls
 	 * the corresponding logic method(s), so GUI elements can be replaced or
-	 * removed later. Calls {@link #addInterval()} .
+	 * removed later. Calls {@link #addInterval(JTextField)} .
 	 */
 	private void lenIntervalTFActionPerformed(java.awt.event.ActionEvent evt) {
 		addInterval(lenIntervalTF);
@@ -552,7 +523,7 @@ public class InputGUI extends javax.swing.JFrame {
 	/**
 	 * Angle interval TF action performed. The ActionPerformed methods only
 	 * calls the corresponding logic method(s), so GUI elements can be replaced
-	 * or removed later. Calls {@link #addInterval()} .
+	 * or removed later. Calls {@link #addInterval(JTextField)} .
 	 */
 	private void angleIntervalTFActionPerformed(java.awt.event.ActionEvent evt) {
 		addInterval(angleIntervalTF);
@@ -561,7 +532,7 @@ public class InputGUI extends javax.swing.JFrame {
 	/**
 	 * Len interval TF focus lost. The ActionPerformed methods only calls the
 	 * corresponding logic method(s), so GUI elements can be replaced or removed
-	 * later. Calls {@link #addInterval()} .
+	 * later. Calls {@link #addInterval(JTextField)} .
 	 */
 	private void lenIntervalTFFocusLost(java.awt.event.FocusEvent evt) {
 		addInterval(lenIntervalTF);
@@ -570,7 +541,7 @@ public class InputGUI extends javax.swing.JFrame {
 	/**
 	 * Angle interval TF focus lost. The ActionPerformed methods only calls the
 	 * corresponding logic method(s), so GUI elements can be replaced or removed
-	 * later. Calls {@link #addInterval()} .
+	 * later. Calls {@link #addInterval(JTextField)} .
 	 */
 	private void angleIntervalTFFocusLost(java.awt.event.FocusEvent evt) {
 		addInterval(angleIntervalTF);
@@ -622,7 +593,7 @@ public class InputGUI extends javax.swing.JFrame {
 
 		for (Searchobject obj : searchList) {
 			if (!editClicked && obj.getId1().equals(id1) && !Objects.equals(obj.getLength(), length)) {
-				javax.swing.JOptionPane.showMessageDialog(this, "Diese Kante hat schon eine andere Länge!");
+				javax.swing.JOptionPane.showMessageDialog(this, "Diese Kante hat schon eine andere Laenge!");
 				return false;
 			}
 
@@ -724,10 +695,8 @@ public class InputGUI extends javax.swing.JFrame {
 	 *
 	 * Checks if the user input consists of acceptable values. Different from
 	 * the valuesMatch method, checks only for valid types (int/double) and
-	 * positive numbers in the input. If all values are valid, returns true.
-	 * 
-	 * @param index
-	 *            the index at which the object is added
+	 * positive numbers in the input. 
+	 * @return true if input is valid, false otherwise
 	 */
 
 	private boolean validInput() {
@@ -742,7 +711,7 @@ public class InputGUI extends javax.swing.JFrame {
 		}
 
 		else if (!isDouble(lenTF.getText()) || Double.valueOf(lenTF.getText()) < 0) {
-			javax.swing.JOptionPane.showMessageDialog(this, "Kantenlänge muss eine nicht-negative Zahl sein.");
+			javax.swing.JOptionPane.showMessageDialog(this, "Kantenlaenge muss eine nicht-negative Zahl sein.");
 			lenTF.setText("");
 			return false;
 		}
@@ -771,10 +740,10 @@ public class InputGUI extends javax.swing.JFrame {
 	/**
 	 * Calls all the functions that are needed to manage the user input. First,
 	 * calls {@link #validInput()} . If textfields were left empty, sets the
-	 * corresponding values to null. Then calls {@link #valuesMatch()} . If it
-	 * succeeded, calls {@link #createSearchobject()} . Checks whether the user
-	 * clicked the edit button and calls {@link #addSearchobject()} or
-	 * {@link #replaceSearchobject()}.
+	 * corresponding values to null. Then calls {@link #valuesMatch(Integer, Double, Double, Integer, List)} . If it
+	 * succeeded, calls {@link #createSearchobject(Integer, Double, Double, Integer)} . Checks whether the user
+	 * clicked the edit button and calls {@link #addSearchobject(Searchobject)} or
+	 * {@link #replaceSearchobject(int, Searchobject)}.
 	 */
 	private void manageInput() {
 		if (!validInput())
@@ -852,7 +821,7 @@ public class InputGUI extends javax.swing.JFrame {
 	private void displaySearchlist() {
 		listModel.clear();
 		for (Searchobject obj : searchList) {
-			String newLine = "Kante " + obj.getId1() + ":      " + "Länge: " + obj.getLength() + ",      Winkel: "
+			String newLine = "Kante " + obj.getId1() + ":      " + "Laenge: " + obj.getLength() + ",      Winkel: "
 					+ obj.getAngle() + "   zur Kante " + obj.getId2();
 			listModel.addElement(newLine);
 
@@ -884,7 +853,7 @@ public class InputGUI extends javax.swing.JFrame {
 
 	/**
 	 * Replaces the searchobject at the given index of the searchlist with the
-	 * given searchobject. Calls {@link #replaceLengths()}. Sets the editClicked
+	 * given searchobject. Calls {@link #replaceLengths(Integer, Double)}. Sets the editClicked
 	 * flag to false, enables the remove buttons, sets the textfields to empty
 	 * and calls {@link #displaySearchlist()}
 	 * 
@@ -902,7 +871,7 @@ public class InputGUI extends javax.swing.JFrame {
 		lenTF.setText("");
 		angleTF.setText("");
 		toEdgeTF.setText("");
-		addButton.setText("hinzufügen");
+		addButton.setText("Hinzufuegen");
 
 		displaySearchlist();
 	}
@@ -936,7 +905,7 @@ public class InputGUI extends javax.swing.JFrame {
 	 * {@link #displaySearchlist()}
 	 */
 	private void removeAllSearchobjects() {
-		int reply = javax.swing.JOptionPane.showConfirmDialog(this, "Alle Kanten aus der Liste löschen?", "",
+		int reply = javax.swing.JOptionPane.showConfirmDialog(this, "Alle Kanten aus der Liste loeschen?", "",
 				javax.swing.JOptionPane.YES_NO_OPTION);
 		if (reply == javax.swing.JOptionPane.YES_OPTION) {
 			searchList.clear();
@@ -948,6 +917,7 @@ public class InputGUI extends javax.swing.JFrame {
 	/**
 	 * Calls the search function of the main class if at least one searchobject
 	 * exists. Displays an error message otherwise.
+	 * Performs the search on the deep copy of the search list, where IDs that were equal to null are replaced by unused numbers, because otherwise this search wouldn't be allowed.
 	 */
 	private void searchSearchobject() {
 		if (searchList.size() > 0) {
@@ -965,7 +935,7 @@ public class InputGUI extends javax.swing.JFrame {
 
 	/**
 	 * Read file. Opens the file chooser for files. Adds chosen file to the
-	 * filelist. Calls {@link #matchTxtPng()}
+	 * filelist. Calls {@link #matchTxtPng(File[])}
 	 */
 	private void readFile() {
 		chooser.setFileSelectionMode(javax.swing.JFileChooser.FILES_ONLY);
@@ -974,9 +944,6 @@ public class InputGUI extends javax.swing.JFrame {
 
 		int returnState = chooser.showDialog(null, "Open file");
 		if (returnState == javax.swing.JFileChooser.APPROVE_OPTION) {
-			// java.nio.file.Files.Path path =
-			// chooser.getSelectedFile().getPath();
-			System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
 			File[] fl = chooser.getSelectedFiles();
 			matchTxtPng(fl);
 
@@ -986,7 +953,7 @@ public class InputGUI extends javax.swing.JFrame {
 
 	/**
 	 * Read directory Opens the file chooser for directories Adds chosen files
-	 * to the filelist Calls {@link #matchTxtPng()}
+	 * to the filelist Calls {@link #matchTxtPng(File[])}
 	 */
 	private void readDir() {
 		chooser.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
@@ -1130,18 +1097,5 @@ public class InputGUI extends javax.swing.JFrame {
 		super.dispose();
 	}
 
-	/**
-	 * The main method.
-	 *
-	 * @param args
-	 *            the arguments
-	 */
-	public static void main(String args[]) {
 
-		java.awt.EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				new InputGUI().setVisible(true);
-			}
-		});
-	}
 }
